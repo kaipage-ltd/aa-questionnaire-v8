@@ -5,7 +5,7 @@ import { sendRevealEmail } from '../_lib/email.js';
 import { rateLimit } from '../_lib/rateLimit.js';
 import { verifyTurnstile } from '../_lib/turnstile.js';
 
-const PRIVACY_NOTICE_VERSION = '2026-06-04';
+const PRIVACY_NOTICE_VERSION = '2026-06-23';
 const PRIVACY_NOTICE_URL = '/privacy/';
 
 function validName(value) {
