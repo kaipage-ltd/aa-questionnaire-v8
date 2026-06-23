@@ -1,0 +1,4039 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'none'; form-action 'self'; object-src 'none'; frame-src https://challenges.cloudflare.com; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com; connect-src 'self' https://challenges.cloudflare.com; font-src 'self' data:; media-src 'none'; worker-src 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta name="referrer" content="no-referrer">
+<meta name="robots" content="noindex, nofollow, noarchive">
+<link rel="icon" href="data:,">
+<title>The AI Readiness Diagnostic</title>
+<script>
+  if (new URLSearchParams(window.location.search).get('demoNav') === '1') {
+    document.documentElement.classList.add('demo-nav-enabled');
+  }
+</script>
+<style>
+  :root {
+    --ink: #1a1a1a;
+    --ink-soft: #4a4a4a;
+    --ink-mute: #6b6b6b;
+    --ink-faint: #8a8a8a;
+    --ink-whisper: #b8b6b0;
+    --paper: #fafaf7;
+    --paper-soft: #f4f3ee;
+    --paper-warm: #f7f5ef;
+    --paper-tint: #f1ede2;
+    --rule: #d8d6d0;
+    --rule-soft: #e6e4de;
+    --rule-bold: #1a1a1a;
+    --selection: #ebe6d2;
+
+    --serif: 'Iowan Old Style', 'Palatino Linotype', Palatino, Georgia, serif;
+    --sans: 'Instrument Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --mono: 'SF Mono', 'JetBrains Mono', Menlo, Consolas, monospace;
+
+    --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+    --ease-soft: cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  * { box-sizing: border-box; }
+
+  html:not(.demo-nav-enabled) .demo-launch,
+  html:not(.demo-nav-enabled) .demo-harness,
+  html:not(.demo-nav-enabled) .demo-badge {
+    display: none !important;
+  }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--serif);
+    font-size: 16px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    /* OpenType refinements  -  the difference between type and typography */
+    font-feature-settings: "kern" 1, "liga" 1, "calt" 1, "onum" 1;
+    text-rendering: optimizeLegibility;
+  }
+  .sys-body, .user-body, .opt-text, .doc-title, .doc-subline, .opening-held {
+    font-feature-settings: "kern" 1, "liga" 1, "calt" 1, "onum" 1;
+    font-variant-numeric: oldstyle-nums proportional-nums;
+  }
+  /* Mono labels keep tabular lining numerals */
+  .opt-num, .pick-num, .byline, .q-id, .kbd-hint {
+    font-variant-numeric: lining-nums tabular-nums;
+  }
+
+  body {
+    background-image:
+      radial-gradient(circle at 18% 22%, rgba(0,0,0,0.014) 0%, transparent 55%),
+      radial-gradient(circle at 82% 78%, rgba(0,0,0,0.014) 0%, transparent 55%);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' seed='4'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.04 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+    opacity: 0.5;
+    pointer-events: none;
+    z-index: 1;
+    mix-blend-mode: multiply;
+  }
+
+  ::selection { background: var(--selection); color: var(--ink); }
+
+  .stage {
+    position: relative;
+    z-index: 2;
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 44px 40px 24px;
+  }
+
+  /* A+A wordmark  -  sits above the title in flow */
+  .brand-mark {
+    color: var(--ink);
+    margin: 0 0 30px;
+    user-select: none;
+  }
+  .brand-mark svg {
+    width: 160px;
+    height: auto;
+    display: block;
+  }
+
+  /* Inline restart  -  sits at the right end of each kbd-hint, faint marginal */
+  .kbd-restart {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: 0.12em;
+    text-transform: lowercase;
+    color: var(--ink-whisper);
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    margin-left: auto;
+    transition: color 240ms var(--ease-soft);
+  }
+  .kbd-restart:hover { color: var(--ink); }
+  .kbd-restart::before { content: '· '; color: var(--rule); margin-right: 4px; }
+
+  /* Restart colophon at end of reveal */
+  .reveal-restart {
+    margin: 40px 0 0;
+    text-align: center;
+  }
+  .reveal-restart button {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: 0.14em;
+    text-transform: lowercase;
+    color: var(--ink-whisper);
+    background: none;
+    border: none;
+    padding: 8px 12px;
+    cursor: pointer;
+    transition: color 240ms var(--ease-soft);
+  }
+  .reveal-restart button:hover { color: var(--ink); }
+
+  /* ──────────────────────────────── HEADER ─────────────────────────────── */
+
+  .doc-head {
+    margin-bottom: 8px;
+    padding-bottom: 0;
+    border-bottom: none;
+  }
+
+  /* Quiet architectural divider. Keep it abstract; domain visuals live in the map. */
+  .doc-divider {
+    display: flex;
+    align-items: center;
+    gap: 22px;
+    margin: 0 0 26px;
+  }
+  .doc-divider-rule {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(
+      to right,
+      transparent 0%,
+      var(--rule) 12%,
+      var(--rule-bold) 50%,
+      var(--rule) 88%,
+      transparent 100%
+    );
+  }
+  .doc-divider-mark {
+    width: 14px;
+    height: 14px;
+    color: var(--ink-soft);
+    flex-shrink: 0;
+    display: block;
+  }
+
+  .doc-title {
+    font-family: var(--serif);
+    font-size: 58px;
+    font-weight: 400;
+    line-height: 1.02;
+    margin: 0 0 14px;
+    letter-spacing: -0.02em;
+  }
+
+  .doc-subline {
+    font-style: italic;
+    font-size: 22px;
+    color: var(--ink-soft);
+    margin: 0 0 22px;
+    line-height: 1.35;
+  }
+
+
+  /* ──────────────────────────────── STREAM ─────────────────────────────── */
+
+  #stream { position: relative; }
+
+  .beat {
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 700ms var(--ease-out), transform 700ms var(--ease-out);
+  }
+  .beat.is-in { opacity: 1; transform: none; }
+  .beat.is-retired { display: none; }
+
+  /* Question identifier  -  Aperture-style category tag */
+  .q-id {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--ink-whisper);
+    margin: 0 0 18px;
+    font-variant-numeric: tabular-nums;
+  }
+  .q-id::before { content: '[ '; color: var(--ink-whisper); }
+  .q-id::after { content: ' ]'; color: var(--ink-whisper); }
+  .question-mode {
+    font-family: var(--sans);
+    font-size: 10.5px;
+    font-weight: 560;
+    line-height: 1;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin: 0 0 16px;
+  }
+
+  /* SYSTEM turn body */
+  .sys-body {
+    font-family: var(--serif);
+    font-size: 21px;
+    line-height: 1.5;
+    color: var(--ink);
+    margin: 0 0 4px;
+    position: relative;
+  }
+  .sys-body em { font-style: italic; color: var(--ink-soft); }
+  .sys-body + .sys-body { margin-top: 14px; }
+
+  /* Streaming caret  -  tapered fountain-pen lift */
+  .caret {
+    display: inline-block;
+    width: 2px;
+    height: 1.02em;
+    background: linear-gradient(
+      to bottom,
+      transparent 0%,
+      var(--ink) 14%,
+      var(--ink) 86%,
+      transparent 100%
+    );
+    margin-left: 1px;
+    vertical-align: -2px;
+    animation: caretBlink 0.94s steps(2) infinite;
+    transition: opacity 220ms var(--ease-soft);
+  }
+  .caret.is-fading { opacity: 0; }
+  @keyframes caretBlink {
+    0%, 50% { opacity: 1; }
+    50.01%, 100% { opacity: 0; }
+  }
+
+  /* Shimmer verb (replaces dots) */
+  .shimmer-verb {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    padding: 4px 0 16px;
+    opacity: 0;
+    transition: opacity 240ms var(--ease-soft);
+  }
+  .shimmer-verb.is-in { opacity: 1; }
+  .shimmer-verb .verb {
+    background: linear-gradient(
+      90deg,
+      var(--ink-faint) 0%,
+      var(--ink-faint) 35%,
+      var(--ink) 50%,
+      var(--ink-faint) 65%,
+      var(--ink-faint) 100%
+    );
+    background-size: 200% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: shimmerSweep 2.2s linear infinite;
+  }
+  .shimmer-verb .glyph {
+    width: 6px; height: 6px;
+    border: 1px solid var(--ink-faint);
+    border-radius: 50%;
+    animation: glyphPulse 2.2s var(--ease-soft) infinite;
+  }
+  @keyframes shimmerSweep {
+    0% { background-position: 100% 0; }
+    100% { background-position: -100% 0; }
+  }
+  @keyframes glyphPulse {
+    0%, 100% { transform: scale(0.7); opacity: 0.5; }
+    50% { transform: scale(1); opacity: 1; }
+  }
+
+  /* Options */
+  .opts {
+    margin: 26px 0 4px;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .opt {
+    display: flex;
+    align-items: baseline;
+    gap: 20px;
+    padding: 12px 14px 12px 12px;
+    margin-left: -14px;
+    border: none;
+    background: transparent;
+    text-align: left;
+    font-family: var(--serif);
+    font-size: 18px;
+    line-height: 1.45;
+    color: var(--ink);
+    cursor: pointer;
+    border-radius: 1px;
+    transition:
+      background 360ms var(--ease-soft),
+      color 360ms var(--ease-soft),
+      transform 520ms var(--ease-out),
+      opacity 520ms var(--ease-out);
+    opacity: 0;
+    transform: translateX(-6px);
+    width: calc(100% + 14px);
+    position: relative;
+  }
+  .opt.is-in { opacity: 1; transform: none; }
+  .opt:hover, .opt:focus-visible, .opt.is-arrow-focus {
+    background: var(--paper-soft);
+    outline: none;
+  }
+  .opt:active { opacity: 0.7; transition: opacity 90ms var(--ease-soft); }
+  .opt:focus-visible::before,
+  .opt.is-arrow-focus::before {
+    content: '';
+    position: absolute;
+    left: -2px; top: 8px; bottom: 8px;
+    width: 1px;
+    background: var(--ink);
+  }
+  .opt:disabled { cursor: default; opacity: 0.55; }
+  .opt-num {
+    font-family: var(--mono);
+    font-size: 11.5px;
+    letter-spacing: 0.06em;
+    color: var(--ink-faint);
+    flex-shrink: 0;
+    min-width: 22px;
+    padding-top: 3px;
+    font-variant-numeric: tabular-nums;
+    transition: color 240ms var(--ease-soft), font-weight 240ms var(--ease-soft);
+  }
+
+  /* B  -  numeral ink-pulse on confirm */
+  .opt-num.is-pulsing {
+    animation: numPulse 600ms var(--ease-out) forwards;
+  }
+  @keyframes numPulse {
+    0%   { color: var(--ink-faint); font-weight: 400; }
+    20%  { color: var(--ink); font-weight: 600; }
+    100% { color: var(--ink); font-weight: 500; }
+  }
+
+  /* C  -  acknowledgment mark fades in next to the picked numeral */
+  .ack-mark {
+    display: inline-block;
+    margin: 0 0 0 8px;
+    font-family: var(--mono);
+    font-size: 11.5px;
+    color: var(--ink);
+    opacity: 0;
+    transform: translateX(-4px);
+    animation: ackBeat 720ms var(--ease-out) forwards;
+    pointer-events: none;
+    font-variant-numeric: lining-nums tabular-nums;
+  }
+  @keyframes ackBeat {
+    0%   { opacity: 0; transform: translateX(-4px); }
+    18%  { opacity: 1; transform: translateX(0); }
+    62%  { opacity: 1; transform: translateX(0); }
+    100% { opacity: 0; transform: translateX(2px); }
+  }
+  .opt-text {
+    flex: 1;
+    transition: transform 260ms var(--ease-out);
+  }
+  .opt:hover .opt-text,
+  .opt.is-arrow-focus .opt-text { transform: translateX(3px); }
+  .opt-key {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--ink-whisper);
+    letter-spacing: 0.08em;
+    margin-left: 8px;
+    align-self: center;
+    transition: color 200ms var(--ease-soft);
+    flex-shrink: 0;
+    min-width: 14px;
+    text-align: right;
+  }
+  .opt:hover .opt-key,
+  .opt:focus-visible .opt-key,
+  .opt.is-arrow-focus .opt-key { color: var(--ink-soft); }
+
+  @media (min-width: 900px) {
+    .stage {
+      max-width: 860px;
+      padding-left: 48px;
+      padding-right: 48px;
+    }
+    .question-block .q-id {
+      font-size: 11px;
+      margin-bottom: 18px;
+    }
+    .question-block .question-mode {
+      font-size: 11.5px;
+      margin-bottom: 18px;
+    }
+    .question-block .sys-body {
+      font-size: 26px;
+      line-height: 1.36;
+    }
+    .question-block .opts {
+      margin-top: 34px;
+      gap: 6px;
+    }
+    .question-block .opt {
+      font-size: 21px;
+      line-height: 1.42;
+      gap: 24px;
+      padding: 14px 16px 14px 14px;
+    }
+    .question-block .opt-num {
+      font-size: 12px;
+      min-width: 26px;
+    }
+    .question-block .opt-check {
+      font-size: 13.5px;
+      min-width: 26px;
+    }
+    .question-block .opt-key {
+      font-size: 10.5px;
+    }
+    .question-block .kbd-hint {
+      margin-top: 30px;
+    }
+  }
+
+  /* Multi-select */
+  .opt.is-multi .opt-num { min-width: 18px; }
+  .opt-check {
+    font-family: var(--mono);
+    font-size: 12.5px;
+    color: var(--ink-faint);
+    flex-shrink: 0;
+    min-width: 22px;
+    padding-top: 2px;
+    transition: color 200ms var(--ease-soft);
+    letter-spacing: -0.04em;
+  }
+  .opt.is-checked .opt-check { color: var(--ink); }
+  .opt.is-checked { background: var(--paper-warm); }
+  .opt.is-checked .opt-text { color: var(--ink); }
+
+  .multi-block .confirm-row {
+    align-items: center;
+  }
+  .multi-block .confirm-btn {
+    min-width: 0;
+  }
+  .multi-block .confirm-btn:disabled {
+    background: transparent;
+    color: var(--ink-faint);
+    border-color: var(--rule);
+  }
+  .multi-block .confirm-hint {
+    min-width: 86px;
+  }
+
+  .confirm-row {
+    margin: 24px 0 4px;
+    display: flex;
+    align-items: baseline;
+    gap: 18px;
+    opacity: 0;
+    transform: translateY(4px);
+    transition: opacity 320ms var(--ease-out), transform 320ms var(--ease-out);
+  }
+  .confirm-row.is-in { opacity: 1; transform: none; }
+  .confirm-btn {
+    font-family: var(--mono);
+    font-size: 11.5px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--ink);
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid var(--ink);
+    padding: 4px 2px 4px;
+    cursor: pointer;
+    transition: padding-right 280ms var(--ease-out), color 200ms var(--ease-soft);
+  }
+  .confirm-btn::after {
+    content: ' ↵';
+    color: var(--ink-faint);
+    letter-spacing: 0;
+    margin-left: 6px;
+    transition: color 200ms var(--ease-soft), transform 220ms var(--ease-out);
+    display: inline-block;
+  }
+  .confirm-btn:hover { padding-right: 8px; }
+  .confirm-btn:hover::after { color: var(--ink); transform: translateX(2px); }
+  .confirm-btn:disabled {
+    color: var(--ink-whisper);
+    border-color: var(--rule);
+    cursor: default;
+  }
+  .begin-block .confirm-btn {
+    font-size: 12.5px;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    border-bottom-width: 1.5px;
+    padding: 6px 3px 5px;
+  }
+  .begin-block .confirm-btn::after {
+    color: var(--ink-soft);
+    margin-left: 8px;
+  }
+  .confirm-hint {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-whisper);
+  }
+
+  /* USER turn  -  contained pill, clickable to revise */
+  .user-block {
+    background: var(--paper-warm);
+    border-left: 1px solid var(--ink-whisper);
+    padding: 16px 20px 18px;
+    margin-right: 6%;
+    position: relative;
+    cursor: pointer;
+    transition: background 360ms var(--ease-soft), border-color 360ms var(--ease-soft);
+    outline: none;
+  }
+  .user-block:hover,
+  .user-block:focus-visible {
+    background: var(--paper-tint);
+    border-left-color: var(--ink-soft);
+  }
+  .user-block:focus-visible { box-shadow: -1px 0 0 0 var(--ink); }
+  .user-block.is-revising {
+    background: var(--paper-warm);
+    border-left-color: var(--ink);
+  }
+  /* Current pick highlight during revise mode */
+  .opt.is-current-pick { background: var(--paper-warm); }
+  .opt.is-current-pick .opt-num { color: var(--ink); }
+  .user-body {
+    font-family: var(--serif);
+    font-size: 18px;
+    font-style: italic;
+    line-height: 1.5;
+    color: var(--ink-soft);
+    margin: 0;
+  }
+  .user-body .pick-num {
+    font-family: var(--mono);
+    font-style: normal;
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    color: var(--ink-whisper);
+    margin-right: 12px;
+    font-variant-numeric: tabular-nums;
+    vertical-align: 1px;
+  }
+  .user-body .pick-chip { display: block; }
+  .user-body .pick-chip + .pick-chip { margin-top: 8px; }
+
+  /* Divider between turns  -  printed ink that bleeds at ends */
+  .rule {
+    border: none;
+    height: 1px;
+    background: linear-gradient(
+      to right,
+      transparent 0%,
+      var(--rule-soft) 6%,
+      var(--rule) 50%,
+      var(--rule-soft) 94%,
+      transparent 100%
+    );
+    margin: 36px 0 36px;
+    opacity: 0;
+    transform: scaleX(0.25);
+    transform-origin: left;
+    transition: opacity 620ms var(--ease-out), transform 820ms var(--ease-out);
+  }
+  .rule.is-in { opacity: 1; transform: none; }
+
+  /* Pillar transition  -  silent breathing room only, no label */
+  .pillar-break {
+    margin: 56px 0 0;
+    opacity: 0;
+    transition: opacity 560ms var(--ease-out);
+  }
+  .pillar-break.is-in { opacity: 1; }
+  .pillar-break-visual {
+    width: min(100%, 360px);
+    height: 30px;
+    display: block;
+    color: var(--ink-whisper);
+    margin: 0 auto;
+  }
+  .pillar-break-visual * {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    vector-effect: non-scaling-stroke;
+  }
+  .pillar-break-visual .strong {
+    color: var(--ink-soft);
+    stroke-width: 1.5;
+  }
+  .pillar-break-visual .dot {
+    fill: currentColor;
+    stroke: none;
+  }
+  .pillar-break-visual .plus-line {
+    stroke-width: 1.35;
+  }
+
+  /* Domain map  -  editorial progress, not a progress bar */
+  .domain-map {
+    margin: 30px 0 30px;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity 700ms var(--ease-out), transform 700ms var(--ease-out);
+  }
+  .domain-map.is-in { opacity: 1; transform: none; }
+  .domain-map.is-compact {
+    max-width: 620px;
+    margin: 28px auto 4px;
+  }
+  .domain-card {
+    min-height: 122px;
+    padding: 12px 10px 10px;
+    position: relative;
+    color: var(--ink-whisper);
+    background: rgba(247, 245, 239, 0.34);
+    border: 1px solid var(--rule-soft);
+  }
+  .domain-card::before,
+  .domain-card::after {
+    content: '';
+    position: absolute;
+    pointer-events: none;
+    border: 1px solid currentColor;
+    opacity: 0.3;
+  }
+  .domain-card::before {
+    inset: -2px 2px 2px -2px;
+    transform: rotate(-0.35deg);
+  }
+  .domain-card::after {
+    inset: 2px -2px -2px 2px;
+    transform: rotate(0.45deg);
+  }
+  .domain-card.is-complete {
+    color: var(--ink-soft);
+    background: var(--paper-warm);
+    border-color: var(--rule);
+  }
+  .domain-card.is-current {
+    color: var(--ink);
+    background: var(--paper-tint);
+    border-color: var(--ink);
+  }
+  .domain-icon {
+    width: 42px;
+    height: 42px;
+    display: block;
+    margin: 0 0 18px;
+  }
+  .domain-icon * {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    vector-effect: non-scaling-stroke;
+  }
+  .domain-label {
+    display: block;
+    font-family: var(--mono);
+    font-size: 10px;
+    line-height: 1.2;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: currentColor;
+  }
+  .domain-note {
+    display: block;
+    margin-top: 8px;
+    font-family: var(--serif);
+    font-size: 14px;
+    line-height: 1.25;
+    color: var(--ink-faint);
+  }
+  .domain-card.is-current .domain-note,
+  .domain-card.is-complete .domain-note { color: var(--ink-soft); }
+  .domain-state {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    color: currentColor;
+  }
+
+  /* Reflection beat */
+  .reflection {
+    margin: 30px 0 4px;
+    padding: 26px 28px 28px;
+    background: var(--paper-warm);
+    border-left: 1px solid var(--ink);
+    position: relative;
+  }
+  .reflection .sys-body {
+    font-size: 19px;
+    color: var(--ink-soft);
+    font-style: italic;
+  }
+  .reflection .sys-body.lede {
+    color: var(--ink);
+    font-style: normal;
+    font-size: 20px;
+  }
+
+  /* Reveal placeholder */
+  .reveal-placeholder { margin-top: 22px; }
+  .reveal-placeholder .ph-row {
+    display: flex;
+    align-items: baseline;
+    gap: 20px;
+    padding: 16px 0;
+    border-bottom: 1px solid var(--rule-soft);
+    opacity: 0;
+    transform: translateY(4px);
+    transition: opacity 420ms var(--ease-out), transform 420ms var(--ease-out);
+  }
+  .reveal-placeholder .ph-row.is-in { opacity: 1; transform: none; }
+  .reveal-placeholder .ph-row:first-of-type { border-top: 1px solid var(--rule-soft); }
+  .reveal-placeholder .ph-num {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    color: var(--ink-whisper);
+    min-width: 26px;
+    font-variant-numeric: tabular-nums;
+  }
+  .reveal-placeholder .ph-label {
+    font-family: var(--serif);
+    font-size: 18px;
+    color: var(--ink-soft);
+    flex: 1;
+  }
+
+  /* Keyboard hint line  -  persistent under each option set */
+  .kbd-hint {
+    margin: 24px 0 0;
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: 0.08em;
+    color: var(--ink-whisper);
+    opacity: 0;
+    transform: translateY(2px);
+    transition: opacity 460ms var(--ease-soft), transform 460ms var(--ease-out);
+    display: flex;
+    gap: 18px;
+    flex-wrap: wrap;
+  }
+  .kbd-hint.is-in { opacity: 1; transform: none; }
+  .kbd-hint .pair { display: inline-flex; align-items: center; gap: 6px; }
+  .kbd-hint .pair.touch-only { display: none; }
+  @media (hover: none) and (pointer: coarse) {
+    .kbd-hint .pair.keyboard-only { display: none; }
+    .kbd-hint .pair.touch-only { display: inline-flex; }
+  }
+  .kbd-hint kbd {
+    font-family: var(--mono);
+    font-size: 10px;
+    background: var(--paper-soft);
+    border: 1px solid var(--rule);
+    padding: 1px 5px;
+    border-radius: 2px;
+    color: var(--ink-soft);
+    letter-spacing: 0.04em;
+  }
+
+  .begin-block { margin: 20px 0 0; }
+
+  /* ─────────────────────────────────────────────────────────────────────
+     DEMO NAVIGATION  -  temporary review chrome, remove before launch
+     ───────────────────────────────────────────────────────────────────── */
+  .demo-launch {
+    position: fixed;
+    right: 24px;
+    bottom: 24px;
+    z-index: 99;
+    appearance: none;
+    border: 1px solid var(--rule-bold);
+    background: var(--ink);
+    color: var(--paper);
+    padding: 12px 16px;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 220ms var(--ease-out), color 220ms var(--ease-out), transform 220ms var(--ease-out);
+  }
+  .demo-launch:hover {
+    background: var(--paper);
+    color: var(--ink);
+    transform: translateY(-1px);
+  }
+  .demo-harness {
+    display: none;
+    position: fixed;
+    right: 24px;
+    bottom: 76px;
+    width: 360px;
+    max-height: min(640px, calc(100svh - 120px));
+    background: var(--paper);
+    border: 1px solid var(--rule-bold);
+    padding: 18px;
+    z-index: 100;
+    font-family: var(--mono);
+    font-size: 11px;
+    overflow: auto;
+    opacity: 0;
+    transform: translateY(8px);
+    pointer-events: none;
+    transition: opacity 280ms var(--ease-out), transform 280ms var(--ease-out);
+    box-shadow: 0 4px 16px rgba(26,26,26,0.06);
+  }
+  .demo-harness.is-open { display: block; opacity: 1; transform: none; pointer-events: auto; }
+  .demo-harness .demo-title {
+    font-size: 9.5px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin: 0 0 12px;
+    border-bottom: 1px solid var(--rule);
+    padding-bottom: 8px;
+  }
+  .demo-harness .demo-copy {
+    font-family: var(--serif);
+    font-size: 15px;
+    line-height: 1.45;
+    color: var(--ink-soft);
+    margin: 0 0 14px;
+  }
+  .demo-section-label {
+    font-size: 9.5px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin: 18px 0 8px;
+  }
+  .demo-harness .demo-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+  .demo-harness button[data-scenario] {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.04em;
+    color: var(--ink);
+    background: transparent;
+    border: none;
+    padding: 8px 0;
+    text-align: left;
+    cursor: pointer;
+    border-bottom: 1px solid var(--rule-soft);
+    transition: color 200ms var(--ease-soft), padding-left 220ms var(--ease-out);
+  }
+  .demo-harness button[data-scenario]:last-child { border-bottom: none; }
+  .demo-harness button[data-scenario]:hover { color: var(--ink); padding-left: 4px; }
+  .demo-harness button[data-scenario].is-selected {
+    color: var(--ink);
+    padding-left: 4px;
+    background: var(--paper-warm);
+  }
+  .demo-harness .demo-row {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .demo-harness .demo-row .demo-key {
+    font-size: 9.5px;
+    color: var(--ink-whisper);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+  .demo-harness .demo-row .demo-label {
+    font-size: 12px;
+    color: var(--ink);
+    font-family: var(--serif);
+    font-style: italic;
+    letter-spacing: -0.005em;
+  }
+  .demo-harness .demo-row .demo-desc {
+    font-family: var(--serif);
+    font-size: 12px;
+    line-height: 1.35;
+    color: var(--ink-soft);
+    letter-spacing: 0;
+    text-transform: none;
+  }
+  .demo-harness .demo-help {
+    margin-top: 14px;
+    padding-top: 10px;
+    border-top: 1px solid var(--rule);
+    font-size: 9.5px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-whisper);
+    display: flex;
+    justify-content: space-between;
+  }
+  .demo-primary-actions {
+    display: grid;
+    gap: 8px;
+    margin: 0 0 14px;
+  }
+  .demo-reveal-actions {
+    display: grid;
+    gap: 8px;
+    margin-top: 12px;
+  }
+  .demo-action {
+    appearance: none;
+    border: 1px solid var(--ink);
+    background: var(--ink);
+    color: var(--paper);
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    padding: 11px 12px;
+    cursor: pointer;
+    text-align: center;
+  }
+  .demo-action.secondary {
+    background: transparent;
+    color: var(--ink);
+    border-color: var(--rule);
+  }
+  .demo-action:disabled {
+    opacity: 0.38;
+    cursor: not-allowed;
+  }
+  .demo-action:hover { background: var(--paper); color: var(--ink); }
+  .demo-action.secondary:hover { border-color: var(--ink); }
+
+  .gate-card {
+    max-width: 520px;
+  }
+  .gate-eyebrow {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin-bottom: 22px;
+  }
+  .gate-title {
+    font-family: var(--serif);
+    font-size: clamp(34px, 7vw, 48px);
+    font-weight: 400;
+    line-height: 1.05;
+    letter-spacing: -0.024em;
+    margin: 0 0 18px;
+    color: var(--ink);
+  }
+  .gate-line {
+    font-family: var(--serif);
+    font-size: 18px;
+    line-height: 1.5;
+    font-style: italic;
+    color: var(--ink-soft);
+    margin: 0 0 24px;
+  }
+  .gate-includes {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+    margin: 0 0 34px;
+    padding: 16px 0 18px;
+    border-top: 1px solid var(--rule-soft);
+    border-bottom: 1px solid var(--rule-soft);
+  }
+  .gate-includes-row {
+    display: grid;
+    grid-template-columns: 34px 1fr;
+    gap: 14px;
+    align-items: baseline;
+  }
+  .gate-includes-num {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    color: var(--ink-faint);
+  }
+  .gate-includes-text {
+    font-family: var(--serif);
+    font-size: 17px;
+    line-height: 1.35;
+    color: var(--ink);
+  }
+  .gate-field { margin-bottom: 28px; }
+  .gate-field label {
+    display: block;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin-bottom: 8px;
+  }
+  .gate-optional {
+    opacity: 0.55;
+    letter-spacing: 0.16em;
+  }
+  .gate-field .input-wrap { position: relative; }
+  .gate-field input {
+    width: 100%;
+    padding: 8px 0;
+    background: transparent;
+    border: none;
+    outline: none;
+    font-family: var(--serif);
+    font-size: 18px;
+    color: var(--ink);
+  }
+  .gate-field input::selection {
+    background: var(--selection);
+  }
+  .gate-field .rule-line {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 1px;
+    background: var(--ink-whisper);
+  }
+  .gate-field .rule-line-thick {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 2px;
+    background: var(--ink);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 450ms var(--ease-out);
+  }
+  .gate-field input:focus ~ .rule-line-thick { transform: scaleX(1); }
+  .gate-field.is-error .rule-line { background: rgba(180, 30, 30, 0.5); }
+  .gate-field .error-text {
+    min-height: 18px;
+    margin-top: 8px;
+    font-size: 12px;
+    color: rgba(180, 30, 30, 0.8);
+  }
+  .gate-privacy {
+    margin: -4px 0 28px;
+  }
+  .privacy-check {
+    display: grid;
+    grid-template-columns: 20px 1fr;
+    gap: 12px;
+    align-items: start;
+    font-family: var(--serif);
+    font-size: 14.5px;
+    line-height: 1.45;
+    color: var(--ink-soft);
+    cursor: pointer;
+  }
+  .privacy-check input {
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    margin: 2px 0 0;
+    border: 1px solid var(--ink-whisper);
+    background: transparent;
+    display: grid;
+    place-content: center;
+    transition: border-color 180ms var(--ease-soft), background 180ms var(--ease-soft);
+  }
+  .privacy-check input::before {
+    content: '';
+    width: 10px;
+    height: 10px;
+    transform: scale(0);
+    background: var(--ink);
+    transition: transform 180ms var(--ease-out);
+  }
+  .privacy-check input:checked::before { transform: scale(1); }
+  .privacy-check input:focus-visible {
+    outline: 2px solid var(--ink);
+    outline-offset: 3px;
+  }
+  .gate-privacy.is-error .privacy-check input {
+    border-color: rgba(180, 30, 30, 0.75);
+  }
+  .privacy-actions {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px 14px;
+    margin: 10px 0 0 32px;
+  }
+  .privacy-link {
+    appearance: none;
+    border: none;
+    background: transparent;
+    padding: 0;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink);
+    text-decoration: underline;
+    text-underline-offset: 4px;
+    cursor: pointer;
+  }
+  a.privacy-link { display: inline-block; }
+  .privacy-link:hover { color: var(--ink-soft); }
+  .gate-privacy .error-text {
+    min-height: 18px;
+    margin: 8px 0 0 32px;
+    font-size: 12px;
+    color: rgba(180, 30, 30, 0.8);
+  }
+  .bot-check {
+    min-height: 22px;
+    margin: -8px 0 24px 32px;
+  }
+  .bot-check-frame {
+    min-height: 0;
+  }
+  .bot-check .error-text {
+    min-height: 18px;
+    margin-top: 8px;
+    font-size: 12px;
+    color: var(--ink-faint);
+  }
+  .bot-check.is-error .error-text {
+    color: rgba(180, 30, 30, 0.8);
+  }
+  .bot-check.is-active .error-text {
+    color: var(--ink-soft);
+  }
+  .turnstile-standalone {
+    position: fixed;
+    left: -9999px;
+    bottom: 0;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+  }
+  .gate-footer {
+    margin-top: 22px;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+  .gate-result {
+    display: none;
+    margin-top: 0;
+    padding-top: 0;
+    border-top: none;
+  }
+  .gate-result.is-visible { display: block; }
+  .gate-card.is-submitted > .gate-eyebrow,
+  .gate-card.is-submitted > .gate-title,
+  .gate-card.is-submitted > .gate-line,
+  .gate-card.is-submitted > .gate-includes,
+  .gate-card.is-submitted .gate-field,
+  .gate-card.is-submitted .gate-privacy,
+  .gate-card.is-submitted .bot-check,
+  .gate-card.is-submitted > .confirm-row,
+  .gate-card.is-submitted > .gate-footer {
+    display: none;
+  }
+  body.privacy-open { overflow: hidden; }
+  .privacy-modal[hidden] { display: none; }
+  .privacy-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 90;
+    display: grid;
+    place-items: center;
+    padding: 24px;
+    background: rgba(26, 26, 26, 0.42);
+  }
+  .privacy-dialog {
+    width: min(760px, 100%);
+    max-height: min(84vh, 780px);
+    overflow: auto;
+    background: var(--paper);
+    border: 1px solid var(--ink);
+    box-shadow: 0 28px 80px rgba(0, 0, 0, 0.22);
+    padding: clamp(24px, 4vw, 40px);
+  }
+  .privacy-dialog:focus { outline: none; }
+  .privacy-modal-head {
+    display: flex;
+    align-items: start;
+    justify-content: space-between;
+    gap: 24px;
+    padding-bottom: 18px;
+    margin-bottom: 22px;
+    border-bottom: 1px solid var(--rule);
+  }
+  .privacy-modal-kicker {
+    margin: 0 0 8px;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+  .privacy-modal-title {
+    margin: 0;
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: clamp(28px, 5vw, 40px);
+    line-height: 1.08;
+    letter-spacing: -0.018em;
+  }
+  .privacy-close {
+    appearance: none;
+    width: 36px;
+    height: 36px;
+    border: 1px solid var(--rule);
+    background: transparent;
+    color: var(--ink);
+    font-size: 24px;
+    line-height: 1;
+    cursor: pointer;
+    flex: 0 0 auto;
+  }
+  .privacy-close:hover { border-color: var(--ink); }
+  .privacy-copy {
+    font-family: var(--serif);
+    color: var(--ink-soft);
+  }
+  .privacy-copy h3 {
+    margin: 24px 0 8px;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink);
+  }
+  .privacy-copy p,
+  .privacy-copy li {
+    font-size: 15.5px;
+    line-height: 1.55;
+  }
+  .privacy-copy p { margin: 0 0 12px; }
+  .privacy-copy ul {
+    margin: 0 0 14px;
+    padding-left: 18px;
+  }
+  .privacy-copy a {
+    color: var(--ink);
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+  .privacy-dialog-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 28px;
+    padding-top: 22px;
+    border-top: 1px solid var(--rule);
+  }
+  .privacy-accept {
+    appearance: none;
+    border: 1px solid var(--ink);
+    background: var(--ink);
+    color: var(--paper);
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    padding: 12px 14px;
+    cursor: pointer;
+  }
+  .privacy-accept:hover {
+    background: var(--paper);
+    color: var(--ink);
+  }
+  @media (max-width: 640px) {
+    .privacy-modal {
+      padding: 12px;
+      align-items: end;
+    }
+    .privacy-dialog {
+      max-height: 88vh;
+      padding: 22px;
+    }
+    .privacy-modal-head {
+      gap: 16px;
+    }
+  }
+  .gate-result-copy {
+    margin: 0 0 16px;
+    font-family: var(--serif);
+    font-size: 21px;
+    line-height: 1.5;
+    color: var(--ink);
+  }
+  .gate-result-copy em { color: var(--ink-soft); }
+  .profile-dispatch {
+    position: relative;
+    margin: 26px 0 0;
+    padding: 0 0 0 18px;
+    border-left: 1px solid var(--rule-bold);
+    background: transparent;
+  }
+  .profile-dispatch::before,
+  .profile-dispatch::after {
+    content: none;
+  }
+  .dispatch-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    margin-bottom: 14px;
+    padding-bottom: 0;
+    border-bottom: none;
+  }
+  .dispatch-kicker {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+  .dispatch-mark {
+    width: 14px;
+    height: 14px;
+    color: var(--ink);
+    flex: 0 0 auto;
+  }
+  .dispatch-title {
+    font-family: var(--serif);
+    font-size: 22px;
+    line-height: 1.34;
+    letter-spacing: 0;
+    color: var(--ink);
+    margin: 0 0 8px;
+  }
+  .dispatch-title em {
+    font-style: italic;
+    color: var(--ink-soft);
+  }
+  .dispatch-subtitle {
+    margin: 0 0 22px;
+    font-family: var(--serif);
+    font-size: 17px;
+    line-height: 1.45;
+    color: var(--ink-soft);
+  }
+  .dispatch-email {
+    display: grid;
+    gap: 6px;
+    margin: 0 0 24px;
+    padding: 12px 0;
+    border-top: 1px solid var(--rule-soft);
+    border-bottom: 1px solid var(--rule-soft);
+  }
+  .dispatch-email-label {
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+  .dispatch-email-value {
+    font-family: var(--serif);
+    font-size: 18px;
+    line-height: 1.24;
+    color: var(--ink);
+    overflow-wrap: anywhere;
+  }
+  .dispatch-row {
+    display: grid;
+    grid-template-columns: 34px 1fr;
+    gap: 16px;
+    align-items: baseline;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--rule-soft);
+  }
+  .dispatch-row:last-child { border-bottom: none; padding-bottom: 0; }
+  .dispatch-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+  .dispatch-value {
+    font-family: var(--serif);
+    font-size: 17px;
+    line-height: 1.32;
+    color: var(--ink);
+  }
+  body.gate-submitted .demo-launch,
+  body.gate-submitted .demo-badge { display: none; }
+  .dispatch-note {
+    margin: 22px 0 0;
+    font-family: var(--mono);
+    font-size: 9.5px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    line-height: 1.7;
+  }
+  .gate-card .confirm-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: min(100%, 280px);
+    padding: 15px 22px;
+    background: var(--ink);
+    color: var(--paper);
+    border: 1px solid var(--ink);
+    text-decoration: none;
+  }
+  .gate-card .confirm-btn::after {
+    color: var(--paper);
+  }
+  .gate-card .confirm-btn:hover {
+    background: transparent;
+    color: var(--ink);
+  }
+  .gate-card .confirm-btn:hover::after {
+    color: var(--ink);
+  }
+  @media (max-width: 640px) {
+    .profile-dispatch { padding: 0 0 0 16px; }
+    .dispatch-title { font-size: 20px; line-height: 1.35; }
+    .dispatch-email-value { font-size: 16px; line-height: 1.22; }
+    .dispatch-row { gap: 14px; }
+    .dispatch-value { font-size: 16px; }
+    .gate-includes {
+      gap: 9px;
+      margin-bottom: 30px;
+      padding: 14px 0 16px;
+    }
+    .gate-includes-row {
+      grid-template-columns: 28px 1fr;
+      gap: 12px;
+    }
+    .gate-includes-text {
+      font-size: 16px;
+      line-height: 1.36;
+    }
+  }
+  .demo-harness .demo-close {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--ink-whisper);
+    padding: 0;
+  }
+  .demo-harness .demo-close:hover { color: var(--ink); }
+
+  /* Demo mode indicator  -  when a scenario is loaded, show a small badge */
+  .demo-badge {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    font-family: var(--mono);
+    font-size: 9.5px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-whisper);
+    background: var(--paper-warm);
+    padding: 5px 9px;
+    border: 1px solid var(--rule);
+    z-index: 50;
+    pointer-events: none;
+  }
+  .demo-badge .demo-badge-name { color: var(--ink); margin-left: 6px; }
+
+  @media (max-width: 640px) {
+    .demo-launch {
+      right: 14px;
+      bottom: 14px;
+      left: auto;
+      width: auto;
+      z-index: 7;
+      padding: 9px 10px;
+      font-size: 0;
+      letter-spacing: 0.12em;
+    }
+    .demo-launch::after {
+      content: 'Demo';
+      font-size: 8px;
+      letter-spacing: 0.14em;
+    }
+    body.multi-confirm-active .demo-launch { display: none; }
+    .demo-harness {
+      width: auto;
+      max-height: min(620px, calc(100svh - 82px));
+      left: 16px;
+      right: 16px;
+      bottom: 58px;
+    }
+    .demo-badge { top: 12px; right: 12px; }
+  }
+
+  /* Held opening  -  first line of intro renders alone in display italic */
+  .opening-held {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 28px;
+    line-height: 1.18;
+    color: var(--ink);
+    margin: 0 0 18px;
+    letter-spacing: -0.005em;
+  }
+  .opening-held::first-letter {
+    font: inherit;
+  }
+  .begin-block .sys-body {
+    font-size: 18px;
+    line-height: 1.42;
+  }
+
+  /* Aphorism beat  -  display italic, centered, held alone */
+  .aphorism {
+    margin: 64px 0;
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 40px;
+    line-height: 1.2;
+    color: var(--ink-soft);
+    text-align: center;
+    letter-spacing: -0.005em;
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity 800ms var(--ease-out), transform 800ms var(--ease-out);
+  }
+  .aphorism.is-in { opacity: 1; transform: none; }
+  .aphorism.is-out { opacity: 0; transition-duration: 700ms; }
+  .aphorism-stage {
+    margin: 62px 0;
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity 800ms var(--ease-out), transform 800ms var(--ease-out);
+  }
+  .aphorism-stage .aphorism {
+    margin: 0;
+    opacity: 1;
+    transform: none;
+  }
+  .aphorism-stage .domain-map { margin-top: 30px; }
+  .aphorism-stage.is-in { opacity: 1; transform: none; }
+  .aphorism-stage.is-out { opacity: 0; transition-duration: 700ms; }
+
+  /* Byline credit on reveal */
+  .byline {
+    margin: 64px 0 0;
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--ink-whisper);
+    text-align: center;
+    line-height: 1.7;
+  }
+  .byline span { display: inline-block; margin: 0 8px; }
+
+  @media (max-width: 640px) {
+    .stage { padding: 34px 22px 24px; }
+    .doc-head { margin-bottom: 8px; padding-bottom: 0; border-bottom: none; }
+    .doc-title { font-size: 37px; margin-bottom: 12px; }
+    .doc-subline { font-size: 17px; margin-bottom: 20px; }
+    .doc-divider { margin-bottom: 26px; gap: 16px; }
+    .doc-divider-mark { width: 12px; height: 12px; }
+    .opening-held { font-size: 23px; margin-bottom: 16px; }
+    .aphorism { font-size: 30px; margin: 48px 0; }
+
+    /* Wordmark scales down on mobile */
+    .brand-mark { margin-bottom: 28px; }
+    .brand-mark svg { width: 112px; }
+
+    .sys-body { font-size: 18px; }
+    .begin-block .sys-body { font-size: 16px; line-height: 1.42; }
+    .q-id { margin-bottom: 14px; }
+    .question-mode { font-size: 10.5px; margin-bottom: 14px; }
+
+    /* Touch targets: ≥52px tall, invisible padding extends hit area */
+    .opt {
+      font-size: 17px;
+      padding: 16px 12px;
+      min-height: 52px;
+      gap: 16px;
+    }
+    .opt-num { min-width: 22px; font-size: 11px; }
+    .opt-key { display: none; }
+    .opt-text { transition: none; }
+    .opt:hover .opt-text, .opt.is-arrow-focus .opt-text { transform: none; }
+
+    .pillar-break { margin: 36px 0 0; }
+    .domain-map {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin: 26px 0 24px;
+    }
+    .begin-block .domain-map {
+      gap: 8px;
+      margin: 20px 0 18px;
+    }
+    .domain-card {
+      min-height: 116px;
+      padding: 12px 10px 11px;
+    }
+    .begin-block .domain-card {
+      min-height: 78px;
+      padding: 12px 34px 10px 10px;
+    }
+    .domain-icon {
+      width: 36px;
+      height: 36px;
+      margin-bottom: 16px;
+    }
+    .begin-block .domain-icon {
+      display: block;
+      position: absolute;
+      right: 10px;
+      bottom: 10px;
+      width: 20px;
+      height: 20px;
+      margin: 0;
+      opacity: 0.72;
+    }
+    .domain-label { font-size: 9.5px; letter-spacing: 0.12em; }
+    .domain-note { font-size: 13px; }
+    .begin-block .domain-note {
+      margin-top: 7px;
+      font-size: 12.5px;
+      line-height: 1.2;
+    }
+    .aphorism-stage { margin: 48px 0; }
+    .reflection { padding: 20px 20px 22px; margin: 24px 0 4px; }
+    .reflection .sys-body { font-size: 17px; }
+    .reflection .sys-body.lede { font-size: 19px; }
+
+    .user-block { margin-right: 0; padding: 16px 16px 18px; }
+
+    .kbd-hint { font-size: 11px; gap: 14px; margin-top: 22px; }
+
+    /* Sticky Confirm on multi-select  -  page-anchored bar with cream fade above */
+    .confirm-row {
+      position: sticky;
+      bottom: max(12px, env(safe-area-inset-bottom));
+      padding: 22px 0 14px;
+      margin: 22px -22px -8px;
+      padding-left: 22px;
+      padding-right: 22px;
+      background: var(--paper);
+      z-index: 8;
+    }
+    .confirm-row::before {
+      content: '';
+      position: absolute;
+      top: -28px;
+      left: 0;
+      right: 0;
+      height: 28px;
+      background: linear-gradient(to top, var(--paper), rgba(250, 250, 247, 0));
+      pointer-events: none;
+    }
+    .multi-block.long-multi .opts {
+      margin-top: 18px;
+      padding-bottom: 88px;
+    }
+    .multi-block.long-multi .opt {
+      font-size: 16px;
+      line-height: 1.34;
+      gap: 13px;
+      padding-top: 12px;
+      padding-bottom: 12px;
+      min-height: 52px;
+    }
+    .multi-block.long-multi .opt-check {
+      min-width: 18px;
+      font-size: 11.5px;
+    }
+    .multi-block .confirm-row {
+      align-items: center;
+      justify-content: space-between;
+      border-top: 1px solid var(--rule-soft);
+      box-shadow: 0 -10px 24px rgba(250, 250, 247, 0.96);
+      z-index: 120;
+    }
+    .multi-block .confirm-btn {
+      min-height: 42px;
+      min-width: 122px;
+      padding: 11px 14px 10px;
+      font-size: 11.5px;
+      font-weight: 600;
+      letter-spacing: 0.17em;
+      border: 1px solid var(--ink);
+      border-bottom: 1px solid var(--ink);
+      background: var(--ink);
+      color: var(--paper);
+    }
+    .multi-block .confirm-btn:disabled {
+      border: 1px solid var(--rule);
+      border-bottom: 1px solid var(--rule);
+      background: var(--paper-warm);
+      color: var(--ink-faint);
+    }
+    .multi-block .confirm-hint {
+      order: -1;
+      min-width: 0;
+      font-size: 11px;
+      color: var(--ink-faint);
+    }
+
+    /* Begin / Continue rows shouldn't be sticky  -  they're action buttons inline with content */
+    .begin-block .confirm-row,
+    .reflection .confirm-row {
+      position: static;
+      padding: 0;
+      margin: 22px 0 4px;
+      background: transparent;
+    }
+    .begin-block .confirm-row::before,
+    .reflection .confirm-row::before { content: none; }
+
+    /* Bigger byline air on mobile */
+    .byline { margin: 48px 0 0; font-size: 10px; line-height: 1.6; }
+  }
+
+  @media (max-width: 640px) and (max-height: 760px) {
+    .question-block .question-mode {
+      margin-bottom: 10px;
+    }
+    .question-block .sys-body {
+      font-size: 17px;
+      line-height: 1.38;
+    }
+    .question-block .opts {
+      margin-top: 18px;
+    }
+    .question-block .opt {
+      min-height: 48px;
+      padding: 13px 10px;
+      font-size: 16px;
+      line-height: 1.32;
+      gap: 13px;
+    }
+    .question-block .kbd-hint {
+      margin-top: 16px;
+      font-size: 10.5px;
+    }
+    .multi-block .confirm-row {
+      padding-top: 16px;
+      padding-bottom: 12px;
+      margin-top: 16px;
+    }
+    .gate-eyebrow {
+      margin-bottom: 16px;
+    }
+    .gate-title {
+      font-size: 32px;
+      line-height: 1.05;
+      margin-bottom: 14px;
+    }
+    .gate-line {
+      font-size: 16px;
+      line-height: 1.42;
+      margin-bottom: 18px;
+    }
+    .gate-includes {
+      gap: 8px;
+      margin-bottom: 22px;
+      padding: 12px 0;
+    }
+    .gate-includes-text {
+      font-size: 15.5px;
+      line-height: 1.28;
+    }
+    .gate-field {
+      margin-bottom: 18px;
+    }
+    .gate-field label {
+      margin-bottom: 5px;
+    }
+    .gate-field input {
+      padding: 6px 0;
+      font-size: 17px;
+    }
+    .gate-field .error-text {
+      min-height: 14px;
+      margin-top: 5px;
+    }
+    .gate-card .confirm-row {
+      padding-top: 16px;
+      padding-bottom: 10px;
+      margin-top: 14px;
+    }
+    .gate-card .confirm-btn {
+      padding: 13px 18px;
+    }
+    .gate-footer {
+      margin-top: 16px;
+      font-size: 9.5px;
+      line-height: 1.5;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .beat, .opt, .rule, .pillar-break, .domain-map, .aphorism-stage, .confirm-row, .shimmer-verb, .reveal-placeholder .ph-row {
+      transition: opacity 200ms ease !important;
+      transform: none !important;
+    }
+    .caret { animation: none !important; }
+    .shimmer-verb .verb { animation: none !important; background: none !important; -webkit-text-fill-color: var(--ink) !important; }
+    .shimmer-verb .glyph { animation: none !important; }
+  }
+</style>
+</head>
+<body>
+<main class="stage">
+
+  <div class="brand-mark">
+    <svg viewBox="0 0 1620 400" fill="currentColor" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Atelier + Avenue">
+      <path d="M1501 76.3711L1501 41.7653L1619.14 41.7653L1619.14 76.3711L1501 76.3711Z" />
+      <path d="M1542.77 0L1577.37 0V118.137H1542.77V0Z" />
+      <path d="M1396.63 83.2392C1396.63 91.4479 1394.41 98.8749 1389.98 105.52C1385.55 112.165 1379.1 117.051 1370.63 120.179L1400.54 176.467H1352.06L1328.22 127.41H1312.19V176.467H1269V42H1351.28C1360.92 42 1369.13 43.8893 1375.91 47.6679C1382.81 51.3163 1387.96 56.3327 1391.35 62.7173C1394.87 68.9716 1396.63 75.8122 1396.63 83.2392ZM1352.65 84.9982C1352.65 81.4802 1351.48 78.5485 1349.13 76.2031C1346.79 73.8578 1343.92 72.6851 1340.53 72.6851H1312.19V97.5068H1340.53C1343.92 97.5068 1346.79 96.3341 1349.13 93.9887C1351.48 91.5131 1352.65 88.5162 1352.65 84.9982Z" />
+      <path d="M1045 42H1161.29V74.2487H1088.19V92.8161H1150.74V123.697H1088.19V144.218H1162.66V176.467H1045V42Z" />
+      <path d="M896 176.467V42H939.194V176.467H896Z" />
+      <path d="M680 42H723.194V142.069H792.186V176.467H680V42Z" />
+      <path d="M456 42H572.291V74.2487H499.194V92.8161H561.737V123.697H499.194V144.218H573.659V176.467H456V42Z" />
+      <path d="M102.609 176.467L96.9414 157.509H49.8388L44.1709 176.467H0L49.0571 42H99.2868L148.344 176.467H102.609ZM58.8294 127.41H87.9509L73.8787 79.5257H73.097L58.8294 127.41Z" />
+      <path d="M312.365 76.3986V176.467H269.171V76.3986H225V42H356.34V76.3986H312.365Z" />
+      <path d="M1334 265H1450.29V297.249H1377.19V315.816H1439.74V346.697H1377.19V367.218H1451.66V399.467H1334V265Z" />
+      <path d="M1223.88 342.328C1223.88 360.7 1218.08 374.707 1206.49 384.349C1194.89 393.991 1178.41 398.812 1157.04 398.812C1135.67 398.812 1119.12 393.991 1107.39 384.349C1095.8 374.707 1090 360.7 1090 342.328V262H1133.19V341.742C1133.19 349.299 1135.21 355.358 1139.25 359.919C1143.29 364.349 1149.16 366.564 1156.84 366.564C1164.53 366.564 1170.39 364.284 1174.43 359.723C1178.6 355.163 1180.69 349.169 1180.69 341.742V262H1223.88V342.328Z" />
+      <path d="M941.16 399.467L884.676 334.188V399.467H845V265H882.721L939.205 331.256V265H978.881V399.467H941.16Z" />
+      <path d="M626 265H742.291V297.249H669.194V315.816H731.737V346.697H669.194V367.218H743.659V399.467H626V265Z" />
+      <path d="M431.689 399.467L384 265H430.125L457.097 354.905H457.879L485.046 265H529.217L481.723 399.467H431.689Z" />
+      <path d="M271.609 399.467L265.941 380.509H218.839L213.171 399.467H169L218.057 265H268.287L317.344 399.467H271.609ZM227.829 350.41H256.951L242.879 302.526H242.097L227.829 350.41Z" />
+    </svg>
+  </div>
+
+  <header class="doc-head">
+    <h1 class="doc-title">The AI Readiness Diagnostic</h1>
+    <p class="doc-subline">Does your business know more than it can use?</p>
+  </header>
+
+  <div class="doc-divider" aria-hidden="true">
+    <span class="doc-divider-rule"></span>
+    <svg class="doc-divider-mark" viewBox="0 0 52 52" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+      <rect x="0" y="20.8" width="52" height="10.4" />
+      <rect x="20.8" y="0" width="10.4" height="52" />
+    </svg>
+    <span class="doc-divider-rule"></span>
+  </div>
+
+  <div id="stream" aria-live="polite"></div>
+
+</main>
+
+<button class="demo-launch" type="button" id="demoLaunch">Demo navigation</button>
+
+<div class="demo-harness" id="demoHarness" role="dialog" aria-label="Demo navigation">
+  <div class="demo-title">Demo navigation</div>
+  <p class="demo-copy">Temporary review controls. Test the end form or preview a reveal.</p>
+  <div class="demo-primary-actions">
+    <button class="demo-action" type="button" id="demoGate">Skip to gate</button>
+  </div>
+  <div class="demo-section-label">Reveal preview</div>
+  <div class="demo-list" id="demoList"></div>
+  <div class="demo-reveal-actions">
+    <button class="demo-action secondary" type="button" id="demoReveal">Show me that reveal</button>
+    <button class="demo-action secondary" type="button" id="demoPdf">Open that PDF</button>
+  </div>
+  <div class="demo-help">
+    <span id="demoSelectedLabel">Choose a reveal persona</span>
+    <button class="demo-close" type="button" id="demoClose">close</button>
+  </div>
+</div>
+
+<script>
+/* ─────────────────────────────────────────────────────────────────────────
+   V8.6 FLOW DATA
+   ───────────────────────────────────────────────────────────────────────── */
+
+const FLOW = [
+  { kind: 'intro' },
+  { kind: 'prepare' },
+
+  { kind: 'pillar', pillar: 'Role' },
+  {
+    kind: 'q', id: 'Q1', pillar: 'Role', type: 'single',
+    stem: 'Which seat are you in?',
+    options: [
+      'Founder or CEO',
+      'C-suite (CMO, CFO, COO, CTO, MD, Chair, Board)',
+      'Functional lead (Director, Head of, Manager)',
+      'Other'
+    ]
+  },
+
+  { kind: 'pillar', pillar: 'Channel Context' },
+  {
+    kind: 'q', id: 'CC', pillar: 'Channel Context', type: 'multi',
+    stem: 'Which channels does the business sell through? Select all that apply.',
+    options: [
+      'Direct to consumer (eCommerce, owned retail)',
+      'Wholesale through third-party retail (including concessions or shop-in-shop)',
+      'Marketplaces (Amazon, Tmall, others)',
+      'Multi-brand distribution',
+      'Multi-brand retail (department store, multi-brand boutique, concept store)'
+    ]
+  },
+
+  { kind: 'pillar', pillar: 'Visibility' },
+  {
+    kind: 'q', id: 'Q2', pillar: 'Visibility', type: 'single',
+    stem: 'When you open the weekly performance pack, what does it actually show?',
+    options: [
+      'Customer economics, payback, P&L by channel and what keeps working across channels.',
+      'Channel, region and store/eCommerce splits. No view of what keeps working across channels.',
+      'Top-line only. Sales, traffic, sell-through, spend.',
+      'Revenue and scattered figures. No clear picture.'
+    ]
+  },
+  {
+    kind: 'q', id: 'Q3', pillar: 'Visibility', type: 'single',
+    stem: 'How precisely can you say when a new customer turns profitable, across DTC (eCommerce and stores)?',
+    options: [
+      'Precise payback by channel, region and customer type, used weekly.',
+      'A rough estimate. Not precise enough to act on.',
+      'We track ROAS or CAC, not actual payback.',
+      'We do not track this or cannot answer it.'
+    ]
+  },
+  {
+    kind: 'q', id: 'Q4', pillar: 'Visibility', type: 'single',
+    stem: 'How often does the revenue forecast land within range of reality?',
+    options: [
+      'Almost always. Forecasts hold inside a tight band.',
+      'Most quarters. Some drift, no surprises.',
+      'Mixed. We re-baseline mid-quarter to keep it credible.',
+      'Often off. Reality and the plan diverge mid-quarter.'
+    ]
+  },
+  {
+    kind: 'q', id: 'Q5', pillar: 'Visibility', type: 'single',
+    stem: 'How does operational signal reach leadership and at what quality?',
+    options: [
+      'It finds us quickly. Anomalies arrive with context and clear recommendations.',
+      'Routine lands clean. Surprises arrive later but the analysis is always high quality.',
+      'The team pulls most of it. Reports land somewhat on time but thin on recommendation.',
+      'Nothing lands unless we ask. What lands is light on insight and lighter on recommendation.'
+    ]
+  },
+
+  { kind: 'aphorism', text: 'The picture is starting to form.', current: 'Velocity' },
+
+  { kind: 'pillar', pillar: 'Velocity' },
+  {
+    kind: 'q', id: 'Q6', pillar: 'Velocity', type: 'single',
+    stem: 'When a familiar pattern returns, how early does the team see it?',
+    options: [
+      'Early. We recognise the pattern before it shows in the numbers.',
+      'In time. We catch most patterns before the opportunity window closes.',
+      'Late. We name the pattern after the impact has already landed.',
+      'Not at all. Every repeat feels like the first time.'
+    ]
+  },
+  {
+    kind: 'q', id: 'Q7', pillar: 'Velocity', type: 'single',
+    stem: 'When a clear signal lands, how fast does action follow?',
+    options: [
+      'A few days for both strategy and operations.',
+      'One to two weeks. The signal deserved faster.',
+      'Slowly. Analysis takes longer than the opportunity window allows.',
+      'Very slowly. Even obvious signals sit for weeks before action starts.'
+    ]
+  },
+  {
+    kind: 'q', id: 'Q8', pillar: 'Velocity', type: 'single',
+    stem: 'When a decision is on the table, how reliably does it get made?',
+    options: [
+      'Reliably. Open questions get closed inside the week.',
+      'Usually. Bigger calls land with analytics behind them. Smaller ones occasionally slip.',
+      'Inconsistently. Analytics support is patchy, so decisions stall in threads and reschedules.',
+      'Rarely. Most outcomes are decided by drift, with no analytics in the room.'
+    ]
+  },
+  {
+    kind: 'q', id: 'Q9', pillar: 'Velocity', type: 'single',
+    stem: "When the week throws something unexpected, does the team's operating routine still hold?",
+    options: [
+      "The routine holds. Pressure doesn't break it.",
+      'Mostly holds. One meeting slips, the rest still run.',
+      'The routine breaks first. The week turns reactive.',
+      'There is no routine to break. Every week starts cold.'
+    ]
+  },
+
+  { kind: 'reflection' },
+
+  { kind: 'pillar', pillar: 'Coherence' },
+  {
+    kind: 'q', id: 'Q10', pillar: 'Coherence', type: 'single',
+    stem: 'How often do Finance and Digital/eCommerce report different numbers for the same week?',
+    options: [
+      'Never. One source, aligned definitions, one story.',
+      'Very rarely. Small discrepancies from data quality, not method.',
+      'Often. Different sources, different definitions, recurring disagreement in the room.',
+      'Always. Two separate pictures of the business, reconciled by hand.'
+    ]
+  },
+  {
+    kind: 'q', id: 'Q11', pillar: 'Coherence', type: 'single',
+    stem: 'How many tools and people does it take to answer one performance question?',
+    options: [
+      'One. Cross-domain data is fully integrated and in-house teams can read it fluently.',
+      'Two or three. Data flows cleanly between them and the team knows where to look.',
+      'Three or more. Manual stitching every time or skilled people on fragmented data.',
+      'Three or more. Every question becomes a project. Tools or talent, one side is missing.'
+    ]
+  },
+  {
+    kind: 'q', id: 'Q12', pillar: 'Coherence', type: 'single',
+    stem: 'How much of what the team knows is written down somewhere versus locked in their heads?',
+    options: [
+      'The full knowledge base. Processes and expertise live in shared systems.',
+      'Core processes documented. Nuances live with specific people.',
+      'Mostly tribal. Docs exist but are stale or untrusted.',
+      "In people's heads. When someone leaves, the knowledge leaves."
+    ]
+  },
+  {
+    kind: 'q', id: 'Q13', pillar: 'Coherence', type: 'single',
+    stem: 'How often are teams making decisions that quietly work against each other?',
+    options: [
+      "Rarely. Teams see each other's calls early and can plan accordingly.",
+      'Sometimes. One person usually connects the dots.',
+      'Often. Conflicts surface weeks or months later in post-mortem.',
+      'Constantly. Everyone is right in their lane. The P&L suffers for it.'
+    ]
+  },
+
+  { kind: 'aphorism', text: 'Almost ready to show you.', current: 'Leverage' },
+
+  { kind: 'pillar', pillar: 'Leverage' },
+  {
+    kind: 'q', id: 'Q14', pillar: 'Leverage', type: 'multi',
+    stem: 'Where is AI currently present in the business? Select all that apply.',
+    options: [
+      'Not used in any meaningful way',
+      'Individuals use ChatGPT, Claude, Copilot informally with personal accounts',
+      'Isolated experiments running inside specific teams, not yet shared',
+      'AI drafts content, briefs, analysis at task level',
+      'AI runs inside customer-facing workflows (chat, service, drafts)',
+      'AI runs inside back-office workflows (reporting, forecasting, ops)',
+      'AI agents are embedded in operational workflows the team depends on',
+      'AI participates in decision routing across functions, all the way to the management committee'
+    ]
+  },
+  {
+    kind: 'q', id: 'Q15', pillar: 'Leverage', type: 'single',
+    stem: 'How deeply is AI built into the work, not bolted on the side?',
+    options: [
+      'Wired into core workflows. Agents run work end to end.',
+      'Plugged into several workflows. Humans still drive each step.',
+      'Used at the edges. Drafting, summarising, creative production, light experiments.',
+      'Personal tools only. No integration with the business.'
+    ]
+  },
+  {
+    kind: 'q', id: 'Q16', pillar: 'Leverage', type: 'single',
+    stem: 'Where does AI participate in decisions that reach customers or capital?',
+    options: [
+      'AI frames the next move with opportunity cost, business case and company data. Humans approve and act.',
+      'AI surfaces ranked options with trade-offs. Humans pick between them.',
+      'AI prepares some of the inputs. Humans complement them and do all the reasoning.',
+      'AI plays no role yet when the decision matters.'
+    ]
+  },
+  {
+    kind: 'q', id: 'Q17', pillar: 'Leverage', type: 'single',
+    stem: 'Who owns AI at the strategy level in your business?',
+    options: [
+      'Named leadership sponsor. Roadmap, budget, board visibility.',
+      'Senior interest. Some funding. No clear owner yet.',
+      'Pockets of ambition. No mandate. No dedicated budget. No roadmap.',
+      'None. Only top-line conversations at the executive level, no follow-through.'
+    ]
+  },
+  {
+    kind: 'q', id: 'Q18', pillar: 'Leverage', type: 'single',
+    stem: 'Across how many functions is AI actually in use today?',
+    options: [
+      'Across most functions: commercial, operations, finance, supply chain, brand, service.',
+      'Across commercial plus one or two operational areas (finance or ops).',
+      'Across commercial only (marketing, sales, customer service).',
+      'Nowhere that matters yet.'
+    ]
+  },
+
+  { kind: 'pillar', pillar: 'Self-Perception' },
+  {
+    kind: 'q', id: 'SP', pillar: 'Self-Perception', type: 'multi',
+    stem: 'Where do you see the biggest barriers to AI adoption in your business? Select all that apply.',
+    options: [
+      'Siloed data across systems and teams',
+      'Reporting and analytics maturity is thin',
+      'No clear AI strategy or roadmap',
+      'AI fluency is missing at the leadership level',
+      'AI fluency is missing at the operational level',
+      'Technical debt and legacy systems',
+      'Data quality is uneven and trust is low',
+      'Change management and team adoption are unresolved',
+      'Budget is the constraint',
+      'The business case is not yet clear',
+      'Regulatory, compliance or brand risk concerns',
+      'None of the above. We are not blocked, we are moving.'
+    ]
+  },
+
+  { kind: 'reveal' }
+];
+
+const SCORED_PILLARS = new Set(['Visibility', 'Velocity', 'Coherence', 'Leverage']);
+const DOMAIN_SEQUENCE = ['Visibility', 'Velocity', 'Coherence', 'Leverage'];
+const DOMAIN_META = {
+  Visibility: {
+    note: 'What the business can see',
+    icon: '<path d="M5 21c5.5-8 17.5-8 23 0"/><path d="M5 21c5.5 8 17.5 8 23 0"/><circle cx="16.5" cy="21" r="4.4"/><path d="M13 9.5l-2-3.5"/><path d="M20 9.5l2-3.5"/>'
+  },
+  Velocity: {
+    note: 'How fast signal becomes action',
+    icon: '<path d="M7 24c5.5-6.5 11.5-10 20-10"/><path d="M22 8l5 6-6 5"/><path d="M7 31h20"/><path d="M10 18l-3-3"/><path d="M15 14l-2-5"/>'
+  },
+  Coherence: {
+    note: 'Whether teams share one picture',
+    icon: '<circle cx="10" cy="12" r="4"/><circle cx="24" cy="12" r="4"/><circle cx="17" cy="26" r="4"/><path d="M13.5 14.5l3 7"/><path d="M20.5 21.5l2.5-6"/><path d="M14.5 12h5"/>'
+  },
+  Leverage: {
+    note: 'Where AI can multiply the system',
+    icon: '<path d="M7 27l19-13"/><circle cx="8" cy="27" r="2.5"/><circle cx="26" cy="14" r="2.5"/><path d="M10 10h10"/><path d="M15 5v10"/><path d="M21 27h7"/><path d="M24.5 23.5v7"/>'
+  }
+};
+
+/* ─────────────────────────────────────────────────────────────────────────
+   DEMO SCENARIOS  -  preset answer sets for skip-to-reveal testing
+   Indices are 0-based positions into each question's options array.
+   ───────────────────────────────────────────────────────────────────────── */
+
+const DEMO_SCENARIOS = {
+  'c-vi': {
+    key: 'c-vi',
+    label: 'The Dead Reckoner',
+    description: 'Early business. It cannot clearly see what is working yet.',
+    answers: {
+      Q1: 0, CC: [0],
+      Q2: 3, Q3: 3, Q4: 2, Q5: 3,
+      Q6: 2, Q7: 2, Q8: 2, Q9: 1,
+      Q10: 1, Q11: 2, Q12: 1, Q13: 2,
+      Q14: [0, 1],
+      Q15: 3, Q16: 3, Q17: 2, Q18: 3,
+      SP: [3, 4, 6]
+    }
+  },
+  'c-ve': {
+    key: 'c-ve',
+    label: 'The Sole Hand',
+    description: 'Early business. Too many decisions still wait for the founder.',
+    answers: {
+      Q1: 0, CC: [0, 1],
+      Q2: 1, Q3: 1, Q4: 2, Q5: 1,
+      Q6: 3, Q7: 3, Q8: 3, Q9: 2,
+      Q10: 1, Q11: 2, Q12: 2, Q13: 1,
+      Q14: [1, 2],
+      Q15: 2, Q16: 2, Q17: 2, Q18: 2,
+      SP: [6, 7, 9]
+    }
+  },
+  'c-co': {
+    key: 'c-co',
+    label: 'The Patchwork Crew',
+    description: 'Early business. Teams keep stitching different numbers together by hand.',
+    answers: {
+      Q1: 0, CC: [0, 2],
+      Q2: 1, Q3: 2, Q4: 1, Q5: 1,
+      Q6: 1, Q7: 2, Q8: 1, Q9: 2,
+      Q10: 3, Q11: 3, Q12: 2, Q13: 3,
+      Q14: [1, 2],
+      Q15: 2, Q16: 2, Q17: 2, Q18: 2,
+      SP: [0, 8, 9]
+    }
+  },
+  't-vi': {
+    key: 't-vi',
+    label: 'The Blind Sprinter',
+    description: 'Growing business. AI pilots are running on numbers people do not fully trust.',
+    answers: {
+      Q1: 0, CC: [0, 1],
+      Q2: 2, Q3: 3, Q4: 2, Q5: 1,
+      Q6: 1, Q7: 1, Q8: 1, Q9: 1,
+      Q10: 1, Q11: 1, Q12: 2, Q13: 1,
+      Q14: [2, 3, 4],
+      Q15: 1, Q16: 2, Q17: 1, Q18: 1,
+      SP: [0, 1, 2]
+    }
+  },
+  't-ve': {
+    key: 't-ve',
+    label: 'The Late Caller',
+    description: 'Growing business. Momentum is real, but decisions arrive too late.',
+    answers: {
+      Q1: 1, CC: [0, 1],
+      Q2: 1, Q3: 1, Q4: 1, Q5: 1,
+      Q6: 3, Q7: 2, Q8: 2, Q9: 2,
+      Q10: 1, Q11: 1, Q12: 1, Q13: 2,
+      Q14: [2, 3, 5],
+      Q15: 1, Q16: 2, Q17: 1, Q18: 1,
+      SP: [8, 2]
+    }
+  },
+  't-co': {
+    key: 't-co',
+    label: 'The Splitting Pack',
+    description: 'Growing business. Teams are improving, but in different directions.',
+    answers: {
+      Q1: 1, CC: [0, 1, 3],
+      Q2: 1, Q3: 1, Q4: 1, Q5: 1,
+      Q6: 1, Q7: 1, Q8: 1, Q9: 1,
+      Q10: 3, Q11: 2, Q12: 3, Q13: 2,
+      Q14: [2, 3, 5],
+      Q15: 1, Q16: 2, Q17: 1, Q18: 1,
+      SP: [0, 8, 9]
+    }
+  },
+  's-vi': {
+    key: 's-vi',
+    label: 'The Flagship on Faith',
+    description: 'Larger business. The story is strong, but the proof underneath needs work.',
+    answers: {
+      Q1: 1, CC: [0, 1, 3, 4],
+      Q2: 2, Q3: 2, Q4: 1, Q5: 1,
+      Q6: 0, Q7: 1, Q8: 0, Q9: 0,
+      Q10: 0, Q11: 1, Q12: 1, Q13: 0,
+      Q14: [4, 5, 6],
+      Q15: 0, Q16: 1, Q17: 0, Q18: 1,
+      SP: [1, 2, 7]
+    }
+  },
+  's-ve': {
+    key: 's-ve',
+    label: 'The Lagging Tanker',
+    description: 'Larger business. The signal is clear, but decisions move too slowly.',
+    answers: {
+      Q1: 1, CC: [0, 1, 3, 4],
+      Q2: 0, Q3: 0, Q4: 0, Q5: 0,
+      Q6: 2, Q7: 3, Q8: 1, Q9: 2,
+      Q10: 0, Q11: 1, Q12: 1, Q13: 1,
+      Q14: [4, 5, 6, 7],
+      Q15: 0, Q16: 1, Q17: 0, Q18: 1,
+      SP: [3, 4, 7]
+    }
+  },
+  's-co': {
+    key: 's-co',
+    label: 'The Scattered Fleet',
+    description: 'Larger business. There are useful AI pilots, but no shared map yet.',
+    answers: {
+      Q1: 1, CC: [0, 1, 2, 3, 4],
+      Q2: 0, Q3: 1, Q4: 0, Q5: 1,
+      Q6: 0, Q7: 1, Q8: 1, Q9: 0,
+      Q10: 2, Q11: 2, Q12: 3, Q13: 3,
+      Q14: [4, 5, 6, 7],
+      Q15: 0, Q16: 1, Q17: 0, Q18: 1,
+      SP: [0, 9, 10]
+    }
+  }
+};
+
+function getDemoScenario() {
+  const params = new URLSearchParams(window.location.search);
+  const key = params.get('demo');
+  return key && DEMO_SCENARIOS[key] ? DEMO_SCENARIOS[key] : null;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   STATE
+   ───────────────────────────────────────────────────────────────────────── */
+
+const stream = document.getElementById('stream');
+const PRIVACY_NOTICE_VERSION = '2026-06-04';
+const PRIVACY_NOTICE_URL = '/privacy/';
+const TURNSTILE_SCRIPT_URL = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
+const BOT_CHECK_TIMEOUT_MS = 120000;
+
+let botConfigPromise = null;
+let turnstileScriptPromise = null;
+let standaloneBotCheckPromise = null;
+
+const state = {
+  answers: {},
+  activeStream: null,
+  reviseActive: null,
+  questionInFlight: false
+};
+
+const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+function wait(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+function el(tag, cls, text) {
+  const e = document.createElement(tag);
+  if (cls) e.className = cls;
+  if (text !== undefined) e.textContent = text;
+  return e;
+}
+
+function ordinal(n) { return String(n).padStart(2, '0'); }
+
+function formatQId(id) {
+  const m = id.match(/^Q(\d+)$/);
+  return m ? `Q${String(m[1]).padStart(2, '0')}` : id;
+}
+
+function questionModeText(type) {
+  return type === 'multi' ? 'Select All That Apply' : 'Pick One';
+}
+
+function questionStemText(q) {
+  return q.type === 'multi'
+    ? q.stem.replace(/\s*Select all that apply\.?\s*$/i, '')
+    : q.stem;
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+function renderDomainMap({ current, intro = false, compact = false } = {}) {
+  const map = el('div', `domain-map${compact ? ' is-compact' : ''}`);
+  map.setAttribute('aria-label', 'Diagnostic domains');
+  const currentIdx = current ? DOMAIN_SEQUENCE.indexOf(current) : -1;
+
+  DOMAIN_SEQUENCE.forEach((domain, i) => {
+    const meta = DOMAIN_META[domain];
+    const status = intro
+      ? (i === 0 ? 'is-current' : '')
+      : (i < currentIdx ? 'is-complete' : i === currentIdx ? 'is-current' : '');
+    const stateLabel = intro ? ordinal(i + 1) : i < currentIdx ? 'done' : i === currentIdx ? 'now' : ordinal(i + 1);
+
+    const card = el('div', `domain-card ${status}`.trim());
+    card.innerHTML = `
+      <span class="domain-state">${escapeHtml(stateLabel)}</span>
+      <svg class="domain-icon" viewBox="0 0 34 34" aria-hidden="true">${meta.icon}</svg>
+      <span class="domain-label">${escapeHtml(domain)}</span>
+      <span class="domain-note">${escapeHtml(meta.note)}</span>
+    `;
+    map.appendChild(card);
+  });
+
+  return map;
+}
+
+function smoothScrollTo(node, ratio) {
+  if (!node) return;
+  const r = ratio ?? 0.04;
+  const rect = node.getBoundingClientRect();
+  const targetTop = window.scrollY + rect.top - window.innerHeight * r;
+  window.scrollTo({ top: Math.max(0, targetTop), behavior: reduceMotion ? 'auto' : 'smooth' });
+}
+
+function questionScrollRatio(node) {
+  if (!window.matchMedia('(min-width: 900px)').matches) return 0.04;
+  const height = node?.getBoundingClientRect().height || 0;
+  if (height > window.innerHeight * 0.72) return 0.08;
+  if (height > window.innerHeight * 0.58) return 0.14;
+  return 0.22;
+}
+
+function fadeIn(node, delay = 0) {
+  return new Promise(resolve => {
+    requestAnimationFrame(() => {
+      setTimeout(() => {
+        node.classList.add('is-in');
+        setTimeout(resolve, reduceMotion ? 10 : 240);
+      }, delay);
+    });
+  });
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   STREAMING + SHIMMER
+   ───────────────────────────────────────────────────────────────────────── */
+
+function streamText(node, text, { msPerChar = 17 } = {}) {
+  return new Promise(resolve => {
+    if (reduceMotion) {
+      node.textContent = text;
+      resolve();
+      return;
+    }
+    let i = 0;
+    const caret = document.createElement('span');
+    caret.className = 'caret';
+    node.appendChild(caret);
+
+    let cancelled = false;
+    const finish = () => {
+      if (cancelled) return;
+      cancelled = true;
+      if (i < text.length) caret.before(document.createTextNode(text.slice(i)));
+      caret.classList.add('is-fading');
+      setTimeout(() => caret.remove(), 240);
+      state.activeStream = null;
+      resolve();
+    };
+    state.activeStream = finish;
+
+    const tick = () => {
+      if (cancelled) return;
+      if (i >= text.length) { finish(); return; }
+      const chunkSize = 1 + Math.floor(Math.random() * 2);
+      const chunk = text.slice(i, i + chunkSize);
+      caret.before(document.createTextNode(chunk));
+      i += chunkSize;
+      // Punctuation-aware pause  -  reads as thought, not typewriter
+      const lastChar = chunk[chunk.length - 1];
+      let delay = msPerChar;
+      if (lastChar === '.') delay += 280;
+      else if (lastChar === ',') delay += 150;
+      else if (lastChar === '?' || lastChar === '!') delay += 250;
+      else if (lastChar === ';' || lastChar === ':') delay += 120;
+      else if (lastChar === ' - ') delay += 100;
+      setTimeout(tick, delay);
+    };
+    tick();
+  });
+}
+
+function shimmerVerb(label, { scroll = false } = {}) {
+  const wrap = el('div', 'shimmer-verb');
+  wrap.innerHTML = `<span class="glyph"></span><span class="verb">${label}</span>`;
+  stream.appendChild(wrap);
+  requestAnimationFrame(() => wrap.classList.add('is-in'));
+  if (scroll) smoothScrollTo(wrap, 0.5);
+  return wrap;
+}
+
+async function hold(label, ms = 480, opts = {}) {
+  const v = shimmerVerb(label, opts);
+  await wait(reduceMotion ? 180 : ms);
+  v.classList.remove('is-in');
+  await wait(reduceMotion ? 50 : 260);
+  v.remove();
+}
+
+async function appendBeat(content, opts = {}) {
+  const beat = el('div', 'beat');
+  if (opts.id) beat.dataset.id = opts.id;
+  if (opts.noScroll) beat.dataset.noBottomSpace = 'true';
+  if (Array.isArray(content)) content.forEach(c => beat.appendChild(c));
+  else beat.appendChild(content);
+  stream.appendChild(beat);
+  updateBottomSpace();
+  if (!opts.noScroll) {
+    const scrollRatio = typeof opts.scrollRatio === 'function' ? opts.scrollRatio(beat) : opts.scrollRatio;
+    smoothScrollTo(beat, scrollRatio);
+    if (!reduceMotion) await wait(180);
+  }
+  await fadeIn(beat, opts.delay || 0);
+  return beat;
+}
+
+const stageEl = document.querySelector('.stage');
+function updateBottomSpace() {
+  if (!stageEl) return;
+  const candidates = stream.querySelectorAll('.beat, .reflection');
+  const latest = candidates[candidates.length - 1];
+  if (!latest) {
+    stageEl.style.paddingBottom = '';
+    return;
+  }
+  if (latest.dataset.noBottomSpace === 'true') {
+    const desired = 24;
+    const currentPadding = parseFloat(getComputedStyle(stageEl).paddingBottom) || 0;
+    const projectedHeight = document.documentElement.scrollHeight - currentPadding + desired;
+    const projectedMaxScroll = Math.max(0, projectedHeight - window.innerHeight);
+    if (window.scrollY > projectedMaxScroll + 1) {
+      stageEl.style.paddingBottom = `${Math.ceil(currentPadding)}px`;
+      return;
+    }
+    stageEl.style.paddingBottom = `${desired}px`;
+    return;
+  }
+  // Just enough padding so the latest beat can reach viewport top  -  no more
+  const need = window.innerHeight - latest.offsetHeight;
+  stageEl.style.paddingBottom = Math.max(24, need) + 'px';
+}
+const streamRO = new ResizeObserver(updateBottomSpace);
+streamRO.observe(stream);
+window.addEventListener('resize', updateBottomSpace);
+
+async function appendRule() {
+  const r = el('hr', 'rule');
+  stream.appendChild(r);
+  await fadeIn(r, 60);
+  return r;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   KEYBOARD HINT (one-time)
+   ───────────────────────────────────────────────────────────────────────── */
+
+function attachKbdHint(beat, { type }) {
+  const hint = el('div', 'kbd-hint');
+  if (type === 'multi') {
+    hint.innerHTML = `
+      <span class="pair keyboard-only"><kbd>↑</kbd><kbd>↓</kbd> navigate</span>
+      <span class="pair keyboard-only"><kbd>space</kbd> toggle</span>
+      <span class="pair keyboard-only"><kbd>↵</kbd> confirm</span>
+      <span class="pair touch-only">Tap to select, then confirm</span>
+    `;
+  } else {
+    hint.innerHTML = `
+      <span class="pair keyboard-only"><kbd>↑</kbd><kbd>↓</kbd> navigate</span>
+      <span class="pair keyboard-only"><kbd>↵</kbd> confirm</span>
+      <span class="pair touch-only">Tap your answer</span>
+    `;
+  }
+  // Inline restart  -  sits at the far right of the hint row
+  const restart = el('button', 'kbd-restart', 'restart');
+  restart.type = 'button';
+  restart.addEventListener('click', () => restartDiagnostic());
+  hint.appendChild(restart);
+
+  beat.appendChild(hint);
+  setTimeout(() => hint.classList.add('is-in'), 700);
+  return hint;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   REVISE  -  click any past user-echo to amend that answer
+   ───────────────────────────────────────────────────────────────────────── */
+
+function updateEchoBody(echoBlock, q, val) {
+  const ue = echoBlock.querySelector('.user-body');
+  if (!ue) return;
+  if (q.type === 'single') {
+    ue.innerHTML = `<span class="pick-chip"><span class="pick-num">${ordinal(val + 1)}</span>${escapeHtml(q.options[val])}</span>`;
+  } else {
+    ue.innerHTML = val.map(i =>
+      `<span class="pick-chip"><span class="pick-num">${ordinal(i + 1)}</span>${escapeHtml(q.options[i])}</span>`
+    ).join('');
+  }
+}
+
+function relockOptions({ optEls, q, confirmBtn, confirmHint }) {
+  const final = state.answers[q.id];
+  if (q.type === 'single') {
+    optEls.forEach((opt, i) => {
+      opt.disabled = true;
+      opt.classList.remove('is-arrow-focus', 'is-current-pick');
+      if (i !== final) {
+        opt.style.opacity = '0.22';
+        opt.style.background = '';
+        opt.style.boxShadow = '';
+      } else {
+        opt.style.opacity = '1';
+        opt.style.background = 'var(--paper-warm)';
+        opt.style.boxShadow = 'inset 2px 0 0 0 var(--ink-soft)';
+      }
+    });
+  } else {
+    const picks = final || [];
+    optEls.forEach((opt, i) => {
+      opt.disabled = true;
+      opt.classList.remove('is-arrow-focus', 'is-current-pick');
+      const on = picks.includes(i);
+      opt.style.opacity = on ? '1' : '0.22';
+      opt.classList.toggle('is-checked', on);
+      const cb = opt.querySelector('.opt-check');
+      if (cb) cb.textContent = on ? '[×]' : '[ ]';
+    });
+    if (confirmBtn) confirmBtn.disabled = true;
+    if (confirmHint) confirmHint.style.opacity = '0';
+  }
+}
+
+function unlockForRevise({ optEls, q, confirmBtn, confirmHint }) {
+  if (q.type === 'single') {
+    const cur = state.answers[q.id];
+    optEls.forEach((opt, i) => {
+      opt.disabled = false;
+      opt.style.opacity = '';
+      opt.style.background = '';
+      opt.classList.toggle('is-current-pick', i === cur);
+    });
+  } else {
+    const cur = state.answers[q.id] || [];
+    optEls.forEach((opt, i) => {
+      opt.disabled = false;
+      opt.style.opacity = '';
+      const isOn = cur.includes(i);
+      opt.classList.toggle('is-checked', isOn);
+      const cb = opt.querySelector('.opt-check');
+      if (cb) cb.textContent = isOn ? '[×]' : '[ ]';
+    });
+    if (confirmBtn) confirmBtn.disabled = cur.length === 0;
+    if (confirmHint) {
+      confirmHint.style.opacity = '';
+      confirmHint.textContent = cur.length > 0 ? `${cur.length} selected` : '';
+    }
+  }
+}
+
+function waitForReviseAnswer({ q, optEls, confirmBtn, confirmHint }) {
+  return new Promise(resolve => {
+    let done = false;
+    const ac = new AbortController();
+    const selected = q.type === 'multi' ? new Set(state.answers[q.id] || []) : null;
+    let arrowIdx = -1;
+    const exclusiveIndex =
+      q.id === 'Q14' ? 0 :
+      q.id === 'SP' ? q.options.length - 1 :
+      null;
+
+    const finish = (val) => {
+      if (done) return;
+      done = true;
+      ac.abort();
+      document.removeEventListener('keydown', keyHandler);
+      resolve(val);
+    };
+
+    const setArrow = (idx) => {
+      arrowIdx = idx;
+      optEls.forEach((opt, i) => opt.classList.toggle('is-arrow-focus', i === idx));
+      if (idx >= 0) optEls[idx]?.focus({ preventScroll: true });
+    };
+
+    const updateConfirm = () => {
+      if (!confirmBtn) return;
+      if (selected.size > 0) {
+        confirmBtn.disabled = false;
+        if (confirmHint) confirmHint.textContent = `${selected.size} selected`;
+      } else {
+        confirmBtn.disabled = true;
+        if (confirmHint) confirmHint.textContent = '';
+      }
+    };
+
+    const setChecked = (idx, on) => {
+      const opt = optEls[idx];
+      opt.classList.toggle('is-checked', on);
+      opt.querySelector('.opt-check').textContent = on ? '[×]' : '[ ]';
+    };
+
+    const toggle = (idx) => {
+      if (selected.has(idx)) {
+        selected.delete(idx);
+        setChecked(idx, false);
+      } else {
+        if (exclusiveIndex !== null && idx === exclusiveIndex) {
+          selected.forEach((picked) => setChecked(picked, false));
+          selected.clear();
+        } else if (exclusiveIndex !== null && selected.has(exclusiveIndex)) {
+          selected.delete(exclusiveIndex);
+          setChecked(exclusiveIndex, false);
+        }
+        selected.add(idx);
+        setChecked(idx, true);
+      }
+      updateConfirm();
+    };
+
+    if (q.type === 'single') {
+      optEls.forEach(opt => {
+        opt.addEventListener('click', () => finish(Number(opt.dataset.index)), { signal: ac.signal });
+      });
+    } else {
+      optEls.forEach(opt => {
+        opt.addEventListener('click', (e) => {
+          if (e.detail === 0) return;
+          toggle(Number(opt.dataset.index));
+        }, { signal: ac.signal });
+      });
+      if (confirmBtn) {
+        confirmBtn.addEventListener('click', () => {
+          if (selected.size > 0) finish(Array.from(selected).sort((a, b) => a - b));
+        }, { signal: ac.signal });
+      }
+      updateConfirm();
+    }
+
+    const keyHandler = (e) => {
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        finish(undefined); // undefined = cancel, keep original
+        return;
+      }
+      if (e.key === 'ArrowDown' || e.key === 'j') { e.preventDefault(); setArrow((arrowIdx + 1) % optEls.length); return; }
+      if (e.key === 'ArrowUp' || e.key === 'k')   { e.preventDefault(); setArrow(arrowIdx <= 0 ? optEls.length - 1 : arrowIdx - 1); return; }
+      if (e.key === ' ' || e.code === 'Space') {
+        if (q.type === 'multi' && arrowIdx >= 0) { e.preventDefault(); toggle(arrowIdx); }
+        return;
+      }
+      if (e.key === 'Enter') {
+        if (q.type === 'single' && arrowIdx >= 0) { e.preventDefault(); finish(arrowIdx); return; }
+        if (q.type === 'multi' && selected.size > 0) { e.preventDefault(); finish(Array.from(selected).sort((a, b) => a - b)); return; }
+        return;
+      }
+      const n = Number(e.key);
+      if (n >= 1 && n <= q.options.length) {
+        e.preventDefault();
+        if (q.type === 'single') finish(n - 1);
+        else toggle(n - 1);
+      }
+    };
+    document.addEventListener('keydown', keyHandler);
+  });
+}
+
+function makeRevisable({ echoBlock, beat, optEls, q, confirmBtn, confirmHint }) {
+  echoBlock.classList.add('is-revisable');
+  echoBlock.tabIndex = 0;
+  echoBlock.setAttribute('role', 'button');
+  echoBlock.setAttribute('aria-label', `Amend answer to question ${q.id}`);
+
+  const onTrigger = async () => {
+    if (state.reviseActive) return;
+    if (state.questionInFlight) return; // don't allow revise while a new question is being answered
+    state.reviseActive = q.id;
+    echoBlock.classList.add('is-revising');
+
+    unlockForRevise({ optEls, q, confirmBtn, confirmHint });
+    smoothScrollTo(beat, 0.25);
+
+    const result = await waitForReviseAnswer({ q, optEls, confirmBtn, confirmHint });
+    if (result !== undefined) {
+      state.answers[q.id] = result;
+      updateEchoBody(echoBlock, q, result);
+    }
+    relockOptions({ optEls, q, confirmBtn, confirmHint });
+
+    echoBlock.classList.remove('is-revising');
+    state.reviseActive = null;
+  };
+
+  echoBlock.addEventListener('click', (e) => {
+    // Don't trigger if user clicked something interactive inside (none currently, but defensive)
+    if (e.target.closest('button, a, input')) return;
+    onTrigger();
+  });
+  echoBlock.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      onTrigger();
+    }
+  });
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   INTRO
+   ───────────────────────────────────────────────────────────────────────── */
+
+async function renderIntro() {
+  const block = el('div', 'begin-block');
+  // Held opening  -  first line renders alone in display italic
+  const heldP = el('p', 'opening-held');
+  block.appendChild(heldP);
+  // Other paragraphs are appended later, after the held silence
+  const p2 = el('p', 'sys-body');
+  const domainMap = renderDomainMap({ intro: true });
+  const p3 = el('p', 'sys-body');
+  p3.style.fontStyle = 'italic';
+  p3.style.color = 'var(--ink-soft)';
+  p2.style.opacity = '0';
+  domainMap.style.opacity = '0';
+  p3.style.opacity = '0';
+  p2.style.transition = 'opacity 700ms var(--ease-out)';
+  domainMap.style.transition = 'opacity 700ms var(--ease-out), transform 700ms var(--ease-out)';
+  p3.style.transition = 'opacity 700ms var(--ease-out)';
+  block.append(p2, domainMap, p3);
+
+  const beginRow = el('div', 'confirm-row');
+  const beginBtn = el('button', 'confirm-btn', 'Begin');
+  beginBtn.type = 'button';
+  beginRow.append(beginBtn);
+  block.appendChild(beginRow);
+
+  await appendBeat(block, { noScroll: true });
+
+  // Stream the held opening
+  await streamText(heldP, 'AI readiness is not about how many tools you have. It is whether the business can use what it already knows.', { msPerChar: 22 });
+
+  // Hold silence  -  let the opening land
+  await wait(reduceMotion ? 80 : 1400);
+
+  // Fade the rest in
+  p2.style.opacity = '1';
+  await wait(reduceMotion ? 50 : 200);
+  await streamText(p2, 'In eight minutes, you will see where the business loses signal: what it can see, how fast decisions move, whether teams work from one picture and what that means for AI readiness.');
+  domainMap.style.opacity = '1';
+  domainMap.classList.add('is-in');
+  await wait(reduceMotion ? 60 : 360);
+  p3.style.opacity = '1';
+  await wait(reduceMotion ? 50 : 220);
+  await streamText(p3, 'Answer from today, not the version you are trying to become. If two answers feel close, choose the harsher one. The reveal will be more useful.');
+
+  setTimeout(() => {
+    beginRow.classList.add('is-in');
+    smoothScrollTo(beginRow, 0.72);
+  }, 200);
+
+  return new Promise(resolve => {
+    const go = () => {
+      document.removeEventListener('keydown', keyHandler);
+      beginBtn.disabled = true;
+      block.closest('.beat')?.classList.add('is-retired');
+      block.setAttribute('aria-hidden', 'true');
+      updateBottomSpace();
+      resolve();
+    };
+    beginBtn.addEventListener('click', go);
+    const keyHandler = (e) => {
+      if (e.key === 'Enter') { e.preventDefault(); go(); }
+    };
+    document.addEventListener('keydown', keyHandler);
+    setTimeout(() => beginBtn.focus({ preventScroll: true }), 500);
+  });
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   PREPARE  -  held shimmer beat before Q1
+   ───────────────────────────────────────────────────────────────────────── */
+
+async function renderPrepare() {
+  await hold('Reading', 800);
+  await hold('Composing the first question', 1400);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   APHORISM  -  held display italic, auto-advance
+   ───────────────────────────────────────────────────────────────────────── */
+
+async function renderAphorism({ text, current }) {
+  const node = el('div', current ? 'aphorism-stage' : 'aphorism');
+  if (current) {
+    node.appendChild(el('div', 'aphorism', text));
+    const domainMap = renderDomainMap({ current, compact: true });
+    domainMap.classList.add('is-in');
+    node.appendChild(domainMap);
+  } else {
+    node.textContent = text;
+  }
+  stream.appendChild(node);
+  smoothScrollTo(node, 0.4);
+  await wait(reduceMotion ? 50 : 200);
+  requestAnimationFrame(() => node.classList.add('is-in'));
+  await wait(reduceMotion ? 200 : 1800);
+  node.classList.add('is-out');
+  await wait(reduceMotion ? 100 : 700);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   PILLAR TRANSITION  -  silent breathing room. The pillar mark up top inks up.
+   ───────────────────────────────────────────────────────────────────────── */
+
+async function renderPillar({ pillar }) {
+  const spacer = el('div', 'pillar-break');
+  if (!SCORED_PILLARS.has(pillar)) spacer.style.margin = '32px 0 0';
+  if (SCORED_PILLARS.has(pillar)) {
+    spacer.innerHTML = `
+      <svg class="pillar-break-visual" viewBox="0 0 360 30" aria-hidden="true">
+        <path d="M4 15H148" />
+        <path d="M212 15H356" />
+        <path class="strong plus-line" d="M174 15H186" />
+        <path class="strong plus-line" d="M180 9V21" />
+      </svg>
+    `;
+  }
+  stream.appendChild(spacer);
+  await fadeIn(spacer, 60);
+  if (SCORED_PILLARS.has(pillar)) await wait(reduceMotion ? 60 : 220);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   QUESTION (SINGLE)
+   ───────────────────────────────────────────────────────────────────────── */
+
+async function renderSingle(q) {
+  const block = el('div', 'question-block');
+  block.appendChild(el('div', 'q-id', formatQId(q.id)));
+  block.appendChild(el('div', 'question-mode', questionModeText(q.type)));
+  const stemP = el('p', 'sys-body');
+  block.appendChild(stemP);
+
+  const list = el('ul', 'opts');
+  q.options.forEach((text, i) => {
+    const btn = el('button', 'opt');
+    btn.type = 'button';
+    btn.dataset.index = String(i);
+    btn.innerHTML = `
+      <span class="opt-num">${ordinal(i + 1)}</span>
+      <span class="opt-text">${escapeHtml(text)}</span>
+      <span class="opt-key">${i + 1}</span>
+    `;
+    const li = el('li');
+    li.appendChild(btn);
+    list.appendChild(li);
+  });
+  block.appendChild(list);
+
+  const beat = await appendBeat(block, { id: q.id, scrollRatio: questionScrollRatio });
+
+  await streamText(stemP, questionStemText(q));
+
+  const optEls = list.querySelectorAll('.opt');
+  optEls.forEach((opt, i) => {
+    setTimeout(() => opt.classList.add('is-in'), 220 + i * 50);
+  });
+
+  attachKbdHint(block, { type: 'single' });
+
+  const pickedIndex = await new Promise(resolve => {
+    let resolved = false;
+    let arrowIdx = -1;
+
+    const updateArrowFocus = (idx) => {
+      optEls.forEach((opt, i) => opt.classList.toggle('is-arrow-focus', i === idx));
+      if (idx >= 0) optEls[idx]?.focus({ preventScroll: true });
+    };
+
+    const pick = (idx) => {
+      if (resolved) return;
+      resolved = true;
+      document.removeEventListener('keydown', keyHandler);
+      resolve(idx);
+    };
+
+    optEls.forEach((opt) => {
+      opt.addEventListener('click', () => pick(Number(opt.dataset.index)));
+    });
+
+    const keyHandler = (e) => {
+      if (e.key === 'ArrowDown' || e.key === 'j') {
+        e.preventDefault();
+        arrowIdx = (arrowIdx + 1) % optEls.length;
+        updateArrowFocus(arrowIdx);
+        return;
+      }
+      if (e.key === 'ArrowUp' || e.key === 'k') {
+        e.preventDefault();
+        arrowIdx = arrowIdx <= 0 ? optEls.length - 1 : arrowIdx - 1;
+        updateArrowFocus(arrowIdx);
+        return;
+      }
+      if (e.key === 'Enter') {
+        if (arrowIdx >= 0) {
+          e.preventDefault();
+          pick(arrowIdx);
+        }
+        return;
+      }
+      const n = Number(e.key);
+      if (n >= 1 && n <= q.options.length) {
+        e.preventDefault();
+        pick(n - 1);
+      }
+    };
+    document.addEventListener('keydown', keyHandler);
+  });
+
+  optEls.forEach((opt, i) => {
+    opt.disabled = true;
+    opt.classList.remove('is-arrow-focus');
+    if (i !== pickedIndex) {
+      opt.style.opacity = '0.22';
+    } else {
+      opt.style.opacity = '1';
+      opt.style.background = 'var(--paper-warm)';
+      opt.style.boxShadow = 'inset 2px 0 0 0 var(--ink-soft)';
+      // B + C  -  instant acknowledgement on the picked option
+      const num = opt.querySelector('.opt-num');
+      if (num) {
+        num.classList.add('is-pulsing');
+        const ack = el('span', 'ack-mark', '→');
+        num.insertAdjacentElement('afterend', ack);
+        setTimeout(() => ack.remove(), 760);
+      }
+    }
+  });
+  await wait(reduceMotion ? 60 : 180);
+
+  state.answers[q.id] = pickedIndex;
+  beat.dataset.noBottomSpace = 'true';
+  updateBottomSpace();
+
+  await hold('Reading', 380);
+  await appendRule();
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   QUESTION (MULTI)
+   ───────────────────────────────────────────────────────────────────────── */
+
+async function renderMulti(q) {
+  document.body.classList.add('multi-confirm-active');
+  const block = el('div', `question-block multi-block${q.options.length > 6 ? ' long-multi' : ''}`);
+  block.appendChild(el('div', 'q-id', formatQId(q.id)));
+  block.appendChild(el('div', 'question-mode', questionModeText(q.type)));
+  const stemP = el('p', 'sys-body');
+  block.appendChild(stemP);
+
+  const list = el('ul', 'opts');
+  q.options.forEach((text, i) => {
+    const btn = el('button', 'opt is-multi');
+    btn.type = 'button';
+    btn.dataset.index = String(i);
+    btn.innerHTML = `
+      <span class="opt-check">[ ]</span>
+      <span class="opt-text">${escapeHtml(text)}</span>
+    `;
+    const li = el('li');
+    li.appendChild(btn);
+    list.appendChild(li);
+  });
+  block.appendChild(list);
+
+  const confirmRow = el('div', 'confirm-row');
+  const confirmBtn = el('button', 'confirm-btn', 'Confirm');
+  confirmBtn.type = 'button';
+  confirmBtn.disabled = true;
+  const hint = el('span', 'confirm-hint', 'Select at least one');
+  confirmRow.append(confirmBtn, hint);
+  block.appendChild(confirmRow);
+
+  const beat = await appendBeat(block, { id: q.id, scrollRatio: questionScrollRatio });
+
+  await streamText(stemP, questionStemText(q));
+
+  const optEls = list.querySelectorAll('.opt');
+  optEls.forEach((opt, i) => {
+    setTimeout(() => opt.classList.add('is-in'), 220 + i * 40);
+  });
+  setTimeout(() => confirmRow.classList.add('is-in'), 220 + optEls.length * 40 + 100);
+  attachKbdHint(block, { type: 'multi' });
+
+  const selected = new Set();
+  let arrowIdx = -1;
+  const exclusiveIndex =
+    q.id === 'Q14' ? 0 :
+    q.id === 'SP' ? q.options.length - 1 :
+    null;
+
+  const updateArrowFocus = (idx) => {
+    optEls.forEach((opt, i) => opt.classList.toggle('is-arrow-focus', i === idx));
+    if (idx >= 0) optEls[idx]?.focus({ preventScroll: true });
+  };
+
+  const setChecked = (idx, on) => {
+    const opt = optEls[idx];
+    const check = opt.querySelector('.opt-check');
+    opt.classList.toggle('is-checked', on);
+    check.textContent = on ? '[×]' : '[ ]';
+    if (on) {
+      // B  -  brief check-mark ink pulse on toggle-on (no → since not advancing)
+      check.style.animation = 'none';
+      // force reflow so animation can re-trigger
+      void check.offsetWidth;
+      check.style.animation = 'numPulse 600ms var(--ease-out) forwards';
+    }
+  };
+
+  const toggle = (idx) => {
+    if (selected.has(idx)) {
+      selected.delete(idx);
+      setChecked(idx, false);
+    } else {
+      if (exclusiveIndex !== null && idx === exclusiveIndex) {
+        selected.forEach((picked) => setChecked(picked, false));
+        selected.clear();
+      } else if (exclusiveIndex !== null && selected.has(exclusiveIndex)) {
+        selected.delete(exclusiveIndex);
+        setChecked(exclusiveIndex, false);
+      }
+      selected.add(idx);
+      setChecked(idx, true);
+    }
+    updateConfirm();
+  };
+
+  const updateConfirm = () => {
+    if (selected.size > 0) {
+      confirmBtn.disabled = false;
+      hint.textContent = `${selected.size} selected`;
+    } else {
+      confirmBtn.disabled = true;
+      hint.textContent = 'Select at least one';
+    }
+  };
+
+  optEls.forEach((opt) => {
+    opt.addEventListener('click', (e) => {
+      if (e.detail === 0) return;
+      toggle(Number(opt.dataset.index));
+    });
+  });
+
+  await new Promise(resolve => {
+    let done = false;
+    const finish = () => {
+      if (done || selected.size === 0) return;
+      done = true;
+      // B + C on the Confirm button  -  acknowledgement before advancing
+      const ack = el('span', 'ack-mark', '→');
+      confirmBtn.insertAdjacentElement('afterend', ack);
+      setTimeout(() => ack.remove(), 760);
+      document.removeEventListener('keydown', keyHandler);
+      resolve();
+    };
+    confirmBtn.addEventListener('click', finish);
+    const keyHandler = (e) => {
+      if (e.key === 'ArrowDown' || e.key === 'j') {
+        e.preventDefault();
+        arrowIdx = (arrowIdx + 1) % optEls.length;
+        updateArrowFocus(arrowIdx);
+        return;
+      }
+      if (e.key === 'ArrowUp' || e.key === 'k') {
+        e.preventDefault();
+        arrowIdx = arrowIdx <= 0 ? optEls.length - 1 : arrowIdx - 1;
+        updateArrowFocus(arrowIdx);
+        return;
+      }
+      if (e.key === ' ' || e.code === 'Space') {
+        if (arrowIdx >= 0) { e.preventDefault(); toggle(arrowIdx); }
+        return;
+      }
+      if (e.key === 'Enter') {
+        if (selected.size > 0) { e.preventDefault(); finish(); }
+        return;
+      }
+      const n = Number(e.key);
+      if (n >= 1 && n <= q.options.length) {
+        e.preventDefault();
+        toggle(n - 1);
+      }
+    };
+    document.addEventListener('keydown', keyHandler);
+  });
+
+  optEls.forEach(opt => { opt.disabled = true; opt.classList.remove('is-arrow-focus'); });
+  confirmBtn.disabled = true;
+  hint.style.opacity = '0';
+  await wait(reduceMotion ? 80 : 180);
+
+  const picked = Array.from(selected).sort((a, b) => a - b);
+  state.answers[q.id] = picked;
+  optEls.forEach((opt, i) => {
+    opt.style.opacity = picked.includes(i) ? '1' : '0.22';
+  });
+  document.body.classList.remove('multi-confirm-active');
+  beat.dataset.noBottomSpace = 'true';
+  updateBottomSpace();
+
+  await hold('Reading', 380);
+  await appendRule();
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   REFLECTION
+   ───────────────────────────────────────────────────────────────────────── */
+
+async function renderReflection() {
+  await hold('Holding', 800);
+
+  const block = el('div', 'reflection');
+
+  const p1 = el('p', 'sys-body lede');
+  const p2 = el('p', 'sys-body');
+  const domainMap = renderDomainMap({ current: 'Coherence' });
+  block.append(p1, p2, domainMap);
+
+  const continueRow = el('div', 'confirm-row');
+  const continueBtn = el('button', 'confirm-btn', 'Continue');
+  continueBtn.type = 'button';
+  continueRow.append(continueBtn);
+  block.appendChild(continueRow);
+
+  await appendBeat(block);
+
+  await streamText(p1, "You've moved through what the business can see and how fast it can act on what it sees.");
+  await wait(reduceMotion ? 40 : 280);
+  await streamText(p2, 'The next layer is coherence  -  whether the seeing and the acting are connected to the same picture or running on parallel tracks.');
+  domainMap.classList.add('is-in');
+  await wait(reduceMotion ? 60 : 260);
+
+  setTimeout(() => continueRow.classList.add('is-in'), 300);
+
+  await new Promise(resolve => {
+    const go = () => {
+      document.removeEventListener('keydown', keyHandler);
+      continueBtn.disabled = true;
+      resolve();
+    };
+    continueBtn.addEventListener('click', go);
+    const keyHandler = (e) => {
+      if (e.key === 'Enter') { e.preventDefault(); go(); }
+    };
+    document.addEventListener('keydown', keyHandler);
+    setTimeout(() => continueBtn.focus({ preventScroll: true }), 500);
+  });
+
+  await appendRule();
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   REVEAL PLACEHOLDER
+   ───────────────────────────────────────────────────────────────────────── */
+
+async function renderReveal() {
+  // Reveal preamble  -  3-phase composing sequence
+  await hold('Composing', 800);
+  await hold('Composing the picture', 1200);
+  await hold('The picture is ready', 1600);
+
+  const block = el('div');
+
+  const p1 = el('p', 'sys-body');
+  const p2 = el('p', 'sys-body');
+  p2.style.fontStyle = 'italic';
+  p2.style.color = 'var(--ink-soft)';
+  block.append(p1, p2);
+
+  const ph = el('div', 'reveal-placeholder');
+  const sections = [
+    'The picture, in one number',
+    'The strongest pillar',
+    'Where the friction is',
+    'Your own evidence',
+    'What this means',
+    'The held line',
+    'The handoff'
+  ];
+  sections.forEach((label, i) => {
+    const row = el('div', 'ph-row');
+    row.innerHTML = `
+      <span class="ph-num">${ordinal(i + 1)}</span>
+      <span class="ph-label">${label}</span>
+    `;
+    ph.appendChild(row);
+  });
+  block.appendChild(ph);
+
+  // Byline credit
+  const byline = el('div', 'byline');
+  const respondentNo = String(1000 + (Date.now() % 9000));
+  const today = new Date();
+  const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  const dateStr = `${today.getDate()} ${months[today.getMonth()]} ${today.getFullYear()}`;
+  byline.innerHTML = `
+    <span>Diagnostic prepared by Atelier + Avenue</span><span>·</span><span>No. ${respondentNo}</span><span>·</span><span>${dateStr}</span>
+  `;
+  block.appendChild(byline);
+
+  await appendBeat(block);
+
+  await streamText(p1, 'The diagnostic is complete.');
+  await wait(reduceMotion ? 50 : 320);
+  await streamText(p2, 'The picture is being written. The reveal continues here once the closing copy is set.');
+
+  const rows = ph.querySelectorAll('.ph-row');
+  rows.forEach((row, i) => setTimeout(() => row.classList.add('is-in'), 350 + i * 120));
+
+  // Closing colophon  -  restart sits below the byline
+  await wait(reduceMotion ? 100 : 600);
+  const colophon = el('div', 'reveal-restart');
+  const restartBtn = el('button', null, 'begin again');
+  restartBtn.type = 'button';
+  restartBtn.addEventListener('click', () => restartDiagnostic());
+  colophon.appendChild(restartBtn);
+  block.appendChild(colophon);
+}
+
+function getRevealUrl(scenario) {
+  return `./reveal/?demo=${encodeURIComponent(scenario.key)}`;
+}
+
+function buildPrivacyAcknowledgement() {
+  return {
+    accepted: true,
+    version: PRIVACY_NOTICE_VERSION,
+    noticeUrl: PRIVACY_NOTICE_URL
+  };
+}
+
+function privacyNoticeMarkup() {
+  return `
+    <p><strong>Version:</strong> 4 June 2026</p>
+    <h3>Who is responsible</h3>
+    <p>Atelier + Avenue is the controller for the AI Readiness Diagnostic. You can contact us at <a href="mailto:hello@atelierandavenue.com">hello@atelierandavenue.com</a>.</p>
+
+    <h3>What we collect</h3>
+    <ul>
+      <li>Your name and work email address.</li>
+      <li>Your questionnaire answers and the profile, score, hurdle, action plan, reveal link and PDF link generated from those answers.</li>
+      <li>Technical request data needed to run and secure the service, such as request metadata and operational logs.</li>
+    </ul>
+
+    <h3>How we use it</h3>
+    <ul>
+      <li>To generate and deliver your AI-readiness profile, reveal page and PDF.</li>
+      <li>To create or update a Brevo contact record with your diagnostic links and profile metadata.</li>
+      <li>To operate, secure, troubleshoot and improve the diagnostic.</li>
+      <li>To follow up about the diagnostic or a working-session request connected to it.</li>
+    </ul>
+
+    <h3>Lawful bases</h3>
+    <p>We rely on legitimate interests to provide the diagnostic you requested, keep the service secure and follow up about the result. If you ask us to discuss A+A services, we may also rely on taking steps at your request before entering a contract. We may rely on legal obligation where we need to keep or disclose information to comply with law.</p>
+    <p>This acknowledgement is not marketing consent. Marketing emails are handled separately and only sent where consent or another lawful route under UK GDPR and PECR applies.</p>
+
+    <h3>Who receives it</h3>
+    <p>We use Vercel to host and run the diagnostic, and Brevo to hold contact records and, once sender authentication is complete, deliver the requested profile email. We may also share information with professional advisers or service providers where necessary to run the business or comply with law.</p>
+
+    <h3>International transfers</h3>
+    <p>Our processors may process data outside the UK or EEA. Where that happens, we rely on appropriate safeguards such as adequacy arrangements, the UK International Data Transfer Agreement, EU Standard Contractual Clauses or equivalent measures provided by those processors.</p>
+
+    <h3>Retention</h3>
+    <p>The reveal and PDF links use a sealed token that expires after 14 days. We do not run a separate questionnaire database in this app. Brevo contact and diagnostic metadata are kept for up to 24 months after the last meaningful interaction, unless you ask us to delete them sooner or we need to keep limited records for legal reasons. Operational logs are kept for short security and troubleshooting periods by our service providers.</p>
+
+    <h3>Your rights</h3>
+    <p>You can ask to access, correct, delete or restrict your personal data, receive a portable copy, object to processing based on legitimate interests, and withdraw marketing consent where consent is used. You also have the right to complain to the Information Commissioner's Office at <a href="https://ico.org.uk/make-a-complaint/" target="_blank" rel="noopener">ico.org.uk/make-a-complaint</a>.</p>
+
+    <h3>Automated profiling</h3>
+    <p>The diagnostic automatically turns your answers into an indicative business profile and action plan. It does not make decisions about you with legal or similarly significant effects.</p>
+
+    <h3>If you do not provide the data</h3>
+    <p>Name, work email, questionnaire answers and this privacy acknowledgement are required to generate and deliver the profile. Without them, we cannot provide the reveal or PDF.</p>
+  `;
+}
+
+function buildPrivacyModal() {
+  const modal = el('div', 'privacy-modal');
+  modal.hidden = true;
+  modal.innerHTML = `
+    <div class="privacy-dialog" role="dialog" aria-modal="true" aria-labelledby="privacyTitle" tabindex="-1">
+      <div class="privacy-modal-head">
+        <div>
+          <p class="privacy-modal-kicker">Privacy Notice</p>
+          <h2 class="privacy-modal-title" id="privacyTitle">How we use your diagnostic data.</h2>
+        </div>
+        <button class="privacy-close" type="button" aria-label="Close Privacy Notice" data-close-privacy>&times;</button>
+      </div>
+      <div class="privacy-copy">
+        ${privacyNoticeMarkup()}
+      </div>
+      <div class="privacy-dialog-actions">
+        <button class="privacy-accept" type="button" data-accept-privacy>I understand</button>
+        <a class="privacy-link" href="${PRIVACY_NOTICE_URL}" target="_blank" rel="noopener">Open full notice</a>
+      </div>
+    </div>
+  `;
+  return modal;
+}
+
+function loadBotConfig() {
+  if (!botConfigPromise) {
+    botConfigPromise = fetch('/api/v8/config', { headers: { accept: 'application/json' } })
+      .then(async (res) => {
+        const ct = res.headers.get('content-type') || '';
+        const body = ct.includes('application/json') ? await res.json() : {};
+        if (!res.ok || body.ok === false) {
+          return { enabled: true, configured: false, error: body.error || 'bot_check_unavailable' };
+        }
+        return body.turnstile || { enabled: false, configured: false };
+      })
+      .catch(() => ({ enabled: false, configured: false }));
+  }
+  return botConfigPromise;
+}
+
+function loadTurnstileScript() {
+  if (window.turnstile) return Promise.resolve(window.turnstile);
+  if (!turnstileScriptPromise) {
+    turnstileScriptPromise = new Promise((resolve, reject) => {
+      const existing = document.querySelector(`script[src="${TURNSTILE_SCRIPT_URL}"]`);
+      if (existing) {
+        existing.addEventListener('load', () => resolve(window.turnstile), { once: true });
+        existing.addEventListener('error', () => reject(new Error('turnstile_script_failed')), { once: true });
+        return;
+      }
+      const script = document.createElement('script');
+      script.src = TURNSTILE_SCRIPT_URL;
+      script.async = true;
+      script.defer = true;
+      script.addEventListener('load', () => {
+        if (window.turnstile) resolve(window.turnstile);
+        else reject(new Error('turnstile_unavailable'));
+      }, { once: true });
+      script.addEventListener('error', () => reject(new Error('turnstile_script_failed')), { once: true });
+      document.head.appendChild(script);
+    });
+  }
+  return turnstileScriptPromise;
+}
+
+async function createBotCheckController({ container, statusNode }) {
+  const setStatus = (message, stateClass = '') => {
+    const field = container.closest('[data-field="botCheck"]');
+    if (field) {
+      field.classList.toggle('is-error', stateClass === 'error');
+      field.classList.toggle('is-active', stateClass === 'active');
+    }
+    if (statusNode) statusNode.textContent = message || '';
+  };
+
+  const config = await loadBotConfig();
+  if (!config.enabled) {
+    setStatus('');
+    return { enabled: false, execute: async () => null, reset: () => {} };
+  }
+  if (!config.configured || !config.siteKey) {
+    setStatus('Verification is not configured. Please try again later.', 'error');
+    return {
+      enabled: true,
+      execute: async () => {
+        throw new Error(config.error || 'bot_check_unconfigured');
+      },
+      reset: () => {}
+    };
+  }
+
+  let turnstile;
+  try {
+    turnstile = await loadTurnstileScript();
+  } catch (err) {
+    setStatus('Verification could not load. Please refresh and try again.', 'error');
+    return {
+      enabled: true,
+      execute: async () => {
+        throw err;
+      },
+      reset: () => {}
+    };
+  }
+
+  let pending = null;
+  let widgetId = null;
+  const settle = (ok, value) => {
+    if (!pending) return;
+    const current = pending;
+    pending = null;
+    clearTimeout(current.timeout);
+    if (ok) current.resolve(value);
+    else current.reject(value);
+  };
+
+  widgetId = turnstile.render(container, {
+    sitekey: config.siteKey,
+    action: config.action || 'v8-submit',
+    appearance: 'interaction-only',
+    execution: 'execute',
+    callback: (token) => settle(true, token),
+    'expired-callback': () => settle(false, new Error('turnstile_expired')),
+    'error-callback': () => settle(false, new Error('turnstile_failed')),
+    theme: 'light'
+  });
+
+  return {
+    enabled: true,
+    async execute() {
+      setStatus('Verification in progress.', 'active');
+      const token = await new Promise((resolve, reject) => {
+        pending = {
+          resolve,
+          reject,
+          timeout: setTimeout(() => {
+            settle(false, new Error('turnstile_timeout'));
+          }, BOT_CHECK_TIMEOUT_MS)
+        };
+        try {
+          turnstile.reset(widgetId);
+          turnstile.execute(widgetId);
+        } catch (err) {
+          settle(false, err);
+        }
+      });
+      setStatus('');
+      return { provider: 'turnstile', token };
+    },
+    reset() {
+      if (widgetId !== null && turnstile?.reset) turnstile.reset(widgetId);
+    }
+  };
+}
+
+async function getStandaloneBotCheck() {
+  if (!standaloneBotCheckPromise) {
+    const container = document.createElement('div');
+    container.className = 'turnstile-standalone';
+    document.body.appendChild(container);
+    standaloneBotCheckPromise = createBotCheckController({ container, statusNode: null });
+  }
+  const controller = await standaloneBotCheckPromise;
+  return controller.execute();
+}
+
+async function submitProfile({ name, email, company, answers, scenario, privacy, botCheck }) {
+  try {
+    const verifiedBotCheck = botCheck === undefined ? await getStandaloneBotCheck() : botCheck;
+    const res = await fetch('/api/v8/submit', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ name, email, company, answers, privacy, botCheck: verifiedBotCheck })
+    });
+    const ct = res.headers.get('content-type') || '';
+    if (!ct.includes('application/json')) throw new Error('V8 API is not available on this host');
+    const body = await res.json();
+    if (!res.ok || !body.ok) return { ok: false, error: body.error || 'V8 submit failed' };
+    return body;
+  } catch (err) {
+    return {
+      ok: true,
+      fallback: true,
+      emailSent: false,
+      revealUrl: getRevealUrl(scenario),
+      pdfUrl: null,
+      profile: { key: scenario.key, characterName: scenario.label },
+      error: err.message
+    };
+  }
+}
+
+function isWorkEmail(email) {
+  const trimmed = String(email || '').trim().toLowerCase();
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)) return false;
+  const domain = trimmed.split('@')[1];
+  const blocked = new Set([
+    'gmail.com', 'googlemail.com', 'yahoo.com', 'hotmail.com', 'outlook.com',
+    'yahoo.co.uk', 'yahoo.ca', 'yahoo.fr', 'yahoo.de', 'yahoo.it', 'ymail.com',
+    'outlook.co.uk', 'hotmail.co.uk', 'hotmail.fr', 'hotmail.de', 'live.com',
+    'live.co.uk', 'msn.com', 'aol.com', 'aol.co.uk', 'protonmail.com',
+    'proton.me', 'pm.me', 'icloud.com', 'me.com', 'mac.com', 'mail.com',
+    'gmx.com', 'gmx.net', 'gmx.de', 'gmx.co.uk', 'zoho.com', 'yandex.com',
+    'yandex.ru', 'mail.ru', 'fastmail.com', 'fastmail.fm', 'tutanota.com',
+    'tuta.io', 'btinternet.com', 'btopenworld.com', 'virginmedia.com',
+    'sky.com', 'talktalk.net', 'ntlworld.com', 'blueyonder.co.uk',
+    'comcast.net', 'verizon.net', 'att.net', 'sbcglobal.net', 'cox.net',
+    'charter.net', 'earthlink.net', 'bellsouth.net', 'roadrunner.com',
+    'mailinator.com', 'tempmail.com', 'guerrillamail.com', '10minutemail.com',
+    'yopmail.com', 'throwawaymail.com'
+  ]);
+  return !blocked.has(domain);
+}
+
+async function renderGate(scenario) {
+  await hold('Composing', 500);
+  await hold('Last step', 900);
+
+  const block = el('div');
+  const gate = el('form', 'gate-card');
+  gate.noValidate = true;
+  gate.innerHTML = `
+    <div class="gate-eyebrow">THE PICTURE IS READY</div>
+    <h2 class="gate-title">Send yourself the AI-readiness profile.</h2>
+    <p class="gate-line">A private readout of what your answers exposed, with the reveal link and printable PDF profile sent to your inbox.</p>
+    <div class="gate-includes" aria-label="What the profile includes">
+      <div class="gate-includes-row">
+        <span class="gate-includes-num">01</span>
+        <span class="gate-includes-text">Your readiness score and the business character behind it</span>
+      </div>
+      <div class="gate-includes-row">
+        <span class="gate-includes-num">02</span>
+        <span class="gate-includes-text">The weak point holding the system back, with evidence from your answers</span>
+      </div>
+      <div class="gate-includes-row">
+        <span class="gate-includes-num">03</span>
+        <span class="gate-includes-text">The first move worth making, plus what not to do yet</span>
+      </div>
+    </div>
+    <div class="gate-field" data-field="name">
+      <label for="gateName">Name</label>
+      <div class="input-wrap">
+        <input id="gateName" name="name" autocomplete="name" maxlength="120" required>
+        <span class="rule-line"></span>
+        <span class="rule-line-thick"></span>
+      </div>
+      <div class="error-text"></div>
+    </div>
+    <div class="gate-field" data-field="email">
+      <label for="gateEmail">Work email</label>
+      <div class="input-wrap">
+        <input id="gateEmail" name="email" type="email" autocomplete="email" inputmode="email" autocapitalize="none" spellcheck="false" maxlength="254" required>
+        <span class="rule-line"></span>
+        <span class="rule-line-thick"></span>
+      </div>
+      <div class="error-text"></div>
+    </div>
+    <div class="gate-field" data-field="company">
+      <label for="gateCompany">Company <span class="gate-optional">optional</span></label>
+      <div class="input-wrap">
+        <input id="gateCompany" name="company" autocomplete="organization" maxlength="80">
+        <span class="rule-line"></span>
+        <span class="rule-line-thick"></span>
+      </div>
+      <div class="error-text"></div>
+    </div>
+    <div class="gate-privacy" data-field="privacy">
+      <label class="privacy-check" for="gatePrivacy">
+        <input id="gatePrivacy" name="privacyAccepted" type="checkbox" required>
+        <span>I have read the Privacy Notice and understand that Atelier + Avenue will use my answers, name, company name and work email to generate and deliver my AI-readiness profile.</span>
+      </label>
+      <div class="privacy-actions">
+        <button class="privacy-link" type="button" data-open-privacy>Read Privacy Notice</button>
+        <a class="privacy-link" href="${PRIVACY_NOTICE_URL}" target="_blank" rel="noopener">Open full page</a>
+      </div>
+      <div class="error-text"></div>
+    </div>
+    <div class="bot-check" data-field="botCheck" aria-live="polite">
+      <div class="bot-check-frame" data-turnstile-container></div>
+      <div class="error-text" data-turnstile-status></div>
+    </div>
+    <div class="confirm-row is-in">
+      <button class="confirm-btn" type="submit">Send my AI-readiness profile</button>
+    </div>
+    <div class="gate-footer">PRIVATE · CONFIDENTIAL · NEVER SHARED</div>
+    <div class="gate-result" id="gateResult">
+      <div class="q-id">Profile sent</div>
+      <p class="gate-result-copy" id="gateResultCopy">Done. We have sent the AI-readiness profile to your work inbox.</p>
+      <p class="gate-result-copy"><em>It usually lands inside a minute. The email is where the full readout begins.</em></p>
+      <div class="profile-dispatch" aria-hidden="true">
+        <div class="dispatch-top">
+          <span class="dispatch-kicker">Look for this email</span>
+          <svg class="dispatch-mark" viewBox="0 0 52 52" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+            <rect x="0" y="20.8" width="52" height="10.4" />
+            <rect x="20.8" y="0" width="10.4" height="52" />
+          </svg>
+        </div>
+        <p class="dispatch-title">Your A+A AI-readiness profile is ready.</p>
+        <p class="dispatch-subtitle">A short read on the operating pattern your answers revealed.</p>
+        <div class="dispatch-email">
+          <span class="dispatch-email-label">Sent to</span>
+          <span class="dispatch-email-value" id="dispatchEmail">your inbox</span>
+        </div>
+        <div class="dispatch-list">
+          <div class="dispatch-row">
+            <span class="dispatch-label">01</span>
+            <span class="dispatch-value">The character of the business your answers described</span>
+          </div>
+          <div class="dispatch-row">
+            <span class="dispatch-label">02</span>
+            <span class="dispatch-value">Where the signal is breaking</span>
+          </div>
+          <div class="dispatch-row">
+            <span class="dispatch-label">03</span>
+            <span class="dispatch-value">The first move worth making</span>
+          </div>
+        </div>
+        <div class="dispatch-note">If it is not there shortly, check spam or promotions.</div>
+      </div>
+    </div>
+  `;
+  const privacyModal = buildPrivacyModal();
+  block.append(gate, privacyModal);
+
+  await appendBeat(block);
+
+  const setError = (fieldName, message) => {
+    const field = gate.querySelector(`[data-field="${fieldName}"]`);
+    field.classList.toggle('is-error', Boolean(message));
+    field.querySelector('.error-text').textContent = message || '';
+  };
+
+  const privacyInput = gate.elements.privacyAccepted;
+  const botControllerPromise = createBotCheckController({
+    container: gate.querySelector('[data-turnstile-container]'),
+    statusNode: gate.querySelector('[data-turnstile-status]')
+  });
+  let previousPrivacyFocus = null;
+
+  const closePrivacyModal = () => {
+    privacyModal.hidden = true;
+    document.body.classList.remove('privacy-open');
+    if (previousPrivacyFocus && typeof previousPrivacyFocus.focus === 'function') {
+      previousPrivacyFocus.focus();
+    }
+  };
+
+  const openPrivacyModal = () => {
+    previousPrivacyFocus = document.activeElement;
+    privacyModal.hidden = false;
+    document.body.classList.add('privacy-open');
+    privacyModal.querySelector('.privacy-dialog').focus();
+  };
+
+  block.querySelectorAll('[data-open-privacy]').forEach((button) => {
+    button.addEventListener('click', openPrivacyModal);
+  });
+
+  privacyModal.addEventListener('click', (event) => {
+    if (event.target === privacyModal || event.target.closest('[data-close-privacy]')) {
+      closePrivacyModal();
+    }
+  });
+
+  privacyModal.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') {
+      event.preventDefault();
+      closePrivacyModal();
+      return;
+    }
+    if (event.key !== 'Tab') return;
+    const focusable = Array.from(privacyModal.querySelectorAll('a[href], button:not([disabled])'));
+    if (!focusable.length) return;
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    if (event.shiftKey && document.activeElement === first) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault();
+      first.focus();
+    }
+  });
+
+  privacyModal.querySelector('[data-accept-privacy]').addEventListener('click', () => {
+    privacyInput.checked = true;
+    setError('privacy', '');
+    closePrivacyModal();
+  });
+
+  privacyInput.addEventListener('change', () => {
+    if (privacyInput.checked) setError('privacy', '');
+  });
+
+  gate.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const name = gate.elements.name.value.trim();
+    const email = gate.elements.email.value.trim();
+    const company = gate.elements.company.value.trim();
+    const privacyAccepted = privacyInput.checked;
+    const nameError = name ? '' : 'Add your name.';
+    const emailError = isWorkEmail(email) ? '' : 'Use a work email address.';
+    const privacyError = privacyAccepted ? '' : 'Read and acknowledge the Privacy Notice.';
+    setError('name', nameError);
+    setError('email', emailError);
+    setError('privacy', privacyError);
+    if (nameError || emailError || privacyError) return;
+    setError('botCheck', '');
+
+    const submitButton = gate.querySelector('button[type="submit"]');
+    submitButton.disabled = true;
+    submitButton.textContent = 'Verifying';
+
+    const privacy = buildPrivacyAcknowledgement();
+    let botCheck = null;
+    try {
+      const botController = await botControllerPromise;
+      botCheck = await botController.execute();
+    } catch (err) {
+      submitButton.disabled = false;
+      submitButton.textContent = 'Send my AI-readiness profile';
+      setError('botCheck', 'Verification could not complete. Please try again.');
+      return;
+    }
+
+    submitButton.textContent = 'Sending profile';
+    const result = await submitProfile({ name, email, company, answers: state.answers, scenario, privacy, botCheck });
+    if (!result.ok) {
+      submitButton.disabled = false;
+      submitButton.textContent = 'Send my AI-readiness profile';
+      if (String(result.error || '').startsWith('bot_check_')) {
+        setError('botCheck', result.error === 'bot_check_unconfigured'
+          ? 'Verification is not configured. Please try again later.'
+          : 'Verification could not complete. Please try again.');
+      } else {
+        const message = result.error === 'privacy_required'
+          ? 'Read and acknowledge the Privacy Notice.'
+          : 'The profile could not be sent. Please try again.';
+        setError('privacy', message);
+      }
+      return;
+    }
+    state.gate = {
+      name,
+      email,
+      privacy,
+      revealUrl: result.revealUrl,
+      pdfUrl: result.pdfUrl,
+      emailSent: result.emailSent,
+      profile: result.profile
+    };
+
+    gate.classList.add('is-submitted');
+    document.body.classList.add('gate-submitted');
+    gate.querySelector('#gateResultCopy').textContent = result.emailSent
+      ? `Done. We have sent the AI-readiness profile to ${email}.`
+      : `Your AI-readiness profile is ready. Email delivery is not configured in this preview, so it has not been sent to ${email}.`;
+    gate.querySelector('#dispatchEmail').textContent = email;
+
+    const existingFallback = gate.querySelector('.gate-fallback-link');
+    if (existingFallback) existingFallback.remove();
+    if (!result.emailSent && result.revealUrl) {
+      const fallbackLink = document.createElement('a');
+      fallbackLink.className = 'gate-fallback-link confirm-btn';
+      fallbackLink.href = result.revealUrl;
+      fallbackLink.textContent = 'Open profile now';
+      gate.querySelector('#gateResult').appendChild(fallbackLink);
+    }
+
+    gate.querySelector('#gateResult').classList.add('is-visible');
+    smoothScrollTo(gate, 0.04);
+  });
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   GLOBAL: ⌘+Enter skips active stream
+   ───────────────────────────────────────────────────────────────────────── */
+
+document.addEventListener('keydown', (e) => {
+  if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+    if (state.activeStream) {
+      e.preventDefault();
+      state.activeStream();
+    }
+  }
+});
+
+/* ─────────────────────────────────────────────────────────────────────────
+   RUNNER
+   ───────────────────────────────────────────────────────────────────────── */
+
+async function run() {
+  stream.innerHTML = '';
+  state.answers = {};
+  document.body.classList.remove('gate-submitted');
+
+  const scenario = getDemoScenario();
+  if (scenario) {
+    state.answers = { ...scenario.answers };
+    showDemoBadge(scenario);
+    await renderGate(scenario);
+    return;
+  }
+
+  for (const step of FLOW) {
+    if (step.kind === 'intro')        await renderIntro();
+    else if (step.kind === 'prepare') await renderPrepare();
+    else if (step.kind === 'pillar')  await renderPillar(step);
+    else if (step.kind === 'q' && step.type === 'single') await renderSingle(step);
+    else if (step.kind === 'q' && step.type === 'multi')  await renderMulti(step);
+    else if (step.kind === 'aphorism') await renderAphorism(step);
+    else if (step.kind === 'reflection') await renderReflection();
+    else if (step.kind === 'reveal')     await renderGate(DEMO_SCENARIOS[selectedDemoKey] || DEMO_SCENARIOS['s-ve']);
+  }
+}
+
+function restartDiagnostic() {
+  // Clear demo param if present so restart goes back to normal flow
+  if (window.location.search.includes('demo=')) {
+    window.location.search = '';
+    return;
+  }
+  run();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   DEMO NAVIGATION  -  temporary review controls
+   ───────────────────────────────────────────────────────────────────────── */
+
+const harnessLaunch = document.getElementById('demoLaunch');
+const harness = document.getElementById('demoHarness');
+const harnessList = document.getElementById('demoList');
+const harnessClose = document.getElementById('demoClose');
+const harnessGate = document.getElementById('demoGate');
+const harnessReveal = document.getElementById('demoReveal');
+const harnessPdf = document.getElementById('demoPdf');
+const harnessSelectedLabel = document.getElementById('demoSelectedLabel');
+let selectedDemoKey = getDemoScenario()?.key || null;
+
+function updateHarnessSelection() {
+  const selected = selectedDemoKey ? DEMO_SCENARIOS[selectedDemoKey] : null;
+  harnessSelectedLabel.textContent = selected ? `Selected: ${selected.label}` : 'Choose a reveal persona';
+  harnessReveal.disabled = !selected;
+  harnessPdf.disabled = !selected;
+  harnessList.querySelectorAll('button[data-scenario]').forEach((btn) => {
+    btn.classList.toggle('is-selected', Boolean(selected) && btn.dataset.scenario === selected.key);
+  });
+}
+
+function buildHarnessUI() {
+  harnessList.innerHTML = '';
+  Object.values(DEMO_SCENARIOS).forEach((scenario) => {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.dataset.scenario = scenario.key;
+    const row = document.createElement('div');
+    row.className = 'demo-row';
+    const key = document.createElement('span');
+    key.className = 'demo-key';
+    key.textContent = scenario.key;
+    const label = document.createElement('span');
+    label.className = 'demo-label';
+    label.textContent = scenario.label;
+    const desc = document.createElement('span');
+    desc.className = 'demo-desc';
+    desc.textContent = scenario.description;
+    row.append(key, label, desc);
+    btn.appendChild(row);
+    btn.addEventListener('click', () => {
+      selectedDemoKey = scenario.key;
+      updateHarnessSelection();
+    });
+    harnessList.appendChild(btn);
+  });
+  updateHarnessSelection();
+}
+buildHarnessUI();
+
+function toggleHarness() {
+  harness.classList.toggle('is-open');
+}
+
+harnessLaunch.addEventListener('click', toggleHarness);
+harnessClose.addEventListener('click', toggleHarness);
+harnessGate.addEventListener('click', () => {
+  const url = new URL(window.location.href);
+  url.searchParams.set('demo', selectedDemoKey || 's-ve');
+  window.location.href = url.toString();
+});
+harnessReveal.addEventListener('click', () => {
+  if (!selectedDemoKey) return;
+  window.location.href = `./reveal/?demo=${encodeURIComponent(selectedDemoKey)}`;
+});
+harnessPdf.addEventListener('click', async () => {
+  if (!selectedDemoKey) return;
+  const scenario = DEMO_SCENARIOS[selectedDemoKey];
+  const originalText = harnessPdf.textContent;
+  harnessPdf.disabled = true;
+  harnessPdf.textContent = 'Building PDF';
+  try {
+    const result = await submitProfile({
+      name: 'Demo Reviewer',
+      email: `demo+${scenario.key}@atelierandavenue.com`,
+      answers: scenario.answers,
+      scenario,
+      privacy: buildPrivacyAcknowledgement()
+    });
+    if (!result.pdfUrl) throw new Error(result.error || 'PDF URL unavailable on this host');
+    window.location.href = result.pdfUrl;
+  } catch (err) {
+    harnessSelectedLabel.textContent = `PDF failed: ${err.message}`;
+  } finally {
+    harnessPdf.disabled = false;
+    harnessPdf.textContent = originalText;
+  }
+});
+
+/* Demo badge  -  shown when running in demo mode */
+function showDemoBadge(scenario) {
+  const badge = document.createElement('div');
+  badge.className = 'demo-badge';
+  badge.append(document.createTextNode('Demo'));
+  const name = document.createElement('span');
+  name.className = 'demo-badge-name';
+  name.textContent = scenario.key;
+  badge.appendChild(name);
+  document.body.appendChild(badge);
+}
+
+run();
+</script>
+</body>
+</html>

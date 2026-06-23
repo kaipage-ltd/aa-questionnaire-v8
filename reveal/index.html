@@ -1,0 +1,1452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'none'; form-action 'self'; object-src 'none'; frame-src 'none'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; connect-src 'self'; font-src 'self' data:; media-src 'none'; worker-src 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta name="referrer" content="no-referrer">
+<meta name="robots" content="noindex, nofollow, noarchive">
+<link rel="icon" href="data:,">
+<title>The AI Readiness Diagnostic</title>
+<script>
+  if (new URLSearchParams(window.location.search).get('demoNav') === '1') {
+    document.documentElement.classList.add('demo-nav-enabled');
+  }
+</script>
+<style>
+  @font-face {
+    font-family: 'Newsreader';
+    font-style: normal;
+    font-weight: 200 800;
+    font-display: swap;
+    src: url('fonts/Newsreader%5Bopsz%2Cwght%5D.ttf') format('truetype-variations');
+  }
+  @font-face {
+    font-family: 'Newsreader';
+    font-style: italic;
+    font-weight: 200 800;
+    font-display: swap;
+    src: url('fonts/Newsreader-Italic%5Bopsz%2Cwght%5D.ttf') format('truetype-variations');
+  }
+  @font-face {
+    font-family: 'Geist Mono';
+    font-style: normal;
+    font-weight: 100 900;
+    font-display: swap;
+    src: url('fonts/GeistMono-Variable.ttf') format('truetype-variations');
+  }
+
+  :root {
+    --paper: #faf8f2;
+    --paper-dim: #f1ede2;
+    --ink: #211d16;
+    --ink-soft: #5b5346;
+    --ink-faint: #9c9382;
+    --rule: #ddd6c6;
+    --dark: #1c1812;
+    --dark-soft: #b8b1a0;
+    --dark-faint: #6f685a;
+    --serif: "Newsreader", "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+    --mono: "Geist Mono", "SF Mono", Menlo, Consolas, monospace;
+  }
+
+  html { font-optical-sizing: auto; }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    height: 100%;
+    background: var(--paper);
+    font-family: var(--serif);
+    -webkit-font-smoothing: antialiased;
+    color: var(--ink);
+    overflow: hidden;
+  }
+
+  html:not(.demo-nav-enabled) .demo-launch,
+  html:not(.demo-nav-enabled) .demo-harness { display: none !important; }
+
+  .stage {
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    height: 100dvh;
+    background: var(--paper);
+    overflow: hidden;
+  }
+
+  .progress {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    gap: 4px;
+    padding: 14px 18px;
+    z-index: 40;
+  }
+  .seg {
+    flex: 1;
+    height: 2px;
+    background: rgba(33, 29, 22, 0.16);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .seg.dark-ctx { background: rgba(250, 248, 242, 0.20); }
+  .seg > i {
+    display: block;
+    height: 100%;
+    width: 0;
+    background: var(--ink);
+    border-radius: 2px;
+    transition: width 240ms ease;
+  }
+  .seg.dark-ctx > i { background: var(--paper); }
+  .seg.done > i,
+  .seg.active > i { width: 100%; }
+
+  .zone {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 32%;
+    z-index: 30;
+    cursor: pointer;
+  }
+  .zone.prev { left: 0; width: 24%; }
+  .zone.next { right: 0; width: 76%; }
+
+  .card {
+    position: absolute;
+    inset: 0;
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: clamp(82px, 10vh, 128px) clamp(36px, 8vw, 112px) clamp(88px, 10vh, 126px);
+    text-align: left;
+  }
+  .card.is-active { display: flex; }
+  .card.dark { background: var(--dark); color: var(--paper); }
+  .card-inner {
+    position: relative;
+    z-index: 2;
+    width: min(100%, 680px);
+  }
+  .card-inner.is-wide { width: min(100%, 760px); }
+
+  /* Image slots (cost + fit cards). Currently filled with authored interim line
+     art in the brand register; the Midjourney photographic assets specified in
+     reveal_illustration_pass_v1.md replace the SVGs with <img> when they land.
+     The card switches to a content-left / image-right layout so copy never runs
+     under the image. */
+  .card.has-visual { align-items: flex-start; }
+  .card.has-visual .card-inner,
+  .card.has-visual .card-inner.is-wide { width: min(56%, 468px); }
+  .visual {
+    position: absolute;
+    z-index: 1;
+    right: clamp(42px, 7vw, 128px);
+    top: 50%;
+    width: min(26vw, 320px);
+    height: min(40vh, 360px);
+    transform: translateY(-50%);
+    pointer-events: none;
+  }
+  .visual svg { width: 100%; height: 100%; display: block; }
+
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: 0.20em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin-bottom: 30px;
+  }
+  .dark .eyebrow { color: var(--dark-faint); }
+  .lede {
+    font-size: 25px;
+    line-height: 1.46;
+    font-weight: 400;
+    color: var(--ink);
+    letter-spacing: 0;
+  }
+  .dark .lede { color: var(--paper); }
+  p.body {
+    font-size: 19px;
+    line-height: 1.62;
+    color: var(--ink-soft);
+    margin-top: 18px;
+  }
+  .dark p.body { color: var(--dark-soft); }
+  .body em, .lede em { font-style: italic; }
+  .body strong, .lede strong { font-weight: 600; color: var(--ink); }
+  .dark .body strong, .dark .lede strong { color: var(--paper); }
+
+  .card.is-active .anim {
+    animation: rise 620ms cubic-bezier(0.22, 0.61, 0.36, 1) both;
+  }
+  .card.is-active .anim.d1 { animation-delay: 90ms; }
+  .card.is-active .anim.d2 { animation-delay: 220ms; }
+  .card.is-active .anim.d3 { animation-delay: 360ms; }
+  /* The held beat: the reframe's conclusion arrives after the setup has landed. */
+  .card.is-active .anim.d4 { animation-delay: 900ms; }
+  @keyframes rise {
+    from { opacity: 0; transform: translateY(14px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .turn-name {
+    font-size: 56px;
+    line-height: 1;
+    font-weight: 400;
+    margin-bottom: 28px;
+  }
+  .num-label {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin-bottom: 18px;
+  }
+  .num {
+    font-size: 220px;
+    line-height: 0.92;
+    font-weight: 500;
+    letter-spacing: 0;
+    font-variant-numeric: tabular-nums;
+  }
+  .num-after {
+    font-size: 20px;
+    line-height: 1.55;
+    color: var(--ink-soft);
+    margin-top: 22px;
+    opacity: 0;
+  }
+  .card.is-active .num-after.show {
+    animation: rise 560ms ease both;
+    animation-delay: 1100ms;
+  }
+  .score-meaning {
+    font-size: 17px;
+    line-height: 1.55;
+    color: var(--ink-faint);
+    margin-top: 16px;
+  }
+  .close-line {
+    font-size: 21px;
+    line-height: 1.5;
+    color: var(--ink);
+    margin-top: 26px;
+  }
+  .score-brief {
+    width: min(100%, 680px);
+    margin: 24px auto 0;
+    text-align: left;
+  }
+  .score-brief.brief-panel {
+    border-color: rgba(221, 214, 198, 0.92);
+  }
+  .score-brief .brief-row {
+    grid-template-columns: 142px minmax(0, 1fr);
+    padding: 9px 0;
+  }
+  .score-brief .brief-value {
+    font-size: 15.4px;
+    line-height: 1.34;
+  }
+  .shape-read-panel {
+    margin-top: 18px;
+  }
+  .shape-read-panel .brief-row {
+    padding: 8px 0;
+  }
+  .shape-read-panel .brief-value {
+    font-size: 15.6px;
+    line-height: 1.34;
+  }
+  .basis-panel {
+    margin-top: 24px;
+  }
+  .basis-panel .brief-row {
+    grid-template-columns: 118px minmax(0, 1fr);
+    padding: 9px 0;
+  }
+  .basis-panel .brief-value {
+    font-size: 15.6px;
+    line-height: 1.36;
+    color: var(--ink-soft);
+  }
+
+  .bars { margin-top: 26px; }
+  .bar-row { margin-bottom: 18px; }
+  .bar-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 7px;
+  }
+  .bar-name {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+  }
+  .bar-val {
+    font-size: 22px;
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+  }
+  .bar-track {
+    height: 3px;
+    background: rgba(33, 29, 22, 0.10);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .bar-fill {
+    height: 100%;
+    width: 0;
+    background: var(--ink);
+    border-radius: 3px;
+  }
+  .bar-row.hurdle .bar-name,
+  .bar-row.hurdle .bar-val { color: var(--ink); }
+  .bar-row.muted .bar-name,
+  .bar-row.muted .bar-val { color: var(--ink-faint); }
+  .bar-row.muted .bar-fill { background: var(--ink-faint); }
+  .card.is-active .bar-fill.go { transition: width 900ms cubic-bezier(0.22, 0.61, 0.36, 1); }
+
+  .receipt {
+    display: grid;
+    grid-template-columns: 38px minmax(0, 1fr);
+    gap: 16px;
+    padding: 14px 0;
+    border-top: 1px solid var(--rule);
+    color: var(--ink);
+  }
+  .receipt:last-of-type { border-bottom: 1px solid var(--rule); }
+  .receipt .rn {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    color: var(--ink-faint);
+    padding-top: 4px;
+    flex: none;
+  }
+  .receipt-prompt {
+    font-family: var(--mono);
+    font-size: 10px;
+    line-height: 1.35;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin-bottom: 6px;
+  }
+  .receipt-answer {
+    font-size: 17px;
+    line-height: 1.38;
+    font-style: italic;
+    color: var(--ink);
+  }
+  .receipt-read {
+    font-size: 16px;
+    line-height: 1.42;
+    color: var(--ink-soft);
+    margin-top: 7px;
+  }
+  .receipt-proof {
+    font-family: var(--mono);
+    font-size: 9.5px;
+    line-height: 1.45;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin-top: 7px;
+  }
+  .brief-panel {
+    margin-top: 24px;
+    border-top: 1px solid var(--rule);
+    border-bottom: 1px solid var(--rule);
+  }
+  .calibration-panel {
+    margin-top: 22px;
+  }
+  .calibration-panel .brief-row {
+    padding: 11px 0;
+  }
+  .calibration-panel .brief-value {
+    font-size: 16.5px;
+    line-height: 1.4;
+  }
+  .constraint-panel {
+    margin-top: 22px;
+  }
+  .constraint-panel .brief-row {
+    padding: 10px 0;
+  }
+  .constraint-panel .brief-value {
+    font-size: 16.2px;
+    line-height: 1.38;
+  }
+  .cost-model-panel,
+  .compound-panel,
+  .implementation-panel {
+    margin-top: 22px;
+  }
+  .cost-model-panel .brief-row,
+  .compound-panel .brief-row,
+  .implementation-panel .brief-row {
+    padding: 10px 0;
+  }
+  .cost-model-panel .brief-value,
+  .compound-panel .brief-value,
+  .implementation-panel .brief-value {
+    font-size: 16.2px;
+    line-height: 1.38;
+  }
+  .brief-row {
+    display: grid;
+    grid-template-columns: 138px minmax(0, 1fr);
+    gap: 18px;
+    padding: 13px 0;
+    border-top: 1px solid rgba(221, 214, 198, 0.72);
+  }
+  .brief-row:first-child { border-top: 0; }
+  .brief-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    line-height: 1.4;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    padding-top: 4px;
+  }
+  .brief-value {
+    font-size: 17px;
+    line-height: 1.45;
+    color: var(--ink);
+  }
+  .brief-row.is-quote .brief-value { font-style: italic; }
+  .output-list {
+    margin-top: 24px;
+    border-top: 1px solid var(--rule);
+    border-bottom: 1px solid var(--rule);
+  }
+  .output-item {
+    display: grid;
+    grid-template-columns: 34px minmax(0, 1fr);
+    gap: 14px;
+    padding: 14px 0;
+    border-top: 1px solid rgba(221, 214, 198, 0.72);
+    font-size: 18px;
+    line-height: 1.45;
+    color: var(--ink);
+  }
+  .output-item:first-child { border-top: 0; }
+  .output-index {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    color: var(--ink-faint);
+    padding-top: 5px;
+  }
+
+  .quote {
+    font-size: 38px;
+    line-height: 1.28;
+    font-style: italic;
+    font-weight: 400;
+    color: var(--paper);
+    margin: 8px 0 0;
+  }
+  .quote .w {
+    display: inline-block;
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  .quote .w.in {
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 260ms ease, transform 320ms cubic-bezier(0.22, 0.61, 0.36, 1);
+  }
+  .quote-mark {
+    font-size: 38px;
+    font-style: italic;
+    color: var(--dark-faint);
+  }
+  .quote-after {
+    font-size: 18px;
+    line-height: 1.6;
+    color: #d8d0be;
+    margin-top: 30px;
+    opacity: 0;
+  }
+  .quote-after.in { opacity: 1; transition: opacity 700ms ease; }
+  .quote-lens {
+    margin-top: 22px;
+    border-color: rgba(250, 248, 242, 0.18);
+    opacity: 0;
+  }
+  .quote-lens.in { opacity: 1; transition: opacity 700ms ease; }
+  .quote-lens .brief-row {
+    border-top-color: rgba(250, 248, 242, 0.13);
+    grid-template-columns: 150px minmax(0, 1fr);
+    padding: 10px 0;
+  }
+  .quote-lens .brief-label {
+    color: var(--dark-faint);
+  }
+  .quote-lens .brief-value {
+    color: #e6decd;
+    font-size: 15.6px;
+    line-height: 1.38;
+  }
+  .reframe-panel {
+    margin-top: 24px;
+    border-color: rgba(250, 248, 242, 0.20);
+  }
+  .reframe-panel .brief-row {
+    border-top-color: rgba(250, 248, 242, 0.14);
+    grid-template-columns: 158px minmax(0, 1fr);
+    padding: 11px 0;
+  }
+  .reframe-panel .brief-label {
+    color: var(--dark-faint);
+  }
+  .reframe-panel .brief-value {
+    color: #e6decd;
+    font-size: 16.2px;
+    line-height: 1.38;
+  }
+  .said {
+    font-size: 21px;
+    font-style: italic;
+    color: var(--ink);
+    padding: 7px 0 7px 18px;
+    border-left: 2px solid var(--ink);
+    margin: 10px 0;
+  }
+  .cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 30px;
+    padding: 17px 30px;
+    background: var(--ink);
+    color: var(--paper);
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    border: none;
+    border-radius: 2px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: transform 180ms ease, box-shadow 180ms ease;
+  }
+  .cta:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 26px rgba(33, 29, 22, 0.22);
+  }
+  .qualifier {
+    font-family: var(--mono);
+    font-size: 11px;
+    line-height: 1.7;
+    letter-spacing: 0.04em;
+    color: var(--ink-faint);
+    margin-top: 22px;
+  }
+  .calendar-panel {
+    display: none;
+    margin-top: 22px;
+    border: 1px solid var(--rule);
+    background: var(--paper-dim);
+    padding: 18px;
+    font-family: var(--mono);
+    font-size: 11px;
+    line-height: 1.6;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+  }
+  .calendar-panel.is-open { display: block; }
+
+  .hint {
+    position: absolute;
+    bottom: 20px;
+    left: 0;
+    right: 0;
+    text-align: center;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    z-index: 35;
+    pointer-events: none;
+  }
+  .hint.on-dark { color: var(--dark-faint); }
+  .beat-tag {
+    position: absolute;
+    top: 34px;
+    right: 22px;
+    font-family: var(--mono);
+    font-size: 9.5px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    z-index: 35;
+  }
+  .beat-tag.on-dark { color: var(--dark-faint); }
+
+  .loading {
+    position: fixed;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    background: var(--paper);
+    z-index: 80;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+  .loading.is-hidden { display: none; }
+
+  .demo-launch {
+    position: fixed;
+    right: 18px;
+    bottom: 18px;
+    z-index: 90;
+    border: 1px solid var(--ink);
+    background: var(--ink);
+    color: var(--paper);
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 10px 12px;
+    cursor: pointer;
+  }
+  .demo-harness {
+    position: fixed;
+    right: 18px;
+    bottom: 58px;
+    z-index: 91;
+    width: min(360px, calc(100vw - 36px));
+    max-height: min(680px, calc(100vh - 90px));
+    overflow: auto;
+    background: var(--paper);
+    border: 1px solid var(--ink);
+    padding: 16px;
+    display: none;
+  }
+  .demo-harness.is-open { display: block; }
+  .demo-harness h2 {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+  .demo-harness button {
+    width: 100%;
+    text-align: left;
+    border: 0;
+    border-top: 1px solid var(--rule);
+    background: transparent;
+    padding: 10px 0;
+    cursor: pointer;
+    font-family: var(--serif);
+    color: var(--ink);
+  }
+  .demo-key {
+    display: block;
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin-bottom: 3px;
+  }
+
+  @media (max-width: 680px) {
+    .progress { padding: 12px 14px; gap: 3px; }
+    .card { padding: 76px 28px 86px; }
+    /* On phones the image slots are hidden and the card returns to full-width copy. */
+    .visual { display: none; }
+    .card.has-visual { align-items: center; }
+    .card.has-visual .card-inner,
+    .card.has-visual .card-inner.is-wide { width: 100%; }
+    .turn-name { font-size: 40px; }
+    .num { font-size: 132px; }
+    .num-after {
+      font-size: 16px;
+      line-height: 1.38;
+      margin-top: 14px;
+    }
+    .score-brief {
+      margin-top: 14px;
+    }
+    .score-brief .brief-row {
+      grid-template-columns: 1fr;
+      gap: 4px;
+      padding: 6px 0;
+    }
+    .score-brief .brief-label {
+      font-size: 8.4px;
+      line-height: 1.2;
+    }
+    .score-brief .brief-value {
+      font-size: 13.3px;
+      line-height: 1.24;
+    }
+    .shape-read-panel {
+      margin-top: 12px;
+    }
+    .shape-read-panel .brief-row {
+      grid-template-columns: 1fr;
+      gap: 4px;
+      padding: 5px 0;
+    }
+    .shape-read-panel .brief-label {
+      font-size: 8.3px;
+      line-height: 1.2;
+    }
+    .shape-read-panel .brief-value {
+      font-size: 13.1px;
+      line-height: 1.23;
+    }
+    .basis-panel {
+      margin-top: 14px;
+    }
+    .basis-panel .brief-row {
+      grid-template-columns: 1fr;
+      gap: 4px;
+      padding: 5px 0;
+    }
+    .basis-panel .brief-label {
+      font-size: 8.4px;
+      line-height: 1.2;
+    }
+    .basis-panel .brief-value {
+      font-size: 13.1px;
+      line-height: 1.24;
+    }
+    .lede { font-size: 21px; }
+    .quote { font-size: 28px; }
+    .quote-after {
+      font-size: 15.5px;
+      line-height: 1.4;
+      margin-top: 20px;
+    }
+    .quote-lens {
+      margin-top: 14px;
+    }
+    .quote-lens .brief-row {
+      grid-template-columns: 1fr;
+      gap: 4px;
+      padding: 7px 0;
+    }
+    .quote-lens .brief-label {
+      font-size: 8.4px;
+      line-height: 1.2;
+    }
+    .quote-lens .brief-value {
+      font-size: 13.3px;
+      line-height: 1.25;
+    }
+    .reframe-panel {
+      margin-top: 16px;
+    }
+    .reframe-panel .brief-row {
+      grid-template-columns: 1fr;
+      gap: 4px;
+      padding: 7px 0;
+    }
+    .reframe-panel .brief-label {
+      font-size: 8.4px;
+      line-height: 1.2;
+    }
+    .reframe-panel .brief-value {
+      font-size: 13.5px;
+      line-height: 1.27;
+    }
+    p.body { font-size: 17px; }
+    .receipt {
+      grid-template-columns: 30px minmax(0, 1fr);
+      gap: 10px;
+      padding: 10px 0;
+    }
+    .receipt .rn {
+      font-size: 9px;
+      padding-top: 3px;
+    }
+    .receipt-prompt {
+      font-size: 8.8px;
+      margin-bottom: 4px;
+    }
+    .receipt-answer {
+      font-size: 14.8px;
+      line-height: 1.3;
+    }
+    .receipt-read {
+      font-size: 14px;
+      line-height: 1.34;
+      margin-top: 5px;
+    }
+    .receipt-proof {
+      font-size: 8px;
+      line-height: 1.32;
+      margin-top: 5px;
+    }
+    .brief-panel, .output-list { margin-top: 18px; }
+    .calibration-panel { margin-top: 16px; }
+    .calibration-panel .brief-row { padding: 7px 0; }
+    .calibration-panel .brief-value {
+      font-size: 14.6px;
+      line-height: 1.3;
+    }
+    .constraint-panel {
+      margin-top: 15px;
+    }
+    .constraint-panel .brief-row {
+      padding: 6px 0;
+    }
+    .constraint-panel .brief-value {
+      font-size: 13.7px;
+      line-height: 1.27;
+    }
+    .cost-model-panel,
+    .compound-panel,
+    .implementation-panel {
+      margin-top: 15px;
+    }
+    .cost-model-panel .brief-row,
+    .compound-panel .brief-row,
+    .implementation-panel .brief-row {
+      padding: 6px 0;
+    }
+    .cost-model-panel .brief-value,
+    .compound-panel .brief-value,
+    .implementation-panel .brief-value {
+      font-size: 13.8px;
+      line-height: 1.28;
+    }
+    .brief-row {
+      grid-template-columns: 1fr;
+      gap: 5px;
+      padding: 8px 0;
+    }
+    .brief-label {
+      font-size: 9px;
+      padding-top: 0;
+    }
+    .brief-value {
+      font-size: 15.5px;
+      line-height: 1.38;
+    }
+    .output-item {
+      grid-template-columns: 28px minmax(0, 1fr);
+      gap: 10px;
+      padding: 11px 0;
+      font-size: 16px;
+      line-height: 1.38;
+    }
+    .cta {
+      margin-top: 20px;
+      padding: 14px 18px;
+      font-size: 10px;
+    }
+    /* The close card carries lede + outputs + character line + CTA; tighten it
+       so the final beat never scrolls on a phone. */
+    .is-close .lede { font-size: 18px; line-height: 1.42; }
+    .is-close .output-item {
+      padding: 8px 0;
+      font-size: 14px;
+      line-height: 1.3;
+    }
+    .is-close .output-list { margin-top: 12px; }
+    .close-line {
+      font-size: 16px;
+      line-height: 1.42;
+      margin-top: 14px;
+    }
+    .is-close .cta { margin-top: 14px; }
+    .qualifier {
+      margin-top: 12px;
+      font-size: 9.5px;
+      line-height: 1.45;
+    }
+    .beat-tag { top: 30px; right: 18px; }
+  }
+</style>
+</head>
+<body>
+<div class="stage" id="stage">
+  <div class="progress" id="progress"></div>
+  <div class="zone prev" id="prev"></div>
+  <div class="zone next" id="next"></div>
+  <div class="beat-tag" id="beatTag"></div>
+  <div id="cards"></div>
+  <div class="hint" id="hint">Tap right to continue - left/right keys</div>
+</div>
+<div class="loading" id="loading">Composing reveal</div>
+
+<button class="demo-launch" type="button" id="demoLaunch">Demo navigation</button>
+<div class="demo-harness" id="demoHarness" aria-label="Reveal demo personas">
+  <h2>Demo navigation</h2>
+  <div id="demoList"></div>
+</div>
+
+<script>
+const params = new URLSearchParams(window.location.search);
+const cardsHost = document.getElementById('cards');
+const progress = document.getElementById('progress');
+const beatTag = document.getElementById('beatTag');
+const hint = document.getElementById('hint');
+const loading = document.getElementById('loading');
+const demoLaunch = document.getElementById('demoLaunch');
+const demoHarness = document.getElementById('demoHarness');
+const demoList = document.getElementById('demoList');
+const PRIVACY_NOTICE_VERSION = '2026-06-04';
+const PRIVACY_NOTICE_URL = '/privacy/';
+let cards = [];
+let segs = [];
+let i = 0;
+let revealIdentity = {};
+let revealHurdle = '';
+
+const DEMO_SCENARIOS = {
+  'c-vi': { label: 'The Dead Reckoner', answers: { Q1: 0, CC: [0], Q2: 3, Q3: 3, Q4: 2, Q5: 3, Q6: 2, Q7: 2, Q8: 2, Q9: 1, Q10: 1, Q11: 2, Q12: 1, Q13: 2, Q14: [0, 1], Q15: 3, Q16: 3, Q17: 2, Q18: 3, SP: [3, 4, 6] } },
+  'c-ve': { label: 'The Sole Hand', answers: { Q1: 0, CC: [0, 1], Q2: 1, Q3: 1, Q4: 2, Q5: 1, Q6: 3, Q7: 3, Q8: 3, Q9: 2, Q10: 1, Q11: 2, Q12: 2, Q13: 1, Q14: [1, 2], Q15: 2, Q16: 2, Q17: 2, Q18: 2, SP: [6, 7, 9] } },
+  'c-co': { label: 'The Patchwork Crew', answers: { Q1: 0, CC: [0, 2], Q2: 1, Q3: 2, Q4: 1, Q5: 1, Q6: 1, Q7: 2, Q8: 1, Q9: 2, Q10: 3, Q11: 3, Q12: 2, Q13: 3, Q14: [1, 2], Q15: 2, Q16: 2, Q17: 2, Q18: 2, SP: [0, 8, 9] } },
+  't-vi': { label: 'The Blind Sprinter', answers: { Q1: 0, CC: [0, 1], Q2: 2, Q3: 3, Q4: 2, Q5: 1, Q6: 1, Q7: 1, Q8: 1, Q9: 1, Q10: 1, Q11: 1, Q12: 2, Q13: 1, Q14: [2, 3, 4], Q15: 1, Q16: 2, Q17: 1, Q18: 1, SP: [0, 1, 2] } },
+  't-ve': { label: 'The Late Caller', answers: { Q1: 1, CC: [0, 1], Q2: 1, Q3: 1, Q4: 1, Q5: 1, Q6: 3, Q7: 2, Q8: 2, Q9: 2, Q10: 1, Q11: 1, Q12: 1, Q13: 2, Q14: [2, 3, 5], Q15: 1, Q16: 2, Q17: 1, Q18: 1, SP: [8, 2] } },
+  't-co': { label: 'The Splitting Pack', answers: { Q1: 1, CC: [0, 1, 3], Q2: 1, Q3: 1, Q4: 1, Q5: 1, Q6: 1, Q7: 1, Q8: 1, Q9: 1, Q10: 3, Q11: 2, Q12: 3, Q13: 2, Q14: [2, 3, 5], Q15: 1, Q16: 2, Q17: 1, Q18: 1, SP: [0, 8, 9] } },
+  's-vi': { label: 'The Flagship on Faith', answers: { Q1: 1, CC: [0, 1, 3, 4], Q2: 2, Q3: 2, Q4: 1, Q5: 1, Q6: 0, Q7: 1, Q8: 0, Q9: 0, Q10: 0, Q11: 1, Q12: 1, Q13: 0, Q14: [4, 5, 6], Q15: 0, Q16: 1, Q17: 0, Q18: 1, SP: [1, 2, 7] } },
+  's-ve': { label: 'The Lagging Tanker', answers: { Q1: 1, CC: [0, 1, 3, 4], Q2: 0, Q3: 0, Q4: 0, Q5: 0, Q6: 2, Q7: 3, Q8: 1, Q9: 2, Q10: 0, Q11: 1, Q12: 1, Q13: 1, Q14: [4, 5, 6, 7], Q15: 0, Q16: 1, Q17: 0, Q18: 1, SP: [3, 4, 7] } },
+  's-co': { label: 'The Scattered Fleet', answers: { Q1: 1, CC: [0, 1, 2, 3, 4], Q2: 0, Q3: 1, Q4: 0, Q5: 1, Q6: 0, Q7: 1, Q8: 1, Q9: 0, Q10: 2, Q11: 2, Q12: 3, Q13: 3, Q14: [4, 5, 6, 7], Q15: 0, Q16: 1, Q17: 0, Q18: 1, SP: [0, 9, 10] } }
+};
+
+function el(tag, className, text) {
+  const node = document.createElement(tag);
+  if (className) node.className = className;
+  if (text !== undefined) node.textContent = text;
+  return node;
+}
+
+function p(className, text, delay) {
+  const node = el('p', className, text);
+  if (delay) node.classList.add(delay);
+  return node;
+}
+
+function buildBriefPanel(rows, className) {
+  const panel = el('div', `brief-panel${className ? ` ${className}` : ''}`);
+  (rows || []).forEach((row) => {
+    const item = el('div', `brief-row${/clue|quote/i.test(row.label || '') ? ' is-quote' : ''}`);
+    item.append(el('div', 'brief-label', row.label));
+    item.append(el('div', 'brief-value', row.value));
+    panel.append(item);
+  });
+  return panel;
+}
+
+function buildOutputList(outputs, className) {
+  const list = el('div', `output-list${className ? ` ${className}` : ''}`);
+  (outputs || []).forEach((output, index) => {
+    const item = el('div', 'output-item');
+    item.append(el('div', 'output-index', `0${index + 1}`));
+    item.append(el('div', null, output));
+    list.append(item);
+  });
+  return list;
+}
+
+// Interim authored line art for the two image slots, drawn in the reveal's own
+// palette. Each piece follows the direction in reveal_illustration_pass_v1.md
+// (the Midjourney brief): the closing light band (Velocity), the frosted pane
+// (Visibility), the diverging plates (Coherence), the corridor door (fit). When
+// the photographic assets land, ART entries become <img> swaps, nothing else
+// changes.
+const ART = {
+  'cost-velocity': `
+    <svg viewBox="0 0 320 360" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <defs><filter id="bladeglow" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="6"/></filter></defs>
+      <rect width="320" height="360" fill="#eae4d4"/>
+      <rect width="320" height="360" fill="#211d16" opacity="0.05"/>
+      <rect x="0" y="300" width="320" height="60" fill="#211d16" opacity="0.08"/>
+      <line x1="0" y1="300" x2="320" y2="300" stroke="#b8b1a0" stroke-width="1"/>
+      <line x1="80" y1="0" x2="80" y2="300" stroke="#211d16" opacity="0.1" stroke-width="1"/>
+      <line x1="160" y1="0" x2="160" y2="300" stroke="#211d16" opacity="0.1" stroke-width="1"/>
+      <polygon points="224,180 240,180 142,300 52,300" fill="#f6efdd" opacity="0.55" filter="url(#bladeglow)"/>
+      <polygon points="225,180 234,180 116,300 72,300" fill="#fdfaf1"/>
+      <rect x="222" y="36" width="14" height="146" fill="#fdfaf1"/>
+      <rect x="222" y="36" width="14" height="146" stroke="#9c9382" stroke-width="1" opacity="0.6"/>
+      <circle cx="48" cy="84" r="1.6" fill="#211d16" opacity="0.16"/>
+      <circle cx="120" cy="84" r="1.6" fill="#211d16" opacity="0.16"/>
+      <circle cx="48" cy="216" r="1.6" fill="#211d16" opacity="0.16"/>
+      <circle cx="120" cy="216" r="1.6" fill="#211d16" opacity="0.16"/>
+    </svg>`,
+  'cost-visibility': `
+    <svg viewBox="0 0 320 360" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <defs><filter id="frost" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="8"/></filter></defs>
+      <rect width="320" height="360" fill="#f1ede2"/>
+      <line x1="0" y1="300" x2="320" y2="300" stroke="#ddd6c6" stroke-width="1"/>
+      <g filter="url(#frost)">
+        <rect x="118" y="150" width="104" height="104" fill="#211d16" opacity="0.22"/>
+        <polygon points="118,150 140,128 244,128 222,150" fill="#211d16" opacity="0.14"/>
+      </g>
+      <rect x="58" y="58" width="204" height="242" fill="#ffffff" opacity="0.42"/>
+      <rect x="58" y="58" width="204" height="242" stroke="#9c9382" stroke-width="1" opacity="0.6"/>
+      <line x1="86" y1="288" x2="176" y2="70" stroke="#ffffff" stroke-width="1.4" opacity="0.5"/>
+      <rect x="58" y="300" width="204" height="5" fill="#211d16" opacity="0.07"/>
+    </svg>`,
+  'cost-coherence': `
+    <svg viewBox="0 0 320 360" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <rect width="320" height="360" fill="#f1ede2"/>
+      <line x1="0" y1="56" x2="320" y2="56" stroke="#ddd6c6" stroke-width="1"/>
+      <polygon points="150,332 166,332 230,56 102,56" fill="#f6efdd" opacity="0.55"/>
+      <polygon points="138,332 150,332 102,56 86,56" fill="#211d16" opacity="0.62"/>
+      <polygon points="166,332 178,332 246,56 230,56" fill="#211d16" opacity="0.5"/>
+      <polygon points="128,332 138,332 86,56 76,56" fill="#211d16" opacity="0.12"/>
+      <polygon points="178,332 188,332 256,56 246,56" fill="#211d16" opacity="0.1"/>
+      <line x1="0" y1="332" x2="320" y2="332" stroke="#211d16" opacity="0.1" stroke-width="1"/>
+    </svg>`,
+  'fit-door': `
+    <svg viewBox="0 0 320 360" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <defs><filter id="doorglow" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="12"/></filter></defs>
+      <rect width="320" height="360" fill="#f1ede2"/>
+      <polygon points="0,0 132,96 132,200 0,360" fill="#211d16" opacity="0.055"/>
+      <polygon points="320,0 188,96 188,200 320,360" fill="#211d16" opacity="0.085"/>
+      <rect x="124" y="88" width="72" height="120" fill="#f6efdd" filter="url(#doorglow)" opacity="0.85"/>
+      <polygon points="132,200 188,200 256,360 64,360" fill="#f6efdd" opacity="0.4"/>
+      <polygon points="138,200 182,200 224,360 96,360" fill="#fbf6e8" opacity="0.7"/>
+      <rect x="132" y="96" width="56" height="104" fill="#fbf6e8"/>
+      <rect x="132" y="96" width="56" height="104" stroke="#9c9382" stroke-width="1" opacity="0.5"/>
+      <line x1="0" y1="0" x2="132" y2="96" stroke="#9c9382" stroke-width="1" opacity="0.35"/>
+      <line x1="320" y1="0" x2="188" y2="96" stroke="#9c9382" stroke-width="1" opacity="0.35"/>
+      <line x1="0" y1="360" x2="132" y2="200" stroke="#9c9382" stroke-width="1" opacity="0.35"/>
+      <line x1="320" y1="360" x2="188" y2="200" stroke="#9c9382" stroke-width="1" opacity="0.35"/>
+    </svg>`
+};
+
+function buildVisual(type) {
+  const node = el('div', 'visual');
+  node.innerHTML = ART[type] || '';
+  return node;
+}
+
+function visualTypeFor(card) {
+  if (card.type === 'cost') {
+    const variant = `cost-${String(revealHurdle || 'velocity').toLowerCase()}`;
+    return ART[variant] ? variant : 'cost-velocity';
+  }
+  if (card.type === 'fit') return 'fit-door';
+  return undefined;
+}
+
+// Renders an authored multi-line body in full: first line as the lede, the rest
+// as staggered body paragraphs. Several cards previously rendered only the first
+// two lines and silently dropped the strongest authored copy; every prose card
+// goes through here so that cannot happen again (see reveal_player_guard.test.js).
+function appendProse(inner, lines, { skipLede = false } = {}) {
+  const clean = (lines || []).map((line) => String(line || '').trim()).filter(Boolean);
+  clean.forEach((line, index) => {
+    if (index === 0 && !skipLede) {
+      inner.append(p('lede anim d1', line));
+    } else {
+      inner.append(p(`body anim d${Math.min(3, index + 1)}`, line));
+    }
+  });
+}
+
+function buildCard(card) {
+  const section = el('section', `card is-${card.type}${card.dark ? ' dark' : ''}`);
+  section.dataset.beat = card.beat || '';
+  if (card.peak) section.dataset.peak = card.peak;
+  const visualType = visualTypeFor(card);
+  if (visualType) {
+    section.classList.add('has-visual');
+    section.append(buildVisual(visualType));
+  }
+  const inner = el('div', 'card-inner');
+  if (['turn', 'number', 'shape', 'hurdle', 'receipts', 'gap', 'reframe', 'cost', 'widening', 'surface', 'firstMove', 'fit', 'close'].includes(card.type)) inner.classList.add('is-wide');
+  section.appendChild(inner);
+
+  if (card.type === 'turn') {
+    inner.append(el('div', 'eyebrow anim', card.eyebrow));
+    inner.append(el('div', 'turn-name anim d1', card.nameLine));
+    inner.append(p('lede anim d2', card.lede));
+    inner.append(p('body anim d3', card.body));
+    // One human sentence acknowledging seat and footprint. The analyst basis
+    // table stays in the payload (PDF, tests) but never renders here.
+    if (card.contextLine) inner.append(p('body anim d3', card.contextLine));
+  } else if (card.type === 'number') {
+    inner.style.textAlign = 'center';
+    inner.append(el('div', 'num-label anim', card.label));
+    const num = el('div', 'num', '0');
+    num.dataset.target = String(card.score);
+    inner.append(num);
+    inner.append(p('num-after', card.after));
+    // One quiet meaning line only. The full interpretation table pre-empted the
+    // shape card ("the next card shows you which way") and buried the number.
+    const meaning = (card.interpretation || []).find((row) => row.label === 'What it means');
+    if (meaning) inner.append(p('num-after score-meaning', meaning.value));
+  } else if (card.type === 'shape') {
+    inner.append(el('div', 'eyebrow anim', card.eyebrow));
+    inner.append(p('lede anim d1', card.lede));
+    const bars = el('div', 'bars anim d2');
+    card.pillars.forEach((pillar) => {
+      const row = el('div', `bar-row ${pillar.role === 'hurdle' ? 'hurdle' : pillar.role === 'normal' ? 'muted' : ''}`.trim());
+      const head = el('div', 'bar-head');
+      head.append(el('span', 'bar-name', `${pillar.label}${pillar.role === 'hurdle' ? ' - your hurdle' : ''}`));
+      head.append(el('span', 'bar-val', String(pillar.value)));
+      const track = el('div', 'bar-track');
+      const fill = el('div', 'bar-fill');
+      fill.dataset.v = String(pillar.value);
+      track.append(fill);
+      row.append(head, track);
+      bars.append(row);
+    });
+    inner.append(bars);
+    if (card.shapeRead?.length) {
+      inner.append(buildBriefPanel(card.shapeRead, 'shape-read-panel anim d3'));
+    } else {
+      inner.append(p('body anim d3', card.body));
+    }
+  } else if (card.type === 'hurdle') {
+    inner.append(el('div', 'eyebrow anim', card.eyebrow));
+    inner.append(p('lede anim d1', card.lede));
+    if (card.anatomy?.length) {
+      inner.append(buildBriefPanel(card.anatomy, 'constraint-panel anim d2'));
+    } else {
+      inner.append(p('body anim d2', card.body));
+    }
+    inner.append(p('body anim d3', card.close));
+  } else if (card.type === 'receipts') {
+    inner.append(el('div', 'eyebrow anim', card.eyebrow));
+    inner.append(p('lede anim d1', card.lede));
+    const wrap = el('div', 'anim d2');
+    wrap.style.marginTop = '22px';
+    const rows = card.evidence?.length ? card.evidence : (card.receipts || []);
+    rows.forEach((receipt, index) => {
+      const row = el('div', 'receipt');
+      row.append(el('span', 'rn', `0${index + 1}`));
+      if (typeof receipt === 'string') {
+        row.append(el('span', 'receipt-read', receipt));
+      } else {
+        // No raw question IDs (respondents never saw "Q6") and no proof line —
+        // the proves text restated the read line above it at 9px.
+        const body = el('div', 'receipt-body');
+        body.append(el('div', 'receipt-prompt', receipt.prompt || 'Evidence'));
+        body.append(el('div', 'receipt-answer', receipt.answer || ''));
+        body.append(el('div', 'receipt-read', receipt.read || ''));
+        row.append(body);
+      }
+      wrap.append(row);
+    });
+    inner.append(wrap);
+    inner.append(p('body anim d3', card.tail));
+  } else if (card.type === 'quote') {
+    inner.append(el('div', 'eyebrow anim', card.eyebrow));
+    const quote = el('div', 'quote');
+    quote.dataset.quote = card.quote;
+    quote.setAttribute('aria-label', card.quote);
+    quote.append(el('span', 'quote-mark', '"'));
+    quote.append(el('span', 'quote-words'));
+    quote.append(el('span', 'quote-mark', '"'));
+    inner.append(quote);
+    inner.append(p('quote-after', card.implication));
+    if (card.lens?.length) inner.append(buildBriefPanel(card.lens, 'quote-lens'));
+  } else if (card.type === 'gap') {
+    inner.append(el('div', 'eyebrow anim', card.eyebrow));
+    inner.append(p('lede anim d1', card.lede));
+    if (card.calibration?.length) {
+      inner.append(buildBriefPanel(card.calibration, 'calibration-panel anim d2'));
+    } else {
+      const named = el('div', 'anim d2');
+      (card.named || []).forEach((line) => named.append(el('div', 'said', line)));
+      inner.append(named);
+    }
+    // The turn lands alone for divergent profiles (body is empty there: the
+    // calibration rows already carry the decoy and the measured signal).
+    inner.append(p('body anim d3', card.body ? `${card.turn} ${card.body}` : card.turn));
+  } else if (card.type === 'cost') {
+    inner.append(el('div', 'eyebrow anim', card.eyebrow));
+    appendProse(inner, card.body?.length ? card.body : ['Picture the cost inside one real operating cycle.']);
+    // Only the rows that add to the scene; Loss unit and Business consequence
+    // restated the scene's own payoff lines in table form. Your number hands the
+    // respondent the gross-margin calculation the scene cannot do for them.
+    const modelRows = (card.model || []).filter((row) => ['Where it hides', 'Your number', 'Track next'].includes(row.label));
+    if (modelRows.length) inner.append(buildBriefPanel(modelRows, 'cost-model-panel anim d3'));
+  } else if (card.type === 'widening') {
+    inner.append(el('div', 'eyebrow anim', card.eyebrow));
+    appendProse(inner, card.body?.length ? card.body : ['And it is getting more expensive.']);
+    // If ignored is the one row the prose does not already say.
+    const compoundRows = (card.compounders || []).filter((row) => row.label === 'If ignored');
+    if (compoundRows.length) inner.append(buildBriefPanel(compoundRows, 'compound-panel anim d3'));
+  } else if (card.type === 'surface') {
+    inner.append(el('div', 'eyebrow anim', card.eyebrow));
+    // Full prose including the promise line ("What good looks like for you...")
+    // and the test. The implementation table stays payload-only: its rows
+    // pre-empted card 12 nearly word for word.
+    appendProse(inner, card.body?.length ? card.body : ['Here is what fixing it does not mean.']);
+  } else if (card.type === 'reframe') {
+    inner.append(el('div', 'eyebrow anim', card.eyebrow));
+    const lines = card.body || [];
+    if (card.lede) inner.append(p('lede anim d1', card.lede));
+    if (card.logic?.length) {
+      if (lines[0]) inner.append(p('body anim d2', lines[0]));
+      inner.append(buildBriefPanel(card.logic, 'reframe-panel anim d3'));
+    } else {
+      // The conclusion ("you are running last month's business...") holds back
+      // on d4 so the realization arrives as its own beat.
+      lines.forEach((line, index) => {
+        const isLast = index === lines.length - 1 && lines.length > 1;
+        const delay = isLast ? 'd4' : `d${Math.min(3, index + 1)}`;
+        inner.append(p(index === 0 && !card.lede ? 'lede anim d1' : `body anim ${delay}`, line));
+      });
+    }
+  } else if (card.type === 'firstMove') {
+    inner.append(el('div', 'eyebrow anim', card.eyebrow));
+    const lines = card.body || [];
+    inner.append(p('lede anim d1', lines[0] || card.actionPlan?.headline || 'Build the first useful artefact.'));
+    if (card.brief?.length) {
+      inner.append(buildBriefPanel(card.brief, 'anim d2'));
+    } else {
+      lines.slice(1).forEach((line, index) => inner.append(p(`body anim d${Math.min(3, index + 2)}`, line)));
+    }
+  } else if (card.type === 'fit' || card.type === 'close') {
+    inner.append(el('div', 'eyebrow anim', card.eyebrow));
+    inner.append(p('lede anim d1', card.lede));
+    if (card.body && card.type === 'fit' && !card.brief?.length) inner.append(p('body anim d2', card.body));
+    if (card.type === 'fit' && card.brief?.length) inner.append(buildBriefPanel(card.brief, 'anim d3'));
+    if (card.type === 'close' && card.outputs?.length) inner.append(buildOutputList(card.outputs, 'anim d3'));
+    // The character close line is the peak-end beat the whole reveal builds to;
+    // it lands after the outputs, right before the door.
+    if (card.type === 'close' && card.body) inner.append(p('close-line anim d3', card.body));
+    const ctaWrap = el('div', 'anim d3');
+    const cta = el('button', 'cta', `${card.button} ->`);
+    cta.type = 'button';
+    cta.addEventListener('click', () => openCalendar(ctaWrap, card.calendarUrl));
+    ctaWrap.append(cta);
+    if (card.qualifier) ctaWrap.append(p('qualifier', card.qualifier));
+    const panel = el('div', 'calendar-panel', 'Booking opens here once the scheduling link is connected.');
+    ctaWrap.append(panel);
+    inner.append(ctaWrap);
+  }
+  return section;
+}
+
+function openCalendar(wrap, url) {
+  // A real scheduling URL opens in a new tab (prefilled) so the reveal stays open behind it.
+  // Until one is wired, the in-flow panel explains the booking step rather than dead-ending.
+  if (url && /^https?:\/\//i.test(url)) {
+    window.open(withInvitee(url), '_blank', 'noopener');
+    return;
+  }
+  wrap.querySelector('.calendar-panel').classList.add('is-open');
+}
+
+function withInvitee(url) {
+  try {
+    const u = new URL(url);
+    if (revealIdentity.name) u.searchParams.set('name', revealIdentity.name);
+    if (revealIdentity.email) u.searchParams.set('email', revealIdentity.email);
+    return u.toString();
+  } catch (err) {
+    return url;
+  }
+}
+
+function mount(nextCards) {
+  cards = nextCards;
+  cardsHost.innerHTML = '';
+  progress.innerHTML = '';
+  segs = [];
+  cards.forEach((card) => {
+    cardsHost.append(buildCard(card));
+    const seg = el('div', 'seg');
+    seg.append(document.createElement('i'));
+    progress.append(seg);
+    segs.push(seg);
+  });
+  i = 0;
+  loading.classList.add('is-hidden');
+  render();
+}
+
+function render() {
+  const sections = Array.from(document.querySelectorAll('.card'));
+  sections.forEach((card, index) => card.classList.toggle('is-active', index === i));
+  const card = sections[i];
+  const dark = card?.classList.contains('dark');
+  segs.forEach((seg, index) => {
+    seg.classList.toggle('done', index < i);
+    seg.classList.toggle('active', index === i);
+    seg.classList.toggle('dark-ctx', dark);
+  });
+  const data = cards[i] || {};
+  // Position only. The internal funnel labels (Problem / Agitation / Peak) are not
+  // client-facing language and reading them breaks the spell of the reveal.
+  beatTag.textContent = `${String(i + 1).padStart(2, '0')} / ${String(cards.length).padStart(2, '0')}`;
+  beatTag.classList.toggle('on-dark', dark);
+  hint.classList.toggle('on-dark', dark);
+  hint.style.opacity = i >= cards.length - 1 ? '0' : i === 0 ? '1' : '0.7';
+  runCardMotion(card);
+}
+
+function runCardMotion(card) {
+  const num = card?.querySelector('.num');
+  if (num) {
+    const afterItems = Array.from(card.querySelectorAll('.num-after'));
+    const target = Number(num.dataset.target || 0);
+    afterItems.forEach((after) => after.classList.remove('show'));
+    num.textContent = '0';
+    const t0 = performance.now();
+    const dur = 950;
+    const step = (now) => {
+      const pct = Math.min(1, (now - t0) / dur);
+      const eased = 1 - Math.pow(1 - pct, 3);
+      num.textContent = String(Math.round(eased * target));
+      if (pct < 1) requestAnimationFrame(step);
+      else {
+        num.textContent = String(target);
+        afterItems.forEach((after) => after.classList.add('show'));
+      }
+    };
+    requestAnimationFrame(step);
+  }
+  const bars = card?.querySelectorAll('.bar-fill') || [];
+  if (bars.length) {
+    bars.forEach((bar) => {
+      bar.classList.remove('go');
+      bar.style.width = '0';
+    });
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      bars.forEach((bar) => {
+        bar.classList.add('go');
+        bar.style.width = `${bar.dataset.v}%`;
+      });
+    }));
+  }
+  const quote = card?.querySelector('.quote');
+  if (quote) {
+    const wordsHost = quote.querySelector('.quote-words');
+    const after = card.querySelector('.quote-after');
+    const lens = card.querySelector('.quote-lens');
+    after.classList.remove('in');
+    if (lens) lens.classList.remove('in');
+    wordsHost.innerHTML = '';
+    const words = String(quote.dataset.quote || '').split(/\s+/);
+    words.forEach((word, index) => {
+      const span = el('span', 'w', word);
+      wordsHost.append(span);
+      if (index < words.length - 1) wordsHost.append(document.createTextNode(' '));
+    });
+    const spans = wordsHost.querySelectorAll('.w');
+    spans.forEach((span, index) => setTimeout(() => span.classList.add('in'), 520 + index * 55));
+    const afterDelay = 520 + spans.length * 55 + 700;
+    setTimeout(() => after.classList.add('in'), afterDelay);
+    if (lens) setTimeout(() => lens.classList.add('in'), afterDelay + 520);
+  }
+}
+
+function go(index) {
+  const next = Math.max(0, Math.min(cards.length - 1, index));
+  if (next === i) return;
+  i = next;
+  render();
+}
+
+async function loadToken(token) {
+  const res = await fetch(`/api/v8/reveal?token=${encodeURIComponent(token)}`);
+  const body = await res.json();
+  if (!res.ok || !body.ok) throw new Error(body.error || 'Reveal failed');
+  revealIdentity = { name: body.reveal.name || '', email: body.reveal.email || '' };
+  revealHurdle = body.reveal.hurdle || '';
+  document.title = `${body.reveal.characterName} - AI Readiness Diagnostic`;
+  mount(body.reveal.cards);
+}
+
+async function loadDemo(key) {
+  const scenario = DEMO_SCENARIOS[key] || DEMO_SCENARIOS['t-ve'];
+  const res = await fetch('/api/v8/submit', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({
+      name: 'James',
+      email: `demo+${key}@atelierandavenue.com`,
+      answers: scenario.answers,
+      privacy: {
+        accepted: true,
+        version: PRIVACY_NOTICE_VERSION,
+        noticeUrl: PRIVACY_NOTICE_URL
+      }
+    })
+  });
+  const body = await res.json();
+  if (!res.ok || !body.ok) throw new Error(body.error || 'Demo submit failed');
+  await loadToken(new URL(body.revealUrl).searchParams.get('token'));
+}
+
+function buildDemoHarness() {
+  demoList.innerHTML = '';
+  Object.entries(DEMO_SCENARIOS).forEach(([key, scenario]) => {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.innerHTML = `<span class="demo-key">${key}</span>${scenario.label}`;
+    button.addEventListener('click', () => {
+      loading.classList.remove('is-hidden');
+      demoHarness.classList.remove('is-open');
+      loadDemo(key).catch(showError);
+    });
+    demoList.append(button);
+  });
+}
+
+function showError(err) {
+  const code = err && err.message;
+  loading.textContent = (code === 'invalid_token' || code === 'missing_token')
+    ? 'This profile link is no longer valid. Ask A+A for a fresh copy.'
+    : 'We could not open this profile. Please use your A+A invitation link.';
+  loading.classList.remove('is-hidden');
+}
+
+function showNeutral() {
+  loading.textContent = 'Open your profile from your A+A invitation link.';
+  loading.classList.remove('is-hidden');
+}
+
+document.getElementById('next').addEventListener('click', () => go(i + 1));
+document.getElementById('prev').addEventListener('click', () => go(i - 1));
+document.addEventListener('keydown', (event) => {
+  if (event.key === 'ArrowRight' || event.key === ' ') {
+    event.preventDefault();
+    go(i + 1);
+  }
+  if (event.key === 'ArrowLeft') {
+    event.preventDefault();
+    go(i - 1);
+  }
+});
+demoLaunch.addEventListener('click', () => demoHarness.classList.toggle('is-open'));
+buildDemoHarness();
+
+const token = params.get('token');
+const demoKey = params.get('demo');
+const demoNavOn = params.get('demoNav') === '1';
+if (token) loadToken(token).catch(showError);
+// Demo only runs on explicit opt-in (?demo=… or ?demoNav=1). A bare, tokenless /reveal/
+// no longer auto-submits a demo (which would mint a Brevo contact); it shows a neutral state.
+else if (demoKey || demoNavOn) loadDemo(demoKey || 't-ve').catch(showError);
+else showNeutral();
+</script>
+</body>
+</html>

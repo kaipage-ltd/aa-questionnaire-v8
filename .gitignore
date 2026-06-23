@@ -1,0 +1,16 @@
+.env
+.env.local
+.vercel
+node_modules
+npm-debug.log*
+scripts/output/
+.vercel.preview-project
+
+# Internal working docs — kept local, not in the deploy repo
+/BREVO_*
+/DNS_*
+/REVEAL_*
+/LAUNCH_CHECKLIST.md
+/CONTEXT.md
+/reveal_value_audit_*.md
+/security-audit-*.html
