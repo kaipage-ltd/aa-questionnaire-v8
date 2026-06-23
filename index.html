@@ -656,6 +656,85 @@
     stroke-width: 1.35;
   }
 
+  /* Between-question brand breath  -  the A+A + mark, quiet, replaces the plain rule */
+  .q-break {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 18px;
+    margin: 30px 0;
+    opacity: 0;
+    transform: scaleX(0.5);
+    transform-origin: center;
+    transition: opacity 620ms var(--ease-out), transform 820ms var(--ease-out);
+  }
+  .q-break.is-in { opacity: 1; transform: none; }
+  .q-break-line {
+    height: 1px;
+    width: min(120px, 22vw);
+    background: linear-gradient(90deg, transparent, var(--rule), transparent);
+  }
+  .q-break-mark {
+    width: 11px;
+    height: 11px;
+    flex: none;
+    color: var(--ink-whisper);
+    fill: currentColor;
+  }
+
+  /* Per-question pillar progress  -  editorial pillar rail, not a SaaS bar.
+     Rides in-flow at the head of every question; never sticky. */
+  .pillar-rail {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    row-gap: 6px;
+    margin: 0 0 20px;
+  }
+  .pillar-rail-item {
+    font-family: var(--mono);
+    font-size: 9.5px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--ink-whisper);
+    white-space: nowrap;
+    padding-bottom: 3px;
+    transition: color 400ms var(--ease-out);
+  }
+  .pillar-rail-item.is-done { color: var(--ink-faint); }
+  .pillar-rail-item.is-current {
+    color: var(--ink);
+    font-weight: 500;
+    border-bottom: 1px solid var(--ink);
+  }
+  .pillar-rail-sep {
+    width: 16px;
+    height: 1px;
+    margin: 0 10px;
+    background: var(--rule-soft);
+    flex: none;
+  }
+
+  /* Back-navigation  -  quiet "change this answer" affordance */
+  .answer-edit { margin-top: 16px; }
+  .answer-edit-btn {
+    background: none;
+    border: none;
+    padding: 0 0 2px;
+    cursor: pointer;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--ink-whisper);
+    border-bottom: 1px solid var(--rule);
+    transition: color 300ms var(--ease-out), border-color 300ms var(--ease-out);
+  }
+  .answer-edit-btn:hover {
+    color: var(--ink-soft);
+    border-bottom-color: var(--ink-soft);
+  }
+
   /* Domain map  -  editorial progress, not a progress bar */
   .domain-map {
     margin: 30px 0 30px;
@@ -1612,6 +1691,24 @@
   .aphorism-stage .domain-map { margin-top: 30px; }
   .aphorism-stage.is-in { opacity: 1; transform: none; }
   .aphorism-stage.is-out { opacity: 0; transition-duration: 700ms; }
+  /* Section-complete beat  -  persists on scroll-up, framed as a milestone */
+  .aphorism-stage.is-section {
+    padding: 36px 0 8px;
+    border-top: 1px solid var(--rule-soft);
+  }
+  .aphorism-mark {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  .aphorism-mark .tick {
+    color: var(--ink);
+    margin-right: 8px;
+  }
 
   /* Byline credit on reveal */
   .byline {
@@ -2564,10 +2661,53 @@ streamRO.observe(stream);
 window.addEventListener('resize', updateBottomSpace);
 
 async function appendRule() {
-  const r = el('hr', 'rule');
+  // The A+A "+" architectural mark as a quiet brand breath between questions,
+  // flanked by faint hairlines. Replaces the old plain <hr>.
+  const r = el('div', 'q-break');
+  r.setAttribute('aria-hidden', 'true');
+  r.innerHTML = `
+    <span class="q-break-line"></span>
+    <svg class="q-break-mark" viewBox="0 0 52 52"><rect x="0" y="20.8" width="52" height="10.4"></rect><rect x="20.8" y="0" width="10.4" height="52"></rect></svg>
+    <span class="q-break-line"></span>
+  `;
   stream.appendChild(r);
   await fadeIn(r, 60);
   return r;
+}
+
+/* Per-question pillar progress  -  the four scored pillars as an editorial rail.
+   Intake steps (Role / Channel Context) show all four as upcoming; Self-Perception
+   shows all four complete. Never sticky; rides in-flow at the head of the question. */
+function railIndexFor(pillar) {
+  const i = DOMAIN_SEQUENCE.indexOf(pillar);
+  if (i >= 0) return i;
+  if (pillar === 'Self-Perception') return DOMAIN_SEQUENCE.length;
+  return -1;
+}
+function renderPillarRail(pillar) {
+  const rail = el('div', 'pillar-rail');
+  rail.setAttribute('aria-hidden', 'true');
+  const cur = railIndexFor(pillar);
+  DOMAIN_SEQUENCE.forEach((domain, i) => {
+    if (i > 0) rail.appendChild(el('span', 'pillar-rail-sep'));
+    const cls = i < cur ? 'is-done' : i === cur ? 'is-current' : '';
+    rail.appendChild(el('span', `pillar-rail-item ${cls}`.trim(), domain));
+  });
+  return rail;
+}
+
+/* Back-navigation  -  a quiet in-place "change this answer" affordance on every
+   answered question, so a respondent can scroll up and revise. Editorial, not a
+   SaaS undo bar. The re-pick updates state.answers in place; the linear flow is
+   untouched (scoring reads state.answers at submit). */
+function attachAnswerEdit(block, onEdit) {
+  const row = el('div', 'answer-edit');
+  const btn = el('button', 'answer-edit-btn', 'Change this answer');
+  btn.type = 'button';
+  row.appendChild(btn);
+  block.appendChild(row);
+  btn.addEventListener('click', () => onEdit());
+  return row;
 }
 
 /* ─────────────────────────────────────────────────────────────────────────
@@ -2907,8 +3047,16 @@ async function renderPrepare() {
    ───────────────────────────────────────────────────────────────────────── */
 
 async function renderAphorism({ text, current }) {
-  const node = el('div', current ? 'aphorism-stage' : 'aphorism');
+  const node = el('div', current ? 'aphorism-stage is-section' : 'aphorism');
   if (current) {
+    // Name the section that was just completed, so this reads as a milestone
+    // beat that stays legible on scroll-up (Saverio: these disappeared too fast).
+    const doneName = DOMAIN_SEQUENCE[DOMAIN_SEQUENCE.indexOf(current) - 1];
+    if (doneName) {
+      const mark = el('div', 'aphorism-mark');
+      mark.innerHTML = `<span class="tick">+</span>${escapeHtml(doneName)} complete`;
+      node.appendChild(mark);
+    }
     node.appendChild(el('div', 'aphorism', text));
     const domainMap = renderDomainMap({ current, compact: true });
     domainMap.classList.add('is-in');
@@ -2917,12 +3065,18 @@ async function renderAphorism({ text, current }) {
     node.textContent = text;
   }
   stream.appendChild(node);
-  smoothScrollTo(node, 0.4);
+  smoothScrollTo(node, 0.32);
   await wait(reduceMotion ? 50 : 200);
   requestAnimationFrame(() => node.classList.add('is-in'));
-  await wait(reduceMotion ? 200 : 1800);
-  node.classList.add('is-out');
-  await wait(reduceMotion ? 100 : 700);
+  if (current) {
+    // Hold longer, then advance WITHOUT fading out: the section-complete beat
+    // must remain visible when the user scrolls back up.
+    await wait(reduceMotion ? 240 : 2600);
+  } else {
+    await wait(reduceMotion ? 200 : 1800);
+    node.classList.add('is-out');
+    await wait(reduceMotion ? 100 : 700);
+  }
 }
 
 /* ─────────────────────────────────────────────────────────────────────────
@@ -2953,6 +3107,7 @@ async function renderPillar({ pillar }) {
 
 async function renderSingle(q) {
   const block = el('div', 'question-block');
+  block.appendChild(renderPillarRail(q.pillar));
   block.appendChild(el('div', 'q-id', formatQId(q.id)));
   block.appendChild(el('div', 'question-mode', questionModeText(q.type)));
   const stemP = el('p', 'sys-body');
@@ -3034,30 +3189,55 @@ async function renderSingle(q) {
     document.addEventListener('keydown', keyHandler);
   });
 
-  optEls.forEach((opt, i) => {
-    opt.disabled = true;
-    opt.classList.remove('is-arrow-focus');
-    if (i !== pickedIndex) {
-      opt.style.opacity = '0.22';
-    } else {
-      opt.style.opacity = '1';
-      opt.style.background = 'var(--paper-warm)';
-      opt.style.boxShadow = 'inset 2px 0 0 0 var(--ink-soft)';
-      // B + C  -  instant acknowledgement on the picked option
-      const num = opt.querySelector('.opt-num');
-      if (num) {
-        num.classList.add('is-pulsing');
-        const ack = el('span', 'ack-mark', '→');
-        num.insertAdjacentElement('afterend', ack);
-        setTimeout(() => ack.remove(), 760);
+  const lockSingle = (idx, { ack = false } = {}) => {
+    optEls.forEach((opt, i) => {
+      opt.disabled = true;
+      opt.classList.remove('is-arrow-focus');
+      if (i !== idx) {
+        opt.style.opacity = '0.22';
+        opt.style.background = '';
+        opt.style.boxShadow = '';
+      } else {
+        opt.style.opacity = '1';
+        opt.style.background = 'var(--paper-warm)';
+        opt.style.boxShadow = 'inset 2px 0 0 0 var(--ink-soft)';
+        if (ack) {
+          // B + C  -  instant acknowledgement on the picked option
+          const num = opt.querySelector('.opt-num');
+          if (num) {
+            num.classList.add('is-pulsing');
+            const a = el('span', 'ack-mark', '→');
+            num.insertAdjacentElement('afterend', a);
+            setTimeout(() => a.remove(), 760);
+          }
+        }
       }
-    }
-  });
+    });
+  };
+
+  lockSingle(pickedIndex, { ack: true });
   await wait(reduceMotion ? 60 : 180);
 
   state.answers[q.id] = pickedIndex;
   beat.dataset.noBottomSpace = 'true';
   updateBottomSpace();
+
+  attachAnswerEdit(block, () => {
+    optEls.forEach((opt) => {
+      opt.disabled = false;
+      opt.style.opacity = '';
+      opt.style.background = '';
+      opt.style.boxShadow = '';
+    });
+    const onPick = (e) => {
+      const idx = Number(e.currentTarget.dataset.index);
+      optEls.forEach(o => o.removeEventListener('click', onPick));
+      state.answers[q.id] = idx;
+      lockSingle(idx, { ack: true });
+      updateBottomSpace();
+    };
+    optEls.forEach(opt => opt.addEventListener('click', onPick));
+  });
 
   await hold('Reading', 380);
   await appendRule();
@@ -3070,6 +3250,7 @@ async function renderSingle(q) {
 async function renderMulti(q) {
   document.body.classList.add('multi-confirm-active');
   const block = el('div', `question-block multi-block${q.options.length > 6 ? ' long-multi' : ''}`);
+  block.appendChild(renderPillarRail(q.pillar));
   block.appendChild(el('div', 'q-id', formatQId(q.id)));
   block.appendChild(el('div', 'question-mode', questionModeText(q.type)));
   const stemP = el('p', 'sys-body');
@@ -3213,19 +3394,41 @@ async function renderMulti(q) {
     document.addEventListener('keydown', keyHandler);
   });
 
-  optEls.forEach(opt => { opt.disabled = true; opt.classList.remove('is-arrow-focus'); });
-  confirmBtn.disabled = true;
+  const lockMulti = (sel) => {
+    optEls.forEach((opt, i) => {
+      opt.disabled = true;
+      opt.classList.remove('is-arrow-focus');
+      opt.style.opacity = sel.includes(i) ? '1' : '0.22';
+    });
+    confirmBtn.disabled = true;
+  };
+
   hint.style.opacity = '0';
+  let picked = Array.from(selected).sort((a, b) => a - b);
+  lockMulti(picked);
   await wait(reduceMotion ? 80 : 180);
 
-  const picked = Array.from(selected).sort((a, b) => a - b);
   state.answers[q.id] = picked;
-  optEls.forEach((opt, i) => {
-    opt.style.opacity = picked.includes(i) ? '1' : '0.22';
-  });
   document.body.classList.remove('multi-confirm-active');
   beat.dataset.noBottomSpace = 'true';
   updateBottomSpace();
+
+  attachAnswerEdit(block, () => {
+    // Re-open options + confirm; the selected Set retains the prior picks.
+    optEls.forEach((opt) => { opt.disabled = false; opt.style.opacity = ''; });
+    hint.style.opacity = '';
+    updateConfirm();
+    const onConfirm = () => {
+      if (selected.size === 0) return;
+      confirmBtn.removeEventListener('click', onConfirm);
+      picked = Array.from(selected).sort((a, b) => a - b);
+      state.answers[q.id] = picked;
+      hint.style.opacity = '0';
+      lockMulti(picked);
+      updateBottomSpace();
+    };
+    confirmBtn.addEventListener('click', onConfirm);
+  });
 
   await hold('Reading', 380);
   await appendRule();
@@ -3356,75 +3559,6 @@ function buildPrivacyAcknowledgement() {
     version: PRIVACY_NOTICE_VERSION,
     noticeUrl: PRIVACY_NOTICE_URL
   };
-}
-
-function privacyNoticeMarkup() {
-  return `
-    <p><strong>Version:</strong> 4 June 2026</p>
-    <h3>Who is responsible</h3>
-    <p>Atelier + Avenue is the controller for the AI Readiness Diagnostic. You can contact us at <a href="mailto:hello@atelierandavenue.com">hello@atelierandavenue.com</a>.</p>
-
-    <h3>What we collect</h3>
-    <ul>
-      <li>Your name and work email address.</li>
-      <li>Your questionnaire answers and the profile, score, hurdle, action plan, reveal link and PDF link generated from those answers.</li>
-      <li>Technical request data needed to run and secure the service, such as request metadata and operational logs.</li>
-    </ul>
-
-    <h3>How we use it</h3>
-    <ul>
-      <li>To generate and deliver your AI-readiness profile, reveal page and PDF.</li>
-      <li>To create or update a Brevo contact record with your diagnostic links and profile metadata.</li>
-      <li>To operate, secure, troubleshoot and improve the diagnostic.</li>
-      <li>To follow up about the diagnostic or a working-session request connected to it.</li>
-    </ul>
-
-    <h3>Lawful bases</h3>
-    <p>We rely on legitimate interests to provide the diagnostic you requested, keep the service secure and follow up about the result. If you ask us to discuss A+A services, we may also rely on taking steps at your request before entering a contract. We may rely on legal obligation where we need to keep or disclose information to comply with law.</p>
-    <p>This acknowledgement is not marketing consent. Marketing emails are handled separately and only sent where consent or another lawful route under UK GDPR and PECR applies.</p>
-
-    <h3>Who receives it</h3>
-    <p>We use Vercel to host and run the diagnostic, and Brevo to hold contact records and, once sender authentication is complete, deliver the requested profile email. We may also share information with professional advisers or service providers where necessary to run the business or comply with law.</p>
-
-    <h3>International transfers</h3>
-    <p>Our processors may process data outside the UK or EEA. Where that happens, we rely on appropriate safeguards such as adequacy arrangements, the UK International Data Transfer Agreement, EU Standard Contractual Clauses or equivalent measures provided by those processors.</p>
-
-    <h3>Retention</h3>
-    <p>The reveal and PDF links use a sealed token that expires after 14 days. We do not run a separate questionnaire database in this app. Brevo contact and diagnostic metadata are kept for up to 24 months after the last meaningful interaction, unless you ask us to delete them sooner or we need to keep limited records for legal reasons. Operational logs are kept for short security and troubleshooting periods by our service providers.</p>
-
-    <h3>Your rights</h3>
-    <p>You can ask to access, correct, delete or restrict your personal data, receive a portable copy, object to processing based on legitimate interests, and withdraw marketing consent where consent is used. You also have the right to complain to the Information Commissioner's Office at <a href="https://ico.org.uk/make-a-complaint/" target="_blank" rel="noopener">ico.org.uk/make-a-complaint</a>.</p>
-
-    <h3>Automated profiling</h3>
-    <p>The diagnostic automatically turns your answers into an indicative business profile and action plan. It does not make decisions about you with legal or similarly significant effects.</p>
-
-    <h3>If you do not provide the data</h3>
-    <p>Name, work email, questionnaire answers and this privacy acknowledgement are required to generate and deliver the profile. Without them, we cannot provide the reveal or PDF.</p>
-  `;
-}
-
-function buildPrivacyModal() {
-  const modal = el('div', 'privacy-modal');
-  modal.hidden = true;
-  modal.innerHTML = `
-    <div class="privacy-dialog" role="dialog" aria-modal="true" aria-labelledby="privacyTitle" tabindex="-1">
-      <div class="privacy-modal-head">
-        <div>
-          <p class="privacy-modal-kicker">Privacy Notice</p>
-          <h2 class="privacy-modal-title" id="privacyTitle">How we use your diagnostic data.</h2>
-        </div>
-        <button class="privacy-close" type="button" aria-label="Close Privacy Notice" data-close-privacy>&times;</button>
-      </div>
-      <div class="privacy-copy">
-        ${privacyNoticeMarkup()}
-      </div>
-      <div class="privacy-dialog-actions">
-        <button class="privacy-accept" type="button" data-accept-privacy>I understand</button>
-        <a class="privacy-link" href="${PRIVACY_NOTICE_URL}" target="_blank" rel="noopener">Open full notice</a>
-      </div>
-    </div>
-  `;
-  return modal;
 }
 
 function loadBotConfig() {
@@ -3626,8 +3760,8 @@ async function renderGate(scenario) {
   gate.noValidate = true;
   gate.innerHTML = `
     <div class="gate-eyebrow">THE PICTURE IS READY</div>
-    <h2 class="gate-title">Send yourself the AI-readiness profile.</h2>
-    <p class="gate-line">A private readout of what your answers exposed, with the reveal link and printable PDF profile sent to your inbox.</p>
+    <h2 class="gate-title">See your profile, and take it with you.</h2>
+    <p class="gate-line">The moment you submit, your profile opens on screen. We also send the reveal link and a printable PDF to your inbox, so you can return to it anytime.</p>
     <div class="gate-includes" aria-label="What the profile includes">
       <div class="gate-includes-row">
         <span class="gate-includes-num">01</span>
@@ -3675,8 +3809,7 @@ async function renderGate(scenario) {
         <span>I have read the Privacy Notice and understand that Atelier + Avenue will use my answers, name, company name and work email to generate and deliver my AI-readiness profile.</span>
       </label>
       <div class="privacy-actions">
-        <button class="privacy-link" type="button" data-open-privacy>Read Privacy Notice</button>
-        <a class="privacy-link" href="${PRIVACY_NOTICE_URL}" target="_blank" rel="noopener">Open full page</a>
+        <a class="privacy-link" href="${PRIVACY_NOTICE_URL}" target="_blank" rel="noopener">Read the Privacy Notice</a>
       </div>
       <div class="error-text"></div>
     </div>
@@ -3689,9 +3822,9 @@ async function renderGate(scenario) {
     </div>
     <div class="gate-footer">PRIVATE · CONFIDENTIAL · NEVER SHARED</div>
     <div class="gate-result" id="gateResult">
-      <div class="q-id">Profile sent</div>
-      <p class="gate-result-copy" id="gateResultCopy">Done. We have sent the AI-readiness profile to your work inbox.</p>
-      <p class="gate-result-copy"><em>It usually lands inside a minute. The email is where the full readout begins.</em></p>
+      <div class="q-id">Profile ready</div>
+      <p class="gate-result-copy" id="gateResultCopy">Your profile is ready. Open it now — a copy is also on its way to your inbox.</p>
+      <p class="gate-result-copy"><em>The email usually lands inside a minute, so you can return to your profile anytime.</em></p>
       <div class="profile-dispatch" aria-hidden="true">
         <div class="dispatch-top">
           <span class="dispatch-kicker">Look for this email</span>
@@ -3724,8 +3857,7 @@ async function renderGate(scenario) {
       </div>
     </div>
   `;
-  const privacyModal = buildPrivacyModal();
-  block.append(gate, privacyModal);
+  block.appendChild(gate);
 
   await appendBeat(block);
 
@@ -3739,58 +3871,6 @@ async function renderGate(scenario) {
   const botControllerPromise = createBotCheckController({
     container: gate.querySelector('[data-turnstile-container]'),
     statusNode: gate.querySelector('[data-turnstile-status]')
-  });
-  let previousPrivacyFocus = null;
-
-  const closePrivacyModal = () => {
-    privacyModal.hidden = true;
-    document.body.classList.remove('privacy-open');
-    if (previousPrivacyFocus && typeof previousPrivacyFocus.focus === 'function') {
-      previousPrivacyFocus.focus();
-    }
-  };
-
-  const openPrivacyModal = () => {
-    previousPrivacyFocus = document.activeElement;
-    privacyModal.hidden = false;
-    document.body.classList.add('privacy-open');
-    privacyModal.querySelector('.privacy-dialog').focus();
-  };
-
-  block.querySelectorAll('[data-open-privacy]').forEach((button) => {
-    button.addEventListener('click', openPrivacyModal);
-  });
-
-  privacyModal.addEventListener('click', (event) => {
-    if (event.target === privacyModal || event.target.closest('[data-close-privacy]')) {
-      closePrivacyModal();
-    }
-  });
-
-  privacyModal.addEventListener('keydown', (event) => {
-    if (event.key === 'Escape') {
-      event.preventDefault();
-      closePrivacyModal();
-      return;
-    }
-    if (event.key !== 'Tab') return;
-    const focusable = Array.from(privacyModal.querySelectorAll('a[href], button:not([disabled])'));
-    if (!focusable.length) return;
-    const first = focusable[0];
-    const last = focusable[focusable.length - 1];
-    if (event.shiftKey && document.activeElement === first) {
-      event.preventDefault();
-      last.focus();
-    } else if (!event.shiftKey && document.activeElement === last) {
-      event.preventDefault();
-      first.focus();
-    }
-  });
-
-  privacyModal.querySelector('[data-accept-privacy]').addEventListener('click', () => {
-    privacyInput.checked = true;
-    setError('privacy', '');
-    closePrivacyModal();
   });
 
   privacyInput.addEventListener('change', () => {
@@ -3858,18 +3938,22 @@ async function renderGate(scenario) {
     gate.classList.add('is-submitted');
     document.body.classList.add('gate-submitted');
     gate.querySelector('#gateResultCopy').textContent = result.emailSent
-      ? `Done. We have sent the AI-readiness profile to ${email}.`
-      : `Your AI-readiness profile is ready. Email delivery is not configured in this preview, so it has not been sent to ${email}.`;
+      ? `Your profile is ready. Open it now — we have also sent a copy to ${email}.`
+      : `Your profile is ready. Open it now — email delivery is not configured in this preview, so a copy was not sent to ${email}.`;
     gate.querySelector('#dispatchEmail').textContent = email;
 
-    const existingFallback = gate.querySelector('.gate-fallback-link');
-    if (existingFallback) existingFallback.remove();
-    if (!result.emailSent && result.revealUrl) {
-      const fallbackLink = document.createElement('a');
-      fallbackLink.className = 'gate-fallback-link confirm-btn';
-      fallbackLink.href = result.revealUrl;
-      fallbackLink.textContent = 'Open profile now';
-      gate.querySelector('#gateResult').appendChild(fallbackLink);
+    // Always surface the reveal as the primary action: the respondent SEES the
+    // profile on screen, not only in the inbox (Saverio: manage that expectation).
+    const existingCta = gate.querySelector('.gate-reveal-cta');
+    if (existingCta) existingCta.remove();
+    if (result.revealUrl) {
+      const cta = document.createElement('a');
+      cta.className = 'gate-reveal-cta confirm-btn';
+      cta.href = result.revealUrl;
+      cta.textContent = 'View your profile now →';
+      const dispatch = gate.querySelector('.profile-dispatch');
+      if (dispatch) dispatch.parentNode.insertBefore(cta, dispatch);
+      else gate.querySelector('#gateResult').appendChild(cta);
     }
 
     gate.querySelector('#gateResult').classList.add('is-visible');
