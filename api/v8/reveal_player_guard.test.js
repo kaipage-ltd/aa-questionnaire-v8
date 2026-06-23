@@ -17,16 +17,38 @@ const playerHtml = readFileSync(
 test('prose cards render their full authored body via appendProse', () => {
   assert.match(playerHtml, /function appendProse/, 'appendProse helper must exist');
   assert.match(playerHtml, /clean\.forEach/, 'appendProse must loop every line, not slice the first two');
-  const costBranch = playerHtml.match(/card\.type === 'cost'[\s\S]*?card\.type === 'widening'/)?.[0] || '';
-  const wideningBranch = playerHtml.match(/card\.type === 'widening'[\s\S]*?card\.type === 'surface'/)?.[0] || '';
-  const surfaceBranch = playerHtml.match(/card\.type === 'surface'[\s\S]*?card\.type === 'reframe'/)?.[0] || '';
+  const costBranch = playerHtml.match(/card\.type === 'cost'[\s\S]*?card\.type === 'firstMove'/)?.[0] || '';
   assert.match(costBranch, /appendProse/, 'cost card must render the whole scene');
-  assert.match(wideningBranch, /appendProse/, 'widening card must render the whole escalation');
-  assert.match(surfaceBranch, /appendProse/, 'surface card must render the promise and the test');
+});
+
+test('important keywords can be rendered in bold', () => {
+  assert.match(playerHtml, /function boldify/, 'a boldify helper must exist');
+  // boldify escapes first, then promotes only **...** spans -- so user-derived
+  // copy can never inject HTML.
+  assert.match(playerHtml, /replace\(\/&\/g/, 'boldify must escape ampersands before promoting bold');
+  assert.match(playerHtml, /<strong>\$1<\/strong>/, 'boldify must promote **...** to <strong>');
+});
+
+test('the score is shown out of 100', () => {
+  assert.match(playerHtml, /num-denom/, 'the number card must render a /100 denominator');
+});
+
+test('the shape card renders a benchmark ghost bar and plain-language meaning', () => {
+  assert.match(playerHtml, /bar-bench/, 'each pillar bar must carry a benchmark ghost');
+  assert.match(playerHtml, /bar-plain/, 'each pillar must carry a plain-language meaning');
+});
+
+test('the opening card carries the A+A wordmark', () => {
+  assert.match(playerHtml, /AA_WORDMARK/, 'the turn card must render the A+A wordmark');
+  assert.match(playerHtml, /reveal-wordmark/, 'the wordmark needs its own slot on the opening card');
+});
+
+test('every non-final card carries a visible advance affordance', () => {
+  assert.match(playerHtml, /card-advance/, 'cards must offer a visible Continue button, not only invisible zones');
 });
 
 test('the close card renders the character close line', () => {
-  assert.match(playerHtml, /close-line/, 'close card must render card.body as the closing beat');
+  assert.match(playerHtml, /close-line/, 'close card must render the closing beat');
 });
 
 test('image slots carry real artwork and never a placeholder label', () => {
@@ -38,8 +60,9 @@ test('image slots carry real artwork and never a placeholder label', () => {
   assert.match(fn, /revealHurdle/, 'cost slot must pick its variant by the respondent hurdle');
 });
 
-test('receipts carry no raw question IDs and no redundant proof line', () => {
-  const receiptsBranch = playerHtml.match(/card\.type === 'receipts'[\s\S]*?card\.type === 'quote'/)?.[0] || '';
-  assert.doesNotMatch(receiptsBranch, /receipt\.id/, 'internal question IDs must not render');
-  assert.doesNotMatch(receiptsBranch, /receipt\.proves/, 'the proves line restates the read; payload-only');
+test('folded receipts render as supporting evidence, not raw question IDs', () => {
+  const hurdleBranch = playerHtml.match(/card\.type === 'hurdle'[\s\S]*?card\.type === 'quote'/)?.[0] || '';
+  assert.match(hurdleBranch, /support/, 'the hurdle card must show folded supporting evidence');
+  assert.doesNotMatch(hurdleBranch, /receipt\.id/, 'internal question IDs must not render');
+  assert.doesNotMatch(hurdleBranch, /receipt\.proves/, 'the proves line restates the read; payload-only');
 });

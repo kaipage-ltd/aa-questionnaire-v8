@@ -1,12 +1,12 @@
 export const STATIC = {
   card1: {
     eyebrow: 'A+A - AI Readiness Read',
-    lede: 'Before the number, one thing. This is not a quiz result. It is a read on how {brandName} actually operates.',
-    body: 'Every business runs on a delay between what it knows and what it does. Most have never measured theirs. You just did.'
+    lede: 'Before the number, one thing. This is **not a quiz result**. It is a read on how {brandName} actually operates.',
+    body: 'Every business runs on a delay between what it knows and what it does. Most have never measured theirs. **You just did.**'
   },
   card2: {
     label: 'Where {brandName} stands',
-    after: 'Not a grade. A read on where the operating system leans. The next card shows you which way.'
+    after: '**Not a grade.** A read on where the operating system leans. The next card shows you which way.'
   },
   card5: {
     eyebrow: 'From your own answers',
@@ -105,6 +105,20 @@ export const PERSONA = {
   }
 };
 
+// Plain-language meaning for each pillar, shown on the shape card so the terms
+// (especially Coherence) are immediately legible to a time-poor CEO.
+export const PILLAR_PLAIN = {
+  Visibility: 'What the business can see.',
+  Velocity: 'How fast it turns seeing into doing.',
+  Coherence: 'Whether teams act from one shared picture.',
+  Leverage: 'How far AI reaches into real decisions.'
+};
+
+// Where advanced brands sit, per Saverio. Rendered as a ghosted benchmark behind
+// each respondent bar so the gap, not the absolute score, is the message.
+export const BENCHMARK = { Visibility: 100, Velocity: 90, Coherence: 95, Leverage: 90 };
+export const BENCHMARK_LABEL = 'Advanced brands';
+
 export const PILLAR_COPY = {
   Visibility: {
     strong: 'Visibility is real: the business can see more than most.',
@@ -129,7 +143,7 @@ export const HURDLE_COPY = {
     hurdleCard: {
       lede: 'One of these four is not like the others.',
       body: 'It is not that Visibility is just a low number. It is that every other ambition has to stand on it. A business that cannot trust what it sees does not have four problems. It has one, and the other numbers are quietly paying for it.',
-      close: 'Your hurdle is Visibility: the distance between having data and having a picture leadership can act on.'
+      close: 'Your hurdle is **Visibility**: the distance between having data and having a picture leadership can act on.'
     },
     reframe: {
       lede: 'So here is what is actually happening, and it is not just a data problem.',
@@ -157,7 +171,7 @@ export const HURDLE_COPY = {
     hurdleCard: {
       lede: 'One of these four is not like the others.',
       body: 'It is not that Velocity is your lowest score. It is that Velocity sits underneath the other three. A business that sees clearly and moves slowly does not have four problems. It has one, and the other numbers are quietly paying for it.',
-      close: 'Your hurdle is Velocity: the distance between knowing and doing.'
+      close: 'Your hurdle is **Velocity**: the distance between knowing and doing.'
     },
     reframe: {
       lede: 'So here is what is actually happening, and it is not what you think.',
@@ -185,7 +199,7 @@ export const HURDLE_COPY = {
     hurdleCard: {
       lede: 'One of these four is not like the others.',
       body: 'It is not that Coherence is just a weak score. It is that Coherence decides whether the business can act as one system. A business with separate pictures does not have four problems. It has one, and the other numbers are quietly paying for it.',
-      close: 'Your hurdle is Coherence: the distance between separate team pictures and one business decision.'
+      close: 'Your hurdle is **Coherence**: the distance between separate team pictures and one business decision.'
     },
     reframe: {
       lede: 'So here is what is actually happening, and it is not just a collaboration problem.',

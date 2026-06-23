@@ -1,5 +1,7 @@
 import {
   ANSWER_OPTIONS,
+  BENCHMARK,
+  BENCHMARK_LABEL,
   BUCKET_COPY,
   CARD6_IMPLICATIONS,
   COST_SCENES,
@@ -7,6 +9,7 @@ import {
   MULTI_COPY,
   PERSONA,
   PILLAR_COPY,
+  PILLAR_PLAIN,
   QUESTION_STEMS,
   RECEIPT_IMPLICATIONS,
   RECEIPT_PROOFS,
@@ -217,6 +220,18 @@ export function deriveRevealInsights(answers, profile, context = {}) {
   const actionPlan = deriveActionPlan(profile);
   const interpolateContext = { firstName, brandName, characterName: profile.characterName };
 
+  // Folded receipts (now supporting evidence on the hurdle card, not a card of
+  // their own — answers support the message rather than being the centre).
+  const receiptImplications = weakAnswers.map(({ id, index }) => (
+    RECEIPT_IMPLICATIONS[`${id}_${index}`] || answerOption(id, index)
+  ));
+  const evidence = weakAnswers.map(({ id, index }) => evidenceReceipt(id, index, profile.hurdle));
+  const receiptTailLine = receiptTail(profile.hurdle, highEvenShape, balancedEvenShape);
+  const surfaceLines = surfaceBody(profile.hurdle);
+
+  // Eight cards, not fourteen. Each beat is its own composition; the heavy
+  // Agitation/Promise run is concentrated. PDF still reads shape/hurdle/quote/
+  // cost/firstMove by type; receipts fold onto hurdle, widening onto cost.
   const cards = [
     {
       type: 'turn',
@@ -225,8 +240,6 @@ export function deriveRevealInsights(answers, profile, context = {}) {
       nameLine: `${firstName}.`,
       lede: fill(STATIC.card1.lede, interpolateContext),
       body: fill(STATIC.card1.body, interpolateContext),
-      // The player renders contextLine (one human sentence); the basis rows stay in
-      // the payload for the PDF and tests but read as analyst output on screen.
       contextLine: turnContextLine(answers),
       basis: diagnosticBasis(answers, profile)
     },
@@ -235,6 +248,7 @@ export function deriveRevealInsights(answers, profile, context = {}) {
       beat: 'Problem',
       label: fill(STATIC.card2.label, interpolateContext),
       score: profile.score,
+      max: 100,
       interpretation: scoreInterpretation({ profile, strongest, hurdle: hurdlePillar, gap, highEvenShape, balancedEvenShape }),
       after: STATIC.card2.after
     },
@@ -242,30 +256,27 @@ export function deriveRevealInsights(answers, profile, context = {}) {
       type: 'shape',
       beat: 'Problem',
       eyebrow: `The shape behind the ${profile.score}`,
-      lede: 'Four readings. They are not equal.',
+      lede: 'Four readings, against where advanced brands sit. They are not equal.',
       pillars: pillars.map((pillar) => ({
         ...pillar,
-        role: pillar.label === profile.hurdle ? 'hurdle' : pillar.label === strongest.label ? 'strong' : 'normal'
+        role: pillar.label === profile.hurdle ? 'hurdle' : pillar.label === strongest.label ? 'strong' : 'normal',
+        plain: PILLAR_PLAIN[pillar.label] || '',
+        benchmark: BENCHMARK[pillar.label] || 100
       })),
+      benchmark: BENCHMARK,
+      benchmarkLabel: BENCHMARK_LABEL,
       shapeRead: shapeRead({ strongest, hurdle: hurdlePillar, gap, highEvenShape, balancedEvenShape, leverage: leverageReality(answers, profile) }),
       body: shapeBody({ strongest, hurdle: hurdlePillar, gap, highEvenShape, balancedEvenShape })
     },
     {
       type: 'hurdle',
       beat: 'Problem',
-      eyebrow: 'The constraint',
-      ...hurdleCard(profile.hurdle, highEvenShape, balancedEvenShape)
-    },
-    {
-      type: 'receipts',
-      beat: 'Problem',
-      eyebrow: STATIC.card5.eyebrow,
-      lede: STATIC.card5.lede,
-      receipts: weakAnswers.map(({ id, index }) => (
-        RECEIPT_IMPLICATIONS[`${id}_${index}`] || answerOption(id, index)
-      )),
-      evidence: weakAnswers.map(({ id, index }) => evidenceReceipt(id, index, profile.hurdle)),
-      tail: receiptTail(profile.hurdle, highEvenShape, balancedEvenShape)
+      eyebrow: 'The one constraint',
+      ...hurdleCard(profile.hurdle, highEvenShape, balancedEvenShape),
+      // Folded receipts: shown as compact supporting evidence beneath the point.
+      receipts: receiptImplications,
+      evidence,
+      tail: receiptTailLine
     },
     {
       type: 'quote',
@@ -278,79 +289,36 @@ export function deriveRevealInsights(answers, profile, context = {}) {
       implication: quoteImplication(quote, highEvenShape)
     },
     {
-      type: 'gap',
-      beat: 'Agitation',
-      eyebrow: STATIC.card7.eyebrow,
-      lede: sp.none
-        ? fill(STATIC.card7.noneLead, interpolateContext)
-        : sp.convergent
-        ? STATIC.card7.convergentLead
-        : fill(STATIC.card7.divergentLead, interpolateContext),
-      named: sp.named,
-      turn: sp.none
-        ? STATIC.card7.noneTurn
-        : sp.convergent ? STATIC.card7.convergentTurn : STATIC.card7.divergentTurn,
-      calibration: sp.calibration,
-      body: sp.body
-    },
-    {
-      type: 'reframe',
-      beat: 'Agitation',
-      peak: 2,
-      dark: true,
-      eyebrow: 'The reframe',
-      lede: HURDLE_COPY[profile.hurdle].reframe.lede,
-      body: reframeBody(profile.hurdle, interpolateContext)
-    },
-    {
       type: 'cost',
       beat: 'Agitation',
       eyebrow: STATIC.card9.eyebrow,
       model: costModel(profile),
-      body: costSceneBody(answers, profile, interpolateContext, quote)
-    },
-    {
-      type: 'widening',
-      beat: 'Agitation',
-      eyebrow: STATIC.card10.eyebrow,
+      // Folded widening: the "If ignored" escalation rides on the cost card.
       compounders: compoundingModel(profile),
-      body: wideningBody(profile, interpolateContext)
-    },
-    {
-      type: 'surface',
-      beat: 'Promise',
-      eyebrow: STATIC.card11.eyebrow,
-      implementation: embeddedImplementation(profile.hurdle),
-      body: surfaceBody(profile.hurdle)
+      body: costSceneBody(answers, profile, interpolateContext, quote)
     },
     {
       type: 'firstMove',
       beat: 'Promise',
       eyebrow: STATIC.card12.eyebrow,
       actionPlan,
+      // Folded surface: the one "what good looks like" promise frames the move.
+      promise: surfaceLines.find((line) => /What good looks like/i.test(line)) || '',
       brief: firstMoveBrief({ actionPlan, hurdle: profile.hurdle, quote }),
       body: firstMoveBody({ actionPlan, hurdle: profile.hurdle, quote })
     },
     {
-      type: 'fit',
-      beat: 'Solution',
-      eyebrow: STATIC.card13.eyebrow,
-      actionPlan,
-      lede: `${persona.fitLine} The working session is built around one practical artefact: ${actionPlan.artefactName}.`,
-      body: `Thirty minutes with Saverio. Not a pitch. ${actionPlan.whatToBringToCall} Together you decide what to map, what to ignore, and where the drag is hiding.`,
-      button: STATIC.card13.button,
-      qualifier: STATIC.card13.qualifier,
-      calendarUrl: context.calendarUrl || '#'
-    },
-    {
       type: 'close',
       beat: 'Solution',
-      eyebrow: profile.characterName,
+      eyebrow: STATIC.card13.eyebrow,
+      characterName: profile.characterName,
       actionPlan,
-      lede: `Every week, ${brandName} runs with a delay: ${HURDLE_COPY[profile.hurdle].closeClause}. The useful next step is the ${actionPlan.artefactName}.`,
-      body: `${persona.closeLine} The working session starts with ${bringObject(actionPlan.whatToBringToCall)}, not a broad AI ambition.`,
+      lede: `${persona.fitLine} It is built around one practical artefact: ${actionPlan.artefactName}.`,
+      fitBody: `Thirty minutes with Saverio. Not a pitch. ${actionPlan.whatToBringToCall}`,
       outputs: sessionOutputs(profile, actionPlan),
-      button: STATIC.card14.button,
+      closeLine: persona.closeLine,
+      button: STATIC.card13.button,
+      qualifier: STATIC.card13.qualifier,
       calendarUrl: context.calendarUrl || '#'
     }
   ];
@@ -366,7 +334,7 @@ export function deriveRevealInsights(answers, profile, context = {}) {
       hurdle: hurdlePillar,
       gap,
       quote,
-      receipts: cards[4].receipts,
+      receipts: receiptImplications,
       actionPlan
     }
   };

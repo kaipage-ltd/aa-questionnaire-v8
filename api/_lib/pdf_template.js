@@ -375,10 +375,11 @@ export function profileContext(profile, insights) {
   const gap = Number.isFinite(summary.gap) ? summary.gap : Math.max(0, strongest.value - hurdlePillar.value);
   const shape = cards.find((card) => card.type === 'shape');
   const hurdle = cards.find((card) => card.type === 'hurdle');
-  const receiptsCard = cards.find((card) => card.type === 'receipts');
+  // Receipts now ride on the hurdle card; widening ("If ignored") on the cost card.
+  const receiptsCard = hurdle;
   const quoteCard = cards.find((card) => card.type === 'quote');
   const cost = cards.find((card) => card.type === 'cost');
-  const widening = cards.find((card) => card.type === 'widening');
+  const widening = cost;
   const move = cards.find((card) => card.type === 'firstMove');
   const firstMoveLines = arrayText(move?.body);
   const costLines = arrayText(cost?.body);
@@ -466,7 +467,7 @@ function dateString(value) {
   return date.toLocaleDateString('en-GB');
 }
 
-export function esc(value) {
+function escRaw(value) {
   return String(value ?? '')
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
@@ -475,6 +476,12 @@ export function esc(value) {
     .replace(/'/g, '&#39;');
 }
 
+// Body text supports **bold** on the most important keywords (escaped first, so
+// nothing can inject HTML). Attributes stay raw — bold markup never belongs there.
+export function esc(value) {
+  return escRaw(value).replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+}
+
 function escAttr(value) {
-  return esc(value);
+  return escRaw(value);
 }

@@ -566,14 +566,11 @@ test('reveal route resolves a submitted token', async () => {
   assert.equal(body.reveal.actionPlan.artefactName, 'Decision Path Timing Map');
   assert.equal(body.reveal.pillars.length, 4);
   assert.equal(Array.isArray(body.reveal.cards), true);
-  assert.equal(body.reveal.cards.length, 14);
+  assert.equal(body.reveal.cards.length, 8);
   assert.equal(body.reveal.cards[0].type, 'turn');
-  assert.equal(body.reveal.cards[5].type, 'quote');
-  assert.equal(body.reveal.cards[5].peak, 1);
-  assert.equal(body.reveal.cards[7].type, 'reframe');
-  assert.equal(body.reveal.cards[7].peak, 2);
-  assert.equal(body.reveal.cards[7].body.join(' ').includes('temporal displacement'), false);
-  assert.ok(body.reveal.cards.find((card) => card.type === 'receipts').receipts.some((receipt) => receipt.includes('opportunity stays open')));
+  const quotePeak = body.reveal.cards.find((card) => card.type === 'quote');
+  assert.equal(quotePeak.peak, 1);
+  assert.ok(body.reveal.cards.find((card) => card.type === 'hurdle').receipts.some((receipt) => receipt.includes('opportunity stays open')));
   assert.equal(body.reveal.cards.find((card) => card.type === 'quote').quote, 'Analysis takes longer than the opportunity window allows.');
   assert.match(body.reveal.cards.find((card) => card.type === 'shape').body, /Velocity|gap|delay/);
   assert.equal(body.reveal.summary.persona, 'The Lagging Tanker');
@@ -651,14 +648,13 @@ test('all-strong reveals do not manufacture a weak-point claim', () => {
   const insights = deriveRevealInsights(cleaned, profile, { name: 'Kai' });
   const shape = insights.cards.find((card) => card.type === 'shape');
   const hurdle = insights.cards.find((card) => card.type === 'hurdle');
-  const receipts = insights.cards.find((card) => card.type === 'receipts');
   const quote = insights.cards.find((card) => card.type === 'quote');
 
   assert.equal(profile.score, 100);
   assert.match(shape.body, /not a weak profile/i);
   assert.doesNotMatch(shape.body, /thin|collapse/i);
   assert.match(hurdle.close, /first inspection point/i);
-  assert.match(receipts.tail, /real strengths/i);
+  assert.match(hurdle.tail, /real strengths/i);
   assert.match(quote.implication, /selected that as a strength/i);
 });
 
@@ -689,13 +685,12 @@ test('balanced mid-strength reveals use inspection language instead of crisis la
   const insights = deriveRevealInsights(cleaned, profile, { name: 'Kai' });
   const shape = insights.cards.find((card) => card.type === 'shape');
   const hurdle = insights.cards.find((card) => card.type === 'hurdle');
-  const receipts = insights.cards.find((card) => card.type === 'receipts');
 
   assert.equal(profile.score, 66);
   assert.match(shape.body, /not a dramatic gap/i);
   assert.doesNotMatch(shape.body, /thin|collapse/i);
   assert.match(hurdle.lede, /first place to inspect/i);
-  assert.match(receipts.tail, /not collapsing/i);
+  assert.match(hurdle.tail, /not collapsing/i);
 });
 
 test('reveal route returns a generic error for invalid tokens', async () => {

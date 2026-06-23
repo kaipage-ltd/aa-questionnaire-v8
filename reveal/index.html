@@ -574,7 +574,120 @@
   }
   .calendar-panel.is-open { display: block; }
 
+  /* ── Reveal opening wordmark (R9) ─────────────────────────────── */
+  .reveal-wordmark {
+    width: clamp(168px, 22vw, 220px);
+    color: var(--ink);
+    margin-bottom: clamp(28px, 4vh, 44px);
+  }
+  .reveal-wordmark svg { width: 100%; height: auto; display: block; }
+
+  /* ── Wrapped-style scale (each beat its own composition) ──────── */
+  .turn-name { font-size: clamp(60px, 9vw, 92px); }
+  .num { font-size: clamp(180px, 30vw, 300px); }
+  .num-wrap {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: 14px;
+  }
+  .num-denom {
+    font-family: var(--serif);
+    font-size: clamp(40px, 7vw, 60px);
+    font-weight: 400;
+    color: var(--ink-faint);
+    letter-spacing: 0;
+  }
+  .quote { font-size: clamp(34px, 5.4vw, 50px); }
+
+  /* ── Shape: benchmark ghost + plain-language meaning ──────────── */
+  .bar-track { position: relative; }
+  .bar-bench {
+    position: absolute;
+    left: 0; top: 0;
+    height: 100%;
+    background: rgba(33, 29, 22, 0.16);
+    border-radius: 3px;
+    z-index: 0;
+  }
+  .bar-fill { position: relative; z-index: 1; }
+  .bar-plain {
+    margin-top: 7px;
+    font-size: 14.5px;
+    line-height: 1.35;
+    color: var(--ink-soft);
+  }
+  .bar-row.muted .bar-plain { color: var(--ink-faint); }
+  .bench-key {
+    margin-top: 18px;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+
+  /* ── Hurdle: folded supporting evidence (answers support, not centre) ─ */
+  .support {
+    margin-top: 26px;
+    border-top: 1px solid var(--rule);
+    padding-top: 16px;
+  }
+  .support-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin-bottom: 12px;
+  }
+  .support-row { margin-bottom: 12px; }
+  .support-answer {
+    font-size: 16px;
+    font-style: italic;
+    line-height: 1.4;
+    color: var(--ink);
+  }
+  .support-read {
+    font-size: 14.5px;
+    line-height: 1.42;
+    color: var(--ink-soft);
+    margin-top: 3px;
+  }
+
+  /* ── Per-card advance affordance (R3): a real button, not a hint ─ */
+  .card-advance {
+    position: absolute;
+    bottom: 28px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 36;
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    padding: 11px 24px;
+    background: transparent;
+    border: 1px solid var(--ink);
+    border-radius: 999px;
+    color: var(--ink);
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 200ms ease, color 200ms ease, transform 200ms ease;
+  }
+  .card-advance::after { content: '\2192'; }
+  .card-advance:hover {
+    background: var(--ink);
+    color: var(--paper);
+    transform: translateX(-50%) translateY(-2px);
+  }
+  .card-advance.on-dark { border-color: rgba(250, 248, 242, 0.5); color: var(--paper); }
+  .card-advance.on-dark:hover { background: var(--paper); color: var(--dark); }
+
   .hint {
+    display: none;
     position: absolute;
     bottom: 20px;
     left: 0;
@@ -940,11 +1053,24 @@ function el(tag, className, text) {
   return node;
 }
 
+// Authored copy may mark the most important keywords with **double asterisks**.
+// We escape everything first (so user-derived text can never inject HTML), then
+// promote only the **...** spans to <strong>. Quotes/answers never pass through here.
+function boldify(text) {
+  const escaped = String(text == null ? '' : text)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  return escaped.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+}
+
 function p(className, text, delay) {
-  const node = el('p', className, text);
+  const node = el('p', className);
+  node.innerHTML = boldify(text);
   if (delay) node.classList.add(delay);
   return node;
 }
+
+// The A+A wordmark, shown on the reveal's opening card.
+const AA_WORDMARK = `<svg viewBox="0 0 1620 400" fill="currentColor" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Atelier + Avenue"><path d="M1501 76.3711L1501 41.7653L1619.14 41.7653L1619.14 76.3711L1501 76.3711Z"/><path d="M1542.77 0L1577.37 0V118.137H1542.77V0Z"/><path d="M1396.63 83.2392C1396.63 91.4479 1394.41 98.8749 1389.98 105.52C1385.55 112.165 1379.1 117.051 1370.63 120.179L1400.54 176.467H1352.06L1328.22 127.41H1312.19V176.467H1269V42H1351.28C1360.92 42 1369.13 43.8893 1375.91 47.6679C1382.81 51.3163 1387.96 56.3327 1391.35 62.7173C1394.87 68.9716 1396.63 75.8122 1396.63 83.2392ZM1352.65 84.9982C1352.65 81.4802 1351.48 78.5485 1349.13 76.2031C1346.79 73.8578 1343.92 72.6851 1340.53 72.6851H1312.19V97.5068H1340.53C1343.92 97.5068 1346.79 96.3341 1349.13 93.9887C1351.48 91.5131 1352.65 88.5162 1352.65 84.9982Z"/><path d="M1045 42H1161.29V74.2487H1088.19V92.8161H1150.74V123.697H1088.19V144.218H1162.66V176.467H1045V42Z"/><path d="M896 176.467V42H939.194V176.467H896Z"/><path d="M680 42H723.194V142.069H792.186V176.467H680V42Z"/><path d="M456 42H572.291V74.2487H499.194V92.8161H561.737V123.697H499.194V144.218H573.659V176.467H456V42Z"/><path d="M102.609 176.467L96.9414 157.509H49.8388L44.1709 176.467H0L49.0571 42H99.2868L148.344 176.467H102.609ZM58.8294 127.41H87.9509L73.8787 79.5257H73.097L58.8294 127.41Z"/><path d="M312.365 76.3986V176.467H269.171V76.3986H225V42H356.34V76.3986H312.365Z"/><path d="M1334 265H1450.29V297.249H1377.19V315.816H1439.74V346.697H1377.19V367.218H1451.66V399.467H1334V265Z"/><path d="M1223.88 342.328C1223.88 360.7 1218.08 374.707 1206.49 384.349C1194.89 393.991 1178.41 398.812 1157.04 398.812C1135.67 398.812 1119.12 393.991 1107.39 384.349C1095.8 374.707 1090 360.7 1090 342.328V262H1133.19V341.742C1133.19 349.299 1135.21 355.358 1139.25 359.919C1143.29 364.349 1149.16 366.564 1156.84 366.564C1164.53 366.564 1170.39 364.284 1174.43 359.723C1178.6 355.163 1180.69 349.169 1180.69 341.742V262H1223.88V342.328Z"/><path d="M941.16 399.467L884.676 334.188V399.467H845V265H882.721L939.205 331.256V265H978.881V399.467H941.16Z"/><path d="M626 265H742.291V297.249H669.194V315.816H731.737V346.697H669.194V367.218H743.659V399.467H626V265Z"/><path d="M431.689 399.467L384 265H430.125L457.097 354.905H457.879L485.046 265H529.217L481.723 399.467H431.689Z"/><path d="M271.609 399.467L265.941 380.509H218.839L213.171 399.467H169L218.057 265H268.287L317.344 399.467H271.609ZM227.829 350.41H256.951L242.879 302.526H242.097L227.829 350.41Z"/></svg>`;
 
 function buildBriefPanel(rows, className) {
   const panel = el('div', `brief-panel${className ? ` ${className}` : ''}`);
@@ -1076,11 +1202,14 @@ function buildCard(card) {
     section.append(buildVisual(visualType));
   }
   const inner = el('div', 'card-inner');
-  if (['turn', 'number', 'shape', 'hurdle', 'receipts', 'gap', 'reframe', 'cost', 'widening', 'surface', 'firstMove', 'fit', 'close'].includes(card.type)) inner.classList.add('is-wide');
+  if (['turn', 'number', 'shape', 'hurdle', 'quote', 'cost', 'firstMove', 'close'].includes(card.type)) inner.classList.add('is-wide');
   section.appendChild(inner);
 
   if (card.type === 'turn') {
-    inner.append(el('div', 'eyebrow anim', card.eyebrow));
+    const mark = el('div', 'reveal-wordmark anim');
+    mark.innerHTML = AA_WORDMARK;
+    inner.append(mark);
+    inner.append(el('div', 'eyebrow anim d1', card.eyebrow));
     inner.append(el('div', 'turn-name anim d1', card.nameLine));
     inner.append(p('lede anim d2', card.lede));
     inner.append(p('body anim d3', card.body));
@@ -1090,9 +1219,12 @@ function buildCard(card) {
   } else if (card.type === 'number') {
     inner.style.textAlign = 'center';
     inner.append(el('div', 'num-label anim', card.label));
+    const numWrap = el('div', 'num-wrap');
     const num = el('div', 'num', '0');
     num.dataset.target = String(card.score);
-    inner.append(num);
+    numWrap.append(num);
+    numWrap.append(el('span', 'num-denom', `/ ${card.max || 100}`));
+    inner.append(numWrap);
     inner.append(p('num-after', card.after));
     // One quiet meaning line only. The full interpretation table pre-empted the
     // shape card ("the next card shows you which way") and buried the number.
@@ -1108,51 +1240,43 @@ function buildCard(card) {
       head.append(el('span', 'bar-name', `${pillar.label}${pillar.role === 'hurdle' ? ' - your hurdle' : ''}`));
       head.append(el('span', 'bar-val', String(pillar.value)));
       const track = el('div', 'bar-track');
+      // Ghosted benchmark (where advanced brands sit) behind the respondent bar,
+      // so the gap is the message.
+      const bench = el('div', 'bar-bench');
+      bench.style.width = `${Math.min(100, pillar.benchmark || 100)}%`;
       const fill = el('div', 'bar-fill');
       fill.dataset.v = String(pillar.value);
-      track.append(fill);
+      track.append(bench, fill);
       row.append(head, track);
+      // Plain-language meaning of the pillar (esp. Coherence) right where it is read.
+      if (pillar.plain) row.append(el('div', 'bar-plain', pillar.plain));
       bars.append(row);
     });
     inner.append(bars);
-    if (card.shapeRead?.length) {
-      inner.append(buildBriefPanel(card.shapeRead, 'shape-read-panel anim d3'));
-    } else {
-      inner.append(p('body anim d3', card.body));
-    }
+    inner.append(el('div', 'bench-key anim d3', `Ghost bar — ${card.benchmarkLabel || 'Advanced brands'}`));
   } else if (card.type === 'hurdle') {
     inner.append(el('div', 'eyebrow anim', card.eyebrow));
     inner.append(p('lede anim d1', card.lede));
-    if (card.anatomy?.length) {
-      inner.append(buildBriefPanel(card.anatomy, 'constraint-panel anim d2'));
-    } else {
-      inner.append(p('body anim d2', card.body));
-    }
+    inner.append(p('body anim d2', card.body));
     inner.append(p('body anim d3', card.close));
-  } else if (card.type === 'receipts') {
-    inner.append(el('div', 'eyebrow anim', card.eyebrow));
-    inner.append(p('lede anim d1', card.lede));
-    const wrap = el('div', 'anim d2');
-    wrap.style.marginTop = '22px';
-    const rows = card.evidence?.length ? card.evidence : (card.receipts || []);
-    rows.forEach((receipt, index) => {
-      const row = el('div', 'receipt');
-      row.append(el('span', 'rn', `0${index + 1}`));
-      if (typeof receipt === 'string') {
-        row.append(el('span', 'receipt-read', receipt));
-      } else {
-        // No raw question IDs (respondents never saw "Q6") and no proof line —
-        // the proves text restated the read line above it at 9px.
-        const body = el('div', 'receipt-body');
-        body.append(el('div', 'receipt-prompt', receipt.prompt || 'Evidence'));
-        body.append(el('div', 'receipt-answer', receipt.answer || ''));
-        body.append(el('div', 'receipt-read', receipt.read || ''));
-        row.append(body);
-      }
-      wrap.append(row);
-    });
-    inner.append(wrap);
-    inner.append(p('body anim d3', card.tail));
+    // Folded receipts: the respondent's own answers as compact supporting
+    // evidence (two lines), present to back the point — not to be the centre.
+    const evid = (card.evidence || []).slice(0, 2);
+    if (evid.length) {
+      const support = el('div', 'support anim d3');
+      support.append(el('div', 'support-label', 'From your answers'));
+      evid.forEach((receipt) => {
+        const r = el('div', 'support-row');
+        if (typeof receipt === 'string') {
+          r.append(el('div', 'support-read', receipt));
+        } else {
+          r.append(el('div', 'support-answer', receipt.answer || ''));
+          r.append(el('div', 'support-read', receipt.read || ''));
+        }
+        support.append(r);
+      });
+      inner.append(support);
+    }
   } else if (card.type === 'quote') {
     inner.append(el('div', 'eyebrow anim', card.eyebrow));
     const quote = el('div', 'quote');
@@ -1163,74 +1287,29 @@ function buildCard(card) {
     quote.append(el('span', 'quote-mark', '"'));
     inner.append(quote);
     inner.append(p('quote-after', card.implication));
-    if (card.lens?.length) inner.append(buildBriefPanel(card.lens, 'quote-lens'));
-  } else if (card.type === 'gap') {
-    inner.append(el('div', 'eyebrow anim', card.eyebrow));
-    inner.append(p('lede anim d1', card.lede));
-    if (card.calibration?.length) {
-      inner.append(buildBriefPanel(card.calibration, 'calibration-panel anim d2'));
-    } else {
-      const named = el('div', 'anim d2');
-      (card.named || []).forEach((line) => named.append(el('div', 'said', line)));
-      inner.append(named);
-    }
-    // The turn lands alone for divergent profiles (body is empty there: the
-    // calibration rows already carry the decoy and the measured signal).
-    inner.append(p('body anim d3', card.body ? `${card.turn} ${card.body}` : card.turn));
   } else if (card.type === 'cost') {
     inner.append(el('div', 'eyebrow anim', card.eyebrow));
     appendProse(inner, card.body?.length ? card.body : ['Picture the cost inside one real operating cycle.']);
-    // Only the rows that add to the scene; Loss unit and Business consequence
-    // restated the scene's own payoff lines in table form. Your number hands the
-    // respondent the gross-margin calculation the scene cannot do for them.
-    const modelRows = (card.model || []).filter((row) => ['Where it hides', 'Your number', 'Track next'].includes(row.label));
-    if (modelRows.length) inner.append(buildBriefPanel(modelRows, 'cost-model-panel anim d3'));
-  } else if (card.type === 'widening') {
-    inner.append(el('div', 'eyebrow anim', card.eyebrow));
-    appendProse(inner, card.body?.length ? card.body : ['And it is getting more expensive.']);
-    // If ignored is the one row the prose does not already say.
-    const compoundRows = (card.compounders || []).filter((row) => row.label === 'If ignored');
-    if (compoundRows.length) inner.append(buildBriefPanel(compoundRows, 'compound-panel anim d3'));
-  } else if (card.type === 'surface') {
-    inner.append(el('div', 'eyebrow anim', card.eyebrow));
-    // Full prose including the promise line ("What good looks like for you...")
-    // and the test. The implementation table stays payload-only: its rows
-    // pre-empted card 12 nearly word for word.
-    appendProse(inner, card.body?.length ? card.body : ['Here is what fixing it does not mean.']);
-  } else if (card.type === 'reframe') {
-    inner.append(el('div', 'eyebrow anim', card.eyebrow));
-    const lines = card.body || [];
-    if (card.lede) inner.append(p('lede anim d1', card.lede));
-    if (card.logic?.length) {
-      if (lines[0]) inner.append(p('body anim d2', lines[0]));
-      inner.append(buildBriefPanel(card.logic, 'reframe-panel anim d3'));
-    } else {
-      // The conclusion ("you are running last month's business...") holds back
-      // on d4 so the realization arrives as its own beat.
-      lines.forEach((line, index) => {
-        const isLast = index === lines.length - 1 && lines.length > 1;
-        const delay = isLast ? 'd4' : `d${Math.min(3, index + 1)}`;
-        inner.append(p(index === 0 && !card.lede ? 'lede anim d1' : `body anim ${delay}`, line));
-      });
-    }
+    // Your number hands the respondent the gross-margin calculation; If ignored
+    // is the folded widening escalation in a single row.
+    const modelRows = (card.model || []).filter((row) => ['Your number', 'Track next'].includes(row.label));
+    const ignored = (card.compounders || []).filter((row) => row.label === 'If ignored');
+    const rows = [...modelRows, ...ignored];
+    if (rows.length) inner.append(buildBriefPanel(rows, 'cost-model-panel anim d3'));
   } else if (card.type === 'firstMove') {
     inner.append(el('div', 'eyebrow anim', card.eyebrow));
     const lines = card.body || [];
-    inner.append(p('lede anim d1', lines[0] || card.actionPlan?.headline || 'Build the first useful artefact.'));
-    if (card.brief?.length) {
-      inner.append(buildBriefPanel(card.brief, 'anim d2'));
-    } else {
-      lines.slice(1).forEach((line, index) => inner.append(p(`body anim d${Math.min(3, index + 2)}`, line)));
-    }
-  } else if (card.type === 'fit' || card.type === 'close') {
+    // The folded "what good looks like" promise frames the move.
+    if (card.promise) inner.append(p('lede anim d1', card.promise));
+    else if (lines[0]) inner.append(p('lede anim d1', lines[0]));
+    if (card.brief?.length) inner.append(buildBriefPanel(card.brief, 'anim d2'));
+  } else if (card.type === 'close') {
     inner.append(el('div', 'eyebrow anim', card.eyebrow));
     inner.append(p('lede anim d1', card.lede));
-    if (card.body && card.type === 'fit' && !card.brief?.length) inner.append(p('body anim d2', card.body));
-    if (card.type === 'fit' && card.brief?.length) inner.append(buildBriefPanel(card.brief, 'anim d3'));
-    if (card.type === 'close' && card.outputs?.length) inner.append(buildOutputList(card.outputs, 'anim d3'));
-    // The character close line is the peak-end beat the whole reveal builds to;
-    // it lands after the outputs, right before the door.
-    if (card.type === 'close' && card.body) inner.append(p('close-line anim d3', card.body));
+    if (card.fitBody) inner.append(p('body anim d2', card.fitBody));
+    if (card.outputs?.length) inner.append(buildOutputList(card.outputs, 'anim d3'));
+    // The character close line is the peak-end beat the whole reveal builds to.
+    if (card.closeLine) inner.append(p('close-line anim d3', card.closeLine));
     const ctaWrap = el('div', 'anim d3');
     const cta = el('button', 'cta', `${card.button} ->`);
     cta.type = 'button';
@@ -1240,6 +1319,15 @@ function buildCard(card) {
     const panel = el('div', 'calendar-panel', 'Booking opens here once the scheduling link is connected.');
     ctaWrap.append(panel);
     inner.append(ctaWrap);
+  }
+
+  // Visible "see more" affordance on every non-final card (R3): a real button,
+  // not just an invisible tap zone.
+  if (card.type !== 'close') {
+    const advance = el('button', `card-advance${card.dark ? ' on-dark' : ''}`, 'Continue');
+    advance.type = 'button';
+    advance.addEventListener('click', () => go(i + 1));
+    section.append(advance);
   }
   return section;
 }
