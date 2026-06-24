@@ -860,7 +860,7 @@ test('pdf route returns a binary PDF for a submitted token', { skip: !localChrom
   const response = await pdf(new Request(submittedBody.pdfUrl));
   assert.equal(response.status, 200);
   assert.match(response.headers.get('content-type'), /application\/pdf/);
-  assert.match(response.headers.get('content-disposition'), /the-lagging-tanker\.pdf/);
+  assert.match(response.headers.get('content-disposition'), /ai-readiness-profile\.pdf/);
   assert.match(response.headers.get('cache-control'), /no-store/);
   assert.equal(response.headers.get('x-content-type-options'), 'nosniff');
 

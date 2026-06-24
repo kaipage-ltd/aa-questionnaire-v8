@@ -56,7 +56,7 @@ export async function GET(req) {
   return new Response(pdf, {
     headers: {
       'content-type': 'application/pdf',
-      'content-disposition': `inline; filename="${filename(payload.profile.characterName)}.pdf"`,
+      'content-disposition': `inline; filename="${filename(payload.brandName ? `${payload.brandName} AI Readiness Profile` : 'AI Readiness Profile')}.pdf"`,
       'cache-control': 'private, no-store, max-age=0, must-revalidate',
       'x-content-type-options': 'nosniff'
     }
