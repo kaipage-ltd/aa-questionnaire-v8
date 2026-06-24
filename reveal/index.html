@@ -1237,7 +1237,7 @@ function buildCard(card) {
     card.pillars.forEach((pillar) => {
       const row = el('div', `bar-row ${pillar.role === 'hurdle' ? 'hurdle' : pillar.role === 'normal' ? 'muted' : ''}`.trim());
       const head = el('div', 'bar-head');
-      head.append(el('span', 'bar-name', `${pillar.label}${pillar.role === 'hurdle' ? ' - your hurdle' : ''}`));
+      head.append(el('span', 'bar-name', `${pillar.label}${pillar.role === 'hurdle' ? ' - your weakest area' : ''}`));
       head.append(el('span', 'bar-val', String(pillar.value)));
       const track = el('div', 'bar-track');
       // Ghosted benchmark (where advanced brands sit) behind the respondent bar,

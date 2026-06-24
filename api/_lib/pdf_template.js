@@ -231,7 +231,7 @@ function shapePage(ctx, meta, profile) {
       const cls = isHurdle ? 'is-hurdle' : isStrong ? '' : 'is-muted';
       return `<div class="bar-row ${cls}">
         <div class="bar-head">
-          <span class="bar-name">${esc(pillar.label)}${isHurdle ? ' &nbsp;-&nbsp; your hurdle' : isStrong ? ' &nbsp;-&nbsp; strongest signal' : ''}</span>
+          <span class="bar-name">${esc(pillar.label)}${isHurdle ? ' &nbsp;-&nbsp; your weakest area' : isStrong ? ' &nbsp;-&nbsp; strongest signal' : ''}</span>
           <span class="bar-val">${esc(String(pillar.value))}</span>
         </div>
         <div class="bar-track"><div class="bar-fill" style="width:${Math.max(2, Math.min(100, pillar.value))}%;"></div></div>
@@ -405,7 +405,7 @@ export function profileContext(profile, insights) {
     aiLeverage: rowValue(shape?.shapeRead, 'AI today'),
     costModel: Array.isArray(cost?.model) ? cost.model : [],
     ignoredCost: rowValue(widening?.compounders, 'If ignored'),
-    hurdleClose: hurdle?.close || `Your hurdle is ${profile.hurdle}: the first place to inspect before stronger AI work depends on it.`,
+    hurdleClose: hurdle?.close || `Your weakest area is ${profile.hurdle}: the first place to inspect before stronger AI work depends on it.`,
     receipts,
     evidence,
     receiptTail: receiptsCard?.tail || 'Three answers. One pattern. The business has shown us where the drag sits.',
