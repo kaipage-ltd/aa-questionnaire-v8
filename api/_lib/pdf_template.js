@@ -1,7 +1,7 @@
 // The profile report as an HTML document, printed to PDF by headless Chromium.
 // Five fixed A4 sheets, laid out with CSS so variable-length profile copy can
 // never collide or clip the way absolute-positioned PDFKit drawing did. The
-// design language is the reveal's: Newsreader, Geist Mono, paper/ink/dark.
+// design language is the reveal's: Instrument Serif, Instrument Sans, paper/ink/dark.
 import { TOKENS } from './design_tokens.js';
 import { fontFaceCss } from './pdf_fonts.js';
 
@@ -54,7 +54,7 @@ function baseCss() {
     print-color-adjust: exact;
   }
   body {
-    font-family: 'Newsreader', Georgia, serif;
+    font-family: 'Instrument Serif', Georgia, serif;
     color: var(--ink);
     background: var(--paper);
   }
@@ -73,7 +73,7 @@ function baseCss() {
   .sheet:last-child { page-break-after: auto; }
 
   .mono {
-    font-family: 'Geist Mono', monospace;
+    font-family: 'Instrument Sans', system-ui, sans-serif;
     letter-spacing: 0.18em;
     text-transform: uppercase;
   }
@@ -130,7 +130,7 @@ function baseCss() {
 
   .bar-row { padding: 4.6mm 0; border-bottom: 1px solid var(--rule); }
   .bar-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 2.4mm; }
-  .bar-name { font-family: 'Geist Mono', monospace; font-size: 8px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-soft); }
+  .bar-name { font-family: 'Instrument Sans', system-ui, sans-serif; font-size: 8px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-soft); }
   .bar-val { font-size: 19px; font-weight: 500; font-variant-numeric: tabular-nums; }
   .bar-track { height: 2.5px; background: rgba(33, 29, 22, 0.10); border-radius: 2px; }
   .bar-fill { height: 100%; background: var(--ink); border-radius: 2px; }
@@ -140,7 +140,7 @@ function baseCss() {
 
   .btn {
     display: inline-block;
-    font-family: 'Geist Mono', monospace;
+    font-family: 'Instrument Sans', system-ui, sans-serif;
     font-size: 8.6px;
     letter-spacing: 0.14em;
     text-transform: uppercase;

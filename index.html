@@ -14,24 +14,49 @@
   }
 </script>
 <style>
-  :root {
-    --ink: #1a1a1a;
-    --ink-soft: #4a4a4a;
-    --ink-mute: #6b6b6b;
-    --ink-faint: #8a8a8a;
-    --ink-whisper: #b8b6b0;
-    --paper: #fafaf7;
-    --paper-soft: #f4f3ee;
-    --paper-warm: #f7f5ef;
-    --paper-tint: #f1ede2;
-    --rule: #d8d6d0;
-    --rule-soft: #e6e4de;
-    --rule-bold: #1a1a1a;
-    --selection: #ebe6d2;
+  /* ── A+A brand faces, self-hosted (Instrument Serif + Instrument Sans) ── */
+  @font-face {
+    font-family: 'Instrument Serif';
+    font-style: normal; font-weight: 400; font-display: swap;
+    src: url('assets/fonts/InstrumentSerif-Regular.ttf') format('truetype');
+  }
+  @font-face {
+    font-family: 'Instrument Serif';
+    font-style: italic; font-weight: 400; font-display: swap;
+    src: url('assets/fonts/InstrumentSerif-Italic.ttf') format('truetype');
+  }
+  @font-face {
+    font-family: 'Instrument Sans';
+    font-style: normal; font-weight: 400 600; font-display: swap;
+    src: url('assets/fonts/InstrumentSans-Variable.ttf') format('truetype-variations');
+  }
+  @font-face {
+    font-family: 'Instrument Sans';
+    font-style: italic; font-weight: 400 600; font-display: swap;
+    src: url('assets/fonts/InstrumentSans-Italic-Variable.ttf') format('truetype-variations');
+  }
 
-    --serif: 'Iowan Old Style', 'Palatino Linotype', Palatino, Georgia, serif;
+  :root {
+    /* Warm near-monochrome, converged onto the A+A brand tokens (Brand/tokens). */
+    --ink: #22211f;          /* brand ink  - canonical text */
+    --ink-soft: #4d4c4a;     /* slate */
+    --ink-mute: #6f6a64;     /* warm mid grey */
+    --ink-faint: #918f8c;    /* stone */
+    --ink-whisper: #bdbab5;  /* ash */
+    --paper: #f7f3ed;        /* brand cream/linen  - light means cream, not white */
+    --paper-soft: #f1ebe1;   /* warm hover */
+    --paper-warm: #f3eee4;   /* warm fill */
+    --paper-tint: #ece4d5;   /* deeper warm tint (label fills) */
+    --rule: #dcd5c7;         /* warm hairline (shared with the reveal) */
+    --rule-soft: #e8e1d4;
+    --rule-bold: #22211f;
+    --selection: #e9e0cc;
+
+    /* Two families only. The brand has no accent colour and no mono face: the
+       former "mono" chrome retires to tracked Instrument Sans (brand eyebrows). */
+    --serif: 'Instrument Serif', 'Iowan Old Style', 'Palatino Linotype', Palatino, Georgia, serif;
     --sans: 'Instrument Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    --mono: 'SF Mono', 'JetBrains Mono', Menlo, Consolas, monospace;
+    --mono: 'Instrument Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 
     --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
     --ease-soft: cubic-bezier(0.4, 0, 0.2, 1);
@@ -2029,9 +2054,260 @@
     .shimmer-verb .verb { animation: none !important; background: none !important; -webkit-text-fill-color: var(--ink) !important; }
     .shimmer-verb .glyph { animation: none !important; }
   }
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     THRESHOLD HERO  -  the dark brand world the visitor arrives from. On Begin
+     it recedes INTO the cream session beneath it (one gesture, not a hard cut),
+     and the document begins writing itself as the image settles.
+     ───────────────────────────────────────────────────────────────────────── */
+
+  /* The cream title moves onto the hero; the document keeps only its letterhead. */
+  .doc-head { display: none; }
+
+  .hero {
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    background: #0b0a07;
+    overflow: hidden;
+    transition: opacity 920ms var(--ease-out), transform 920ms var(--ease-out), filter 920ms var(--ease-out);
+  }
+  .hero.is-dismissing {
+    opacity: 0;
+    transform: translateY(-2.4%) scale(1.035);
+    filter: blur(7px);
+    pointer-events: none;
+  }
+  .hero-media {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(to bottom, rgba(8,7,5,0.06) 0%, rgba(8,7,5,0.28) 44%, rgba(8,7,5,0.78) 100%),
+      linear-gradient(to right, rgba(8,7,5,0.58) 0%, rgba(8,7,5,0.14) 46%, rgba(8,7,5,0) 80%),
+      url('assets/img/hero-archway.jpg');
+    background-size: cover;
+    background-position: 62% 36%;
+    transform: scale(1.05);
+    animation: heroDrift 18s var(--ease-out) forwards;
+  }
+  @keyframes heroDrift { to { transform: scale(1); } }
+  .hero-inner {
+    position: relative;
+    z-index: 2;
+    height: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px clamp(28px, 6vw, 88px) clamp(56px, 9vh, 104px);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .hero-logo {
+    width: 184px;
+    height: auto;
+    display: block;
+    opacity: 0;
+    transform: translateY(-8px);
+    animation: heroRise 1000ms var(--ease-out) 80ms forwards;
+  }
+  .hero-content { max-width: 820px; }
+  .hero-content > * {
+    opacity: 0;
+    transform: translateY(16px);
+    animation: heroRise 1000ms var(--ease-out) forwards;
+  }
+  .hero-eyebrow {
+    font-family: var(--sans);
+    font-size: 12.5px;
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: rgba(255,251,245,0.6);
+    margin: 0 0 24px;
+    animation-delay: 240ms;
+  }
+  .hero-headline {
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: clamp(44px, 7vw, 92px);
+    line-height: 1.04;
+    letter-spacing: -0.014em;
+    color: #fbf7f0;
+    margin: 0 0 30px;
+    animation-delay: 360ms;
+  }
+  .hero-headline em { font-style: italic; }
+  .hero-begin {
+    font-family: var(--sans);
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 0.005em;
+    color: var(--ink);
+    background: #f7f3ed;
+    border: 1px solid rgba(247,243,237,0.0);
+    border-radius: 60px;
+    padding: 14px 32px;
+    cursor: pointer;
+    animation-delay: 560ms;
+    transition: transform 360ms var(--ease-out), background 240ms var(--ease-soft), box-shadow 360ms var(--ease-out);
+  }
+  .hero-begin:hover { background: #fffdf9; transform: translateY(-1px); box-shadow: 0 12px 30px rgba(0,0,0,0.28); }
+  .hero-begin:focus-visible { outline: 2px solid rgba(255,251,245,0.6); outline-offset: 3px; }
+  @keyframes heroRise { to { opacity: 1; transform: none; } }
+
+  @media (max-width: 700px) {
+    .hero-logo { width: 132px; }
+    .hero-inner { padding: 28px 22px clamp(40px, 7vh, 72px); }
+    .hero-headline { font-size: clamp(34px, 9vw, 52px); margin-bottom: 26px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hero { transition: opacity 200ms linear; }
+    .hero.is-dismissing { transform: none; filter: none; }
+    .hero-media { animation: none; transform: scale(1); }
+    .hero-logo, .hero-content > * { animation: none; opacity: 1; transform: none; }
+  }
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     INTERSTITIALS  -  between sections the model "steps back to look at the
+     bigger picture": a brief full-bleed cinematic image carrying the pacing
+     line, then it dissolves back to the cream question canvas. Same gesture as
+     the hero, in reverse. Sea-to-readiness arc closes the loop to the homepage.
+     ───────────────────────────────────────────────────────────────────────── */
+  .interstitial {
+    position: fixed;
+    inset: 0;
+    z-index: 48;
+    background: #0b0a07;
+    overflow: hidden;
+    opacity: 0;
+    transition: opacity 780ms var(--ease-out);
+    cursor: pointer;
+  }
+  .interstitial.is-in { opacity: 1; }
+  .interstitial.is-out { opacity: 0; transition-duration: 680ms; }
+  .interstitial-media {
+    position: absolute;
+    inset: 0;
+    background-size: cover;
+    background-position: center;
+    transform: scale(1.06);
+    transition: transform 7s var(--ease-out);
+  }
+  .interstitial.is-in .interstitial-media { transform: scale(1); }
+  .interstitial::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(to bottom, rgba(8,7,5,0.28) 0%, rgba(8,7,5,0.32) 42%, rgba(8,7,5,0.74) 100%),
+      linear-gradient(to right, rgba(8,7,5,0.52) 0%, rgba(8,7,5,0.10) 56%, rgba(8,7,5,0) 92%);
+  }
+  .interstitial-inner {
+    position: relative;
+    z-index: 2;
+    height: 100%;
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 40px clamp(28px, 6vw, 88px) clamp(56px, 10vh, 112px);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+  }
+  .interstitial-inner > * {
+    opacity: 0;
+    transform: translateY(16px);
+    transition: opacity 820ms var(--ease-out), transform 820ms var(--ease-out);
+  }
+  .interstitial.is-in .interstitial-inner > * { opacity: 1; transform: none; }
+  .interstitial.is-in .interstitial-eyebrow { transition-delay: 220ms; }
+  .interstitial.is-in .interstitial-line,
+  .interstitial.is-in .interstitial-lede { transition-delay: 360ms; }
+  .interstitial.is-in .interstitial-body { transition-delay: 540ms; }
+  .interstitial.is-in .interstitial-cue { transition-delay: 820ms; }
+  .interstitial-eyebrow {
+    font-family: var(--sans);
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: rgba(255,251,245,0.55);
+    margin: 0 0 22px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .interstitial-eyebrow::before { content: '+'; color: rgba(255,251,245,0.5); }
+  .interstitial-line {
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: clamp(38px, 6vw, 78px);
+    line-height: 1.05;
+    letter-spacing: -0.012em;
+    color: #fbf7f0;
+    margin: 0;
+    max-width: 15em;
+  }
+  .interstitial-line em { font-style: italic; }
+  .interstitial-lede {
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: clamp(26px, 3.6vw, 42px);
+    line-height: 1.16;
+    color: #fbf7f0;
+    margin: 0;
+    max-width: 17em;
+  }
+  .interstitial-body {
+    font-family: var(--sans);
+    font-size: clamp(16px, 2vw, 20px);
+    line-height: 1.5;
+    color: rgba(251,247,240,0.72);
+    margin: 20px 0 0;
+    max-width: 34em;
+  }
+  .interstitial-cue {
+    align-self: flex-start;
+    margin-top: 42px;
+    font-family: var(--sans);
+    font-size: 11.5px;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: rgba(255,251,245,0.82);
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid rgba(255,251,245,0.42);
+    padding: 6px 2px 5px;
+    cursor: pointer;
+    transition: color 240ms var(--ease-soft), border-color 240ms var(--ease-soft);
+  }
+  .interstitial-cue::after { content: ' \2192'; }
+  .interstitial-cue:hover { color: #fff; border-color: rgba(255,251,245,0.9); }
+
+  @media (max-width: 700px) {
+    .interstitial-inner { padding: 28px 22px clamp(44px, 9vh, 86px); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .interstitial, .interstitial-inner > * { transition: opacity 200ms linear !important; transform: none !important; }
+    .interstitial-media { transition: none; transform: scale(1); }
+  }
 </style>
 </head>
 <body>
+
+<div class="hero" id="hero">
+  <div class="hero-media" aria-hidden="true"></div>
+  <div class="hero-inner">
+    <img class="hero-logo" src="assets/img/aa-logo-cream.svg" alt="Atelier + Avenue" width="259" height="64">
+    <div class="hero-content">
+      <p class="hero-eyebrow">The AI Readiness Diagnostic</p>
+      <h1 class="hero-headline">Does your business know more than it can <em>use?</em></h1>
+      <button class="hero-begin" id="heroBegin" type="button">Begin</button>
+    </div>
+  </div>
+</div>
+
 <main class="stage">
 
   <div class="brand-mark">
@@ -3048,12 +3324,6 @@ async function renderIntro() {
   p3.style.transition = 'opacity 700ms var(--ease-out)';
   block.append(p2, domainMap, p3);
 
-  const beginRow = el('div', 'confirm-row');
-  const beginBtn = el('button', 'confirm-btn', 'Begin');
-  beginBtn.type = 'button';
-  beginRow.append(beginBtn);
-  block.appendChild(beginRow);
-
   await appendBeat(block, { noScroll: true });
 
   // Stream the held opening
@@ -3073,27 +3343,10 @@ async function renderIntro() {
   await wait(reduceMotion ? 50 : 220);
   await streamText(p3, 'Answer from today, not the version you are trying to become. If two answers feel close, choose the harsher one. The reveal will be more useful.');
 
-  setTimeout(() => {
-    beginRow.classList.add('is-in');
-    smoothScrollTo(beginRow, 0.72);
-  }, 200);
-
-  return new Promise(resolve => {
-    const go = () => {
-      document.removeEventListener('keydown', keyHandler);
-      beginBtn.disabled = true;
-      block.closest('.beat')?.classList.add('is-retired');
-      block.setAttribute('aria-hidden', 'true');
-      updateBottomSpace();
-      resolve();
-    };
-    beginBtn.addEventListener('click', go);
-    const keyHandler = (e) => {
-      if (e.key === 'Enter') { e.preventDefault(); go(); }
-    };
-    document.addEventListener('keydown', keyHandler);
-    setTimeout(() => beginBtn.focus({ preventScroll: true }), 500);
-  });
+  // The hero "Begin" was the entry gesture, so the briefing now flows straight
+  // into the first question instead of gating on a second button.
+  await wait(reduceMotion ? 140 : 1000);
+  updateBottomSpace();
 }
 
 /* ─────────────────────────────────────────────────────────────────────────
@@ -3106,45 +3359,81 @@ async function renderPrepare() {
 }
 
 /* ─────────────────────────────────────────────────────────────────────────
-   APHORISM  -  held display italic, auto-advance
+   INTERSTITIALS  -  full-bleed cinematic image moments (the model steps back).
+   Reuse the site's own photos in a sea-to-readiness arc that closes the loop
+   back to the homepage. Tap / Continue / Enter advances (the Stories pattern).
    ───────────────────────────────────────────────────────────────────────── */
 
-async function renderAphorism({ text, current }) {
-  const node = el('div', current ? 'aphorism-stage is-section' : 'aphorism');
-  if (current) {
-    // Name the section that was just completed, so this reads as a milestone
-    // beat that stays legible on scroll-up (Saverio: these disappeared too fast).
-    const doneName = DOMAIN_SEQUENCE[DOMAIN_SEQUENCE.indexOf(current) - 1];
-    if (doneName) {
-      const mark = el('div', 'aphorism-mark');
-      mark.innerHTML = `<span class="tick">+</span>${escapeHtml(doneName)} complete`;
-      node.appendChild(mark);
+const INTERSTITIAL_LINES = {
+  'The picture is starting to form.': { image: 'fog-on-sea', emphasis: 'form.' },
+  'Almost ready to show you.':        { image: 'marble-sphere', emphasis: 'show you.' }
+};
+
+function emphasizeLine(text, emphasis) {
+  if (!emphasis || !text.includes(emphasis)) return escapeHtml(text);
+  const i = text.lastIndexOf(emphasis);
+  return escapeHtml(text.slice(0, i)) + '<em>' + escapeHtml(emphasis) + '</em>' + escapeHtml(text.slice(i + emphasis.length));
+}
+
+function showInterstitial({ image, eyebrow, line, emphasis, lede, body }) {
+  return new Promise((resolve) => {
+    const overlay = el('div', 'interstitial');
+    overlay.setAttribute('role', 'group');
+    overlay.setAttribute('aria-label', line || lede || 'A moment to step back');
+    const media = el('div', 'interstitial-media');
+    media.style.backgroundImage = `url('assets/img/${image}.jpg')`;
+    overlay.appendChild(media);
+
+    const inner = el('div', 'interstitial-inner');
+    if (eyebrow) inner.appendChild(el('p', 'interstitial-eyebrow', eyebrow));
+    if (line) {
+      const h = el('h2', 'interstitial-line');
+      h.innerHTML = emphasizeLine(line, emphasis);
+      inner.appendChild(h);
     }
-    node.appendChild(el('div', 'aphorism', text));
-    const domainMap = renderDomainMap({ current, compact: true });
-    domainMap.classList.add('is-in');
-    node.appendChild(domainMap);
-  } else {
-    node.textContent = text;
-  }
-  stream.appendChild(node);
-  smoothScrollTo(node, 0.32);
-  await wait(reduceMotion ? 50 : 200);
-  requestAnimationFrame(() => node.classList.add('is-in'));
-  if (current) {
-    // Hold the milestone (it persists, never fades), then a brief, transient
-    // "loading the next section" beat that scrolls into view, so the pause reads
-    // as "preparing what's next" rather than "finished then jump". It is appended
-    // to the stream and scrolled to (the milestone is tall and would otherwise
-    // push the cue below the fold on desktop), then removed before the next
-    // question lands; it never persists on scroll-up.
-    await wait(reduceMotion ? 200 : 1400);
-    await hold(`Composing ${current}`, reduceMotion ? 200 : 1300, { scroll: true });
-  } else {
-    await wait(reduceMotion ? 200 : 1800);
-    node.classList.add('is-out');
-    await wait(reduceMotion ? 100 : 700);
-  }
+    if (lede) inner.appendChild(el('p', 'interstitial-lede', lede));
+    if (body) inner.appendChild(el('p', 'interstitial-body', body));
+    const cue = el('button', 'interstitial-cue', 'Continue');
+    cue.type = 'button';
+    inner.appendChild(cue);
+    overlay.appendChild(inner);
+
+    document.body.appendChild(overlay);
+    requestAnimationFrame(() => requestAnimationFrame(() => overlay.classList.add('is-in')));
+
+    let done = false;
+    const finish = () => {
+      if (done) return;
+      done = true;
+      document.removeEventListener('keydown', onKey);
+      overlay.classList.remove('is-in');
+      overlay.classList.add('is-out');
+      setTimeout(() => { overlay.remove(); resolve(); }, reduceMotion ? 180 : 700);
+    };
+    const onKey = (e) => {
+      if (e.key === 'Enter' || e.key === ' ' || e.key === 'ArrowRight') { e.preventDefault(); finish(); }
+    };
+    overlay.addEventListener('click', finish);
+    // Brief delay before input is live so a held Enter from the previous answer
+    // does not skip the moment, and the image has a beat to register.
+    setTimeout(() => {
+      document.addEventListener('keydown', onKey);
+      cue.focus({ preventScroll: true });
+    }, reduceMotion ? 60 : 720);
+  });
+}
+
+async function renderAphorism({ text, current }) {
+  const doneName = current ? DOMAIN_SEQUENCE[DOMAIN_SEQUENCE.indexOf(current) - 1] : null;
+  const meta = INTERSTITIAL_LINES[text] || {};
+  await showInterstitial({
+    image: meta.image || 'fog-on-sea',
+    eyebrow: doneName ? `${doneName} complete` : null,
+    line: text,
+    emphasis: meta.emphasis
+  });
+  // Back on the cream canvas, the model resumes composing the next section.
+  if (current) await hold(`Composing ${current}`, reduceMotion ? 180 : 1100, { scroll: true });
 }
 
 /* ─────────────────────────────────────────────────────────────────────────
@@ -3497,46 +3786,15 @@ async function renderMulti(q) {
    ───────────────────────────────────────────────────────────────────────── */
 
 async function renderReflection() {
-  await hold('Holding', 800);
-
-  const block = el('div', 'reflection');
-
-  const p1 = el('p', 'sys-body lede');
-  const p2 = el('p', 'sys-body');
-  const domainMap = renderDomainMap({ current: 'Coherence' });
-  block.append(p1, p2, domainMap);
-
-  const continueRow = el('div', 'confirm-row');
-  const continueBtn = el('button', 'confirm-btn', 'Continue');
-  continueBtn.type = 'button';
-  continueRow.append(continueBtn);
-  block.appendChild(continueRow);
-
-  await appendBeat(block);
-
-  await streamText(p1, "You've moved through what the business can see and how fast it can act on what it sees.");
-  await wait(reduceMotion ? 40 : 280);
-  await streamText(p2, 'The next layer is coherence  -  whether the seeing and the acting are connected to the same picture or running on parallel tracks.');
-  domainMap.classList.add('is-in');
-  await wait(reduceMotion ? 60 : 260);
-
-  setTimeout(() => continueRow.classList.add('is-in'), 300);
-
-  await new Promise(resolve => {
-    const go = () => {
-      document.removeEventListener('keydown', keyHandler);
-      continueBtn.disabled = true;
-      resolve();
-    };
-    continueBtn.addEventListener('click', go);
-    const keyHandler = (e) => {
-      if (e.key === 'Enter') { e.preventDefault(); go(); }
-    };
-    document.addEventListener('keydown', keyHandler);
-    setTimeout(() => continueBtn.focus({ preventScroll: true }), 500);
+  // The midpoint. A held "stepping back" beat, then the full-bleed sea-storm
+  // moment carrying the halfway reflection, before the harder second half.
+  await hold('Holding', reduceMotion ? 150 : 720);
+  await showInterstitial({
+    image: 'sea-storm',
+    eyebrow: 'Halfway',
+    lede: "You've moved through what the business can see and how fast it can act on what it sees.",
+    body: 'The next layer is coherence: whether the seeing and the acting are connected to the same picture or running on parallel tracks.'
   });
-
-  await appendRule();
 }
 
 /* ─────────────────────────────────────────────────────────────────────────
@@ -4181,7 +4439,40 @@ function showDemoBadge(scenario) {
   document.body.appendChild(badge);
 }
 
-run();
+/* ─────────────────────────────────────────────────────────────────────────
+   THRESHOLD START  -  the dark hero is the single entry gesture. On Begin it
+   dissolves and the cream session starts writing beneath it. Demo/skip modes
+   bypass the hero entirely.
+   ───────────────────────────────────────────────────────────────────────── */
+(function bootThreshold() {
+  const heroEl = document.getElementById('hero');
+  const heroBegin = document.getElementById('heroBegin');
+
+  const startSession = () => { document.body.classList.add('session-started'); run(); };
+
+  // Demo / scenario mode skips the threshold (it jumps straight to the gate).
+  if (getDemoScenario() || !heroEl || !heroBegin) {
+    if (heroEl) heroEl.remove();
+    startSession();
+    return;
+  }
+
+  const cross = () => {
+    heroEl.classList.add('is-dismissing');
+    setTimeout(() => heroEl.remove(), reduceMotion ? 240 : 980);
+    startSession();
+  };
+
+  heroBegin.addEventListener('click', cross, { once: true });
+  document.addEventListener('keydown', function onEnter(e) {
+    if (e.key === 'Enter' && document.getElementById('hero') && !heroEl.classList.contains('is-dismissing')) {
+      e.preventDefault();
+      document.removeEventListener('keydown', onEnter);
+      cross();
+    }
+  });
+  setTimeout(() => heroBegin.focus({ preventScroll: true }), 720);
+})();
 </script>
 </body>
 </html>
