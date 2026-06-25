@@ -583,7 +583,7 @@
   .reveal-wordmark svg { width: 100%; height: auto; display: block; }
 
   /* ── Wrapped-style scale (each beat its own composition) ──────── */
-  .turn-name { font-size: clamp(60px, 9vw, 92px); }
+  .turn-name { font-size: clamp(72px, 11vw, 116px); }
   .num { font-size: clamp(180px, 30vw, 300px); }
   .num-wrap {
     display: flex;
@@ -658,20 +658,20 @@
   /* ── Per-card advance affordance (R3): a real button, not a hint ─ */
   .card-advance {
     position: absolute;
-    bottom: 28px;
+    bottom: 34px;
     left: 50%;
     transform: translateX(-50%);
     z-index: 36;
     display: inline-flex;
     align-items: center;
-    gap: 9px;
-    padding: 11px 24px;
-    background: transparent;
-    border: 1px solid var(--ink);
+    gap: 10px;
+    padding: 14px 32px;
+    background: var(--paper-dim);
+    border: 1.5px solid var(--ink);
     border-radius: 999px;
     color: var(--ink);
     font-family: var(--mono);
-    font-size: 10.5px;
+    font-size: 12px;
     letter-spacing: 0.16em;
     text-transform: uppercase;
     cursor: pointer;
@@ -683,7 +683,7 @@
     color: var(--paper);
     transform: translateX(-50%) translateY(-2px);
   }
-  .card-advance.on-dark { border-color: rgba(250, 248, 242, 0.5); color: var(--paper); }
+  .card-advance.on-dark { background: rgba(250, 248, 242, 0.08); border-color: var(--paper); color: var(--paper); }
   .card-advance.on-dark:hover { background: var(--paper); color: var(--dark); }
 
   .hint {
@@ -795,7 +795,7 @@
     .card.has-visual { align-items: center; }
     .card.has-visual .card-inner,
     .card.has-visual .card-inner.is-wide { width: 100%; }
-    .turn-name { font-size: 40px; }
+    .turn-name { font-size: 50px; }
     .num { font-size: 132px; }
     .num-after {
       font-size: 16px;
@@ -1077,7 +1077,9 @@ function buildBriefPanel(rows, className) {
   (rows || []).forEach((row) => {
     const item = el('div', `brief-row${/clue|quote/i.test(row.label || '') ? ' is-quote' : ''}`);
     item.append(el('div', 'brief-label', row.label));
-    item.append(el('div', 'brief-value', row.value));
+    const value = el('div', 'brief-value');
+    value.innerHTML = boldify(row.value);   // honour **bold** on key table takeaways
+    item.append(value);
     panel.append(item);
   });
   return panel;

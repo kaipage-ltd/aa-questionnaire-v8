@@ -168,28 +168,28 @@ export function deriveActionPlan(profile) {
     Visibility: {
       artefactName: 'Decision-Grade Number Map',
       why: 'Until one number is trusted, AI only speeds up debate.',
-      mondayMove: 'Choose the number that should change the week. Write its owner, source, decision, and the condition that would make the room stop trusting it.',
+      mondayMove: 'Choose **the number that should change the week**. Write its owner, source, decision, and the condition that would make the room stop trusting it.',
       whatToBringToCall: 'Bring the metric everyone references but still has to defend: payback, margin, stock risk, channel quality, or the number currently slowing the room.',
       avoidForNow: 'Do not start with a reporting rebuild, dashboard redesign, or AI summary layer. Make one number decision-grade first.'
     },
     Velocity: {
       artefactName: 'Decision Path Timing Map',
       why: 'The lost value is in the waiting, not only in the analysis.',
-      mondayMove: 'Choose one recurring decision. Mark where the signal starts, where it waits, who owns the call, and how many days the handoffs currently cost.',
+      mondayMove: 'Choose **one recurring decision**. Mark where the signal starts, where it waits, who owns the call, and how many days the handoffs currently cost.',
       whatToBringToCall: 'Bring the live decision path that keeps missing its window: campaign response, stock action, pricing call, hiring approval, or another repeated delay.',
       avoidForNow: 'Do not add another meeting, dashboard, or AI layer before you know where the decision is actually waiting.'
     },
     Coherence: {
       artefactName: 'One-Source Decision Map',
       why: 'Separate teams can each be right and still slow the business.',
-      mondayMove: 'Choose one cross-team decision. Write the source, definition, owner, and escalation rule for when the numbers disagree.',
+      mondayMove: 'Choose **one cross-team decision**. Write the source, definition, owner, and escalation rule for when the numbers disagree.',
       whatToBringToCall: 'Bring the decision where teams keep arriving with different pictures: channel performance, stock exposure, customer value, margin, or AI ownership.',
       avoidForNow: 'Do not scale more AI pilots until one shared decision has one source, one definition, and one owner.'
     }
   }[hurdle] || {
     artefactName: 'First Constraint Map',
     why: 'The next useful move is to make one repeated decision cleaner.',
-    mondayMove: 'Choose one recurring decision and write the signal, owner, source, delay, and first fix.',
+    mondayMove: 'Choose **one recurring decision** and write the signal, owner, source, delay, and first fix.',
     whatToBringToCall: 'Bring one live decision the business is already struggling to make cleanly.',
     avoidForNow: 'Do not broaden the work before the first constraint is visible.'
   };
@@ -256,7 +256,7 @@ export function deriveRevealInsights(answers, profile, context = {}) {
       type: 'shape',
       beat: 'Problem',
       eyebrow: `The shape behind the ${profile.score}`,
-      lede: 'Four readings, against where advanced brands sit. They are not equal.',
+      lede: 'Four readings, against where advanced brands sit. They are **not equal**.',
       pillars: pillars.map((pillar) => ({
         ...pillar,
         role: pillar.label === profile.hurdle ? 'hurdle' : pillar.label === strongest.label ? 'strong' : 'normal',
@@ -547,10 +547,10 @@ function blockerCalibration({ orderedPicks, hurdle, noneSelected, convergent, na
 
 function scoreInterpretation({ profile, strongest, hurdle, gap, highEvenShape, balancedEvenShape }) {
   const scoreRead =
-    profile.score >= 80 ? 'Strong enough to turn into advantage, if the first constraint is not allowed to carry forward.' :
-    profile.score >= 65 ? 'Commercially usable readiness, with one operating constraint now doing too much work.' :
-    profile.score >= 45 ? 'Enough signal to act, but the operating system is still asking people to compensate for weak wiring.' :
-    'A useful early read: the value is not in the score, it is in finding the first constraint cleanly.';
+    profile.score >= 80 ? 'Strong enough to turn into **advantage**, if the first constraint is not allowed to carry forward.' :
+    profile.score >= 65 ? 'Commercially usable readiness, with **one operating constraint** now doing too much work.' :
+    profile.score >= 45 ? 'Enough signal to act, but the operating system is still asking people to compensate for **weak wiring**.' :
+    'A useful early read: the value is not in the score, it is in finding **the first constraint** cleanly.';
   const strength = highEvenShape
     ? 'All four readings are high. The work is to choose which part of the system should carry more weight next.'
     : balancedEvenShape
@@ -704,22 +704,22 @@ function costModel(profile) {
     Visibility: {
       hidden: 'The gap hides in reconciliation: reported performance, payback, source ownership, and the decision the number is allowed to change.',
       track: 'Track how many days pass before the room trusts the number enough to act.',
-      yourNumber: 'Take one decision the room delayed because the figure was not trusted. Price the wait in gross margin, not revenue. That is the number this work protects.'
+      yourNumber: 'Take one decision the room delayed because the figure was not trusted. Price the wait in **gross margin, not revenue**. That is the number this work protects.'
     },
     Velocity: {
       hidden: 'The gap hides after signal appears: decision framing, owner permission, handoffs, and the meeting where the call finally becomes real.',
       track: 'Track days from first signal to first irreversible action.',
-      yourNumber: 'Take one decision that landed late last quarter. Price the delay in gross margin, not revenue. That is the number this work protects.'
+      yourNumber: 'Take one decision that landed late last quarter. Price the delay in **gross margin, not revenue**. That is the number this work protects.'
     },
     Coherence: {
       hidden: 'The gap hides between teams: separate sources, separate definitions, separate owners, and late reconciliation before the decision lands.',
       track: 'Track how many people, tools, and definitions are needed before one answer is usable.',
-      yourNumber: 'Take one week of reconciling versions before deciding. Price that time in gross margin, not revenue. That is the number this work protects.'
+      yourNumber: 'Take one week of reconciling versions before deciding. Price that time in **gross margin, not revenue**. That is the number this work protects.'
     }
   }[profile.hurdle] || {
     hidden: 'The gap hides inside the repeated decision path.',
     track: 'Track the delay from first signal to clean decision.',
-    yourNumber: 'Take one repeated decision that landed late. Price the delay in gross margin, not revenue. That is the number this work protects.'
+    yourNumber: 'Take one repeated decision that landed late. Price the delay in **gross margin, not revenue**. That is the number this work protects.'
   };
 
   const specific = {
