@@ -2670,10 +2670,13 @@ async function hold(label, ms = 480, opts = {}) {
 }
 
 async function appendBeat(content, opts = {}) {
-  // Any question already in the stream is now "past" (a newer beat is arriving),
-  // so its "change this answer" affordance becomes available; the just-answered
-  // question stays un-flagged until the next one appears.
-  stream.querySelectorAll('.question-block').forEach((b) => b.classList.add('is-past'));
+  // Any question already in the stream is becoming "past" (a newer beat is
+  // arriving), which makes its "change this answer" affordance hover-available.
+  // We flag it only AFTER the new beat has scrolled into place — otherwise the
+  // just-answered question would flash the affordance while it slides away under
+  // a resting cursor (it looks broken). 700ms covers the smooth-scroll.
+  const settling = Array.from(stream.querySelectorAll('.question-block:not(.is-past)'));
+  if (settling.length) setTimeout(() => settling.forEach((b) => b.classList.add('is-past')), 700);
   const beat = el('div', 'beat');
   if (opts.id) beat.dataset.id = opts.id;
   if (opts.noScroll) beat.dataset.noBottomSpace = 'true';
