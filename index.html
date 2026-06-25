@@ -758,8 +758,10 @@
     transition: opacity 240ms var(--ease-out), transform 240ms var(--ease-out);
     pointer-events: none;
   }
-  .question-block:hover .answer-edit,
-  .answer-edit:focus-within { opacity: 1; transform: none; pointer-events: auto; }
+  /* Only a PAST question (one you've moved beyond) reveals it — never the question
+     you just answered, where your cursor still rests. */
+  .question-block.is-past:hover .answer-edit,
+  .question-block.is-past .answer-edit:focus-within { opacity: 1; transform: none; pointer-events: auto; }
   .answer-edit-btn {
     background: none;
     border: none;
@@ -774,9 +776,9 @@
     transition: color 300ms var(--ease-out), border-color 300ms var(--ease-out);
   }
   .answer-edit-btn:hover { color: var(--ink); border-bottom-color: var(--ink); }
-  /* Touch devices have no hover: keep it discoverable but quiet. */
+  /* Touch devices have no hover: show it quietly, but still only on PAST questions. */
   @media (hover: none) and (pointer: coarse) {
-    .answer-edit { opacity: 1; transform: none; pointer-events: auto; margin-top: 14px; }
+    .question-block.is-past .answer-edit { opacity: 1; transform: none; pointer-events: auto; margin-top: 14px; }
     .answer-edit-btn { font-size: 10px; color: var(--ink-faint); border-bottom-color: var(--rule); }
   }
 
@@ -2668,6 +2670,10 @@ async function hold(label, ms = 480, opts = {}) {
 }
 
 async function appendBeat(content, opts = {}) {
+  // Any question already in the stream is now "past" (a newer beat is arriving),
+  // so its "change this answer" affordance becomes available; the just-answered
+  // question stays un-flagged until the next one appears.
+  stream.querySelectorAll('.question-block').forEach((b) => b.classList.add('is-past'));
   const beat = el('div', 'beat');
   if (opts.id) beat.dataset.id = opts.id;
   if (opts.noScroll) beat.dataset.noBottomSpace = 'true';
@@ -3123,16 +3129,14 @@ async function renderAphorism({ text, current }) {
   await wait(reduceMotion ? 50 : 200);
   requestAnimationFrame(() => node.classList.add('is-in'));
   if (current) {
-    // Hold the milestone (it persists, never fades), then show a brief, transient
-    // "loading the next section" shimmer so the pause reads as "preparing what's
-    // next" rather than "finished and then it jumps" (Saverio: it felt janky).
-    await wait(reduceMotion ? 200 : 1500);
-    const loader = el('div', 'shimmer-verb');
-    loader.innerHTML = `<span class="glyph"></span><span class="verb">Composing ${escapeHtml(current)}</span>`;
-    node.appendChild(loader);
-    requestAnimationFrame(() => loader.classList.add('is-in'));
-    await wait(reduceMotion ? 200 : 1300);
-    loader.remove();
+    // Hold the milestone (it persists, never fades), then a brief, transient
+    // "loading the next section" beat that scrolls into view, so the pause reads
+    // as "preparing what's next" rather than "finished then jump". It is appended
+    // to the stream and scrolled to (the milestone is tall and would otherwise
+    // push the cue below the fold on desktop), then removed before the next
+    // question lands; it never persists on scroll-up.
+    await wait(reduceMotion ? 200 : 1400);
+    await hold(`Composing ${current}`, reduceMotion ? 200 : 1300, { scroll: true });
   } else {
     await wait(reduceMotion ? 200 : 1800);
     node.classList.add('is-out');
