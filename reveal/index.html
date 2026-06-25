@@ -1215,9 +1215,9 @@ function buildCard(card) {
     inner.append(el('div', 'turn-name anim d1', card.nameLine));
     inner.append(p('lede anim d2', card.lede));
     inner.append(p('body anim d3', card.body));
-    // One human sentence acknowledging seat and footprint. The analyst basis
-    // table stays in the payload (PDF, tests) but never renders here.
-    if (card.contextLine) inner.append(p('body anim d3', card.contextLine));
+    // The seat/footprint "context line" was cut from the card: it read as jargon
+    // ("joins and handoffs are part of this read"). It stays in the payload for
+    // tests/analytics but no longer renders, keeping the opening punchier.
   } else if (card.type === 'number') {
     inner.style.textAlign = 'center';
     inner.append(el('div', 'num-label anim', card.label));
