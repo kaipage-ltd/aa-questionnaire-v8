@@ -7,7 +7,7 @@ export const TOKENS = {
   inkSoft: '#4d4c4a',
   inkFaint: '#918f8c',
   rule: '#dcd5c7',
-  dark: '#141414',
+  dark: '#1c1b18',
   darkSoft: '#bdbab5',
   darkFaint: '#8a8782'
 };

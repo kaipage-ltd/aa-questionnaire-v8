@@ -58,8 +58,11 @@
     --sans: 'Instrument Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     --mono: 'Instrument Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 
-    --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+    /* Motion craft (Emil Kowalski): ease-out for entrances, ease-in-out for
+       on-screen morphs. Replace default curves; they lack intentionality. */
+    --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
     --ease-soft: cubic-bezier(0.4, 0, 0.2, 1);
+    --ease-morph: cubic-bezier(0.77, 0, 0.175, 1);
   }
 
   * { box-sizing: border-box; }
@@ -75,7 +78,7 @@
     padding: 0;
     background: var(--paper);
     color: var(--ink);
-    font-family: var(--serif);
+    font-family: var(--sans);
     font-size: 16px;
     line-height: 1.55;
     -webkit-font-smoothing: antialiased;
@@ -264,9 +267,10 @@
   }
 
   /* SYSTEM turn body */
+  /* Streamed system prose is body copy: Instrument Sans, like the site. */
   .sys-body {
-    font-family: var(--serif);
-    font-size: 21px;
+    font-family: var(--sans);
+    font-size: 20px;
     line-height: 1.5;
     color: var(--ink);
     margin: 0 0 4px;
@@ -274,6 +278,17 @@
   }
   .sys-body em { font-style: italic; color: var(--ink-soft); }
   .sys-body + .sys-body { margin-top: 14px; }
+
+  /* The question stem is the SECTION HEADING: Instrument Serif, tight, like the
+     site's serif headlines. The one emphasis word rides as serif italic. */
+  .question-block .sys-body {
+    font-family: var(--serif);
+    font-weight: 400;
+    line-height: 1.14;
+    letter-spacing: -0.01em;
+    color: var(--ink);
+  }
+  .question-block .sys-body em { color: var(--ink); }
 
   /* Streaming caret  -  tapered fountain-pen lift */
   .caret {
@@ -361,7 +376,7 @@
     border: none;
     background: transparent;
     text-align: left;
-    font-family: var(--serif);
+    font-family: var(--sans);
     font-size: 18px;
     line-height: 1.45;
     color: var(--ink);
@@ -470,8 +485,8 @@
       margin-bottom: 18px;
     }
     .question-block .sys-body {
-      font-size: 26px;
-      line-height: 1.36;
+      font-size: 30px;
+      line-height: 1.16;
     }
     .question-block .opts {
       margin-top: 34px;
@@ -612,8 +627,8 @@
   .opt.is-current-pick { background: var(--paper-warm); }
   .opt.is-current-pick .opt-num { color: var(--ink); }
   .user-body {
-    font-family: var(--serif);
-    font-size: 18px;
+    font-family: var(--sans);
+    font-size: 17px;
     font-style: italic;
     line-height: 1.5;
     color: var(--ink-soft);
@@ -2118,11 +2133,11 @@
   }
   .hero-eyebrow {
     font-family: var(--sans);
-    font-size: 12.5px;
-    font-weight: 500;
-    letter-spacing: 0.2em;
+    font-size: 13.5px;
+    font-weight: 400;
+    letter-spacing: 0.14em;
     text-transform: uppercase;
-    color: rgba(255,251,245,0.6);
+    color: rgba(255,251,245,0.62);
     margin: 0 0 24px;
     animation-delay: 240ms;
   }
@@ -2227,11 +2242,11 @@
   .interstitial.is-in .interstitial-cue { transition-delay: 820ms; }
   .interstitial-eyebrow {
     font-family: var(--sans);
-    font-size: 12px;
-    font-weight: 500;
-    letter-spacing: 0.2em;
+    font-size: 13.5px;
+    font-weight: 400;
+    letter-spacing: 0.14em;
     text-transform: uppercase;
-    color: rgba(255,251,245,0.55);
+    color: rgba(255,251,245,0.6);
     margin: 0 0 22px;
     display: flex;
     align-items: center;
@@ -2292,6 +2307,27 @@
     .interstitial, .interstitial-inner > * { transition: opacity 200ms linear !important; transform: none !important; }
     .interstitial-media { transition: none; transform: scale(1); }
   }
+
+  /* When the View Transitions API drives the section break, the overlay is
+     already settled inside the snapshot and the browser cross-fade is the whole
+     entrance, so its own transitions/animations are switched off. */
+  .interstitial.settled,
+  .interstitial.settled .interstitial-media,
+  .interstitial.settled .interstitial-inner > * {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+    animation: none !important;
+  }
+
+  /* The cohesive cross-dissolve itself: the whole canvas cross-fades between the
+     cream questions and the image moment, bridged with a subtle blur (Emil
+     Kowalski's "blur to bridge difficult crossfades"). Scoped so it only fires
+     for section breaks. ~600-720ms reads as a calm breath, not a UI flick. */
+  html.vt-section::view-transition-old(root) { animation: 560ms var(--ease-out) both vtFadeOut; }
+  html.vt-section::view-transition-new(root) { animation: 720ms var(--ease-out) both vtFadeIn; }
+  @keyframes vtFadeOut { from { opacity: 1; filter: blur(0); } to { opacity: 0; filter: blur(7px); } }
+  @keyframes vtFadeIn  { from { opacity: 0; filter: blur(7px); } to { opacity: 1; filter: blur(0); } }
 </style>
 </head>
 <body>
@@ -3375,6 +3411,19 @@ function emphasizeLine(text, emphasis) {
   return escapeHtml(text.slice(0, i)) + '<em>' + escapeHtml(emphasis) + '</em>' + escapeHtml(text.slice(i + emphasis.length));
 }
 
+// Wrap a DOM swap in a scoped View Transition so the canvas cross-dissolves
+// (blur-bridged) between the cream questions and the image moment. Falls back to
+// an instant swap where the API is absent or motion is reduced.
+function withSectionTransition(domUpdate) {
+  if (!document.startViewTransition || reduceMotion) {
+    domUpdate();
+    return Promise.resolve();
+  }
+  document.documentElement.classList.add('vt-section');
+  const t = document.startViewTransition(domUpdate);
+  return t.finished.catch(() => {}).finally(() => document.documentElement.classList.remove('vt-section'));
+}
+
 function showInterstitial({ image, eyebrow, line, emphasis, lede, body }) {
   return new Promise((resolve) => {
     const overlay = el('div', 'interstitial');
@@ -3398,17 +3447,28 @@ function showInterstitial({ image, eyebrow, line, emphasis, lede, body }) {
     inner.appendChild(cue);
     overlay.appendChild(inner);
 
-    document.body.appendChild(overlay);
-    requestAnimationFrame(() => requestAnimationFrame(() => overlay.classList.add('is-in')));
+    const supportsVT = !!document.startViewTransition && !reduceMotion;
+    if (supportsVT) {
+      // Settled inside the snapshot: the browser cross-fade is the entrance.
+      overlay.classList.add('settled');
+      withSectionTransition(() => document.body.appendChild(overlay));
+    } else {
+      document.body.appendChild(overlay);
+      requestAnimationFrame(() => requestAnimationFrame(() => overlay.classList.add('is-in')));
+    }
 
     let done = false;
     const finish = () => {
       if (done) return;
       done = true;
       document.removeEventListener('keydown', onKey);
-      overlay.classList.remove('is-in');
-      overlay.classList.add('is-out');
-      setTimeout(() => { overlay.remove(); resolve(); }, reduceMotion ? 180 : 700);
+      if (supportsVT) {
+        withSectionTransition(() => overlay.remove()).then(resolve);
+      } else {
+        overlay.classList.remove('is-in');
+        overlay.classList.add('is-out');
+        setTimeout(() => { overlay.remove(); resolve(); }, reduceMotion ? 180 : 680);
+      }
     };
     const onKey = (e) => {
       if (e.key === 'Enter' || e.key === ' ' || e.key === 'ArrowRight') { e.preventDefault(); finish(); }
@@ -3419,7 +3479,7 @@ function showInterstitial({ image, eyebrow, line, emphasis, lede, body }) {
     setTimeout(() => {
       document.addEventListener('keydown', onKey);
       cue.focus({ preventScroll: true });
-    }, reduceMotion ? 60 : 720);
+    }, reduceMotion ? 60 : 640);
   });
 }
 
