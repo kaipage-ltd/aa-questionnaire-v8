@@ -3152,24 +3152,13 @@ async function renderAphorism({ text, current }) {
    ───────────────────────────────────────────────────────────────────────── */
 
 async function renderPillar({ pillar }) {
+  // A silent breath only. The new section is already marked by the milestone beat
+  // above (its domain map) and by the pillar rail lighting up on the next
+  // question, so the old motif + extra "+" divider here were duplication.
   const spacer = el('div', 'pillar-break');
-  if (!SCORED_PILLARS.has(pillar)) spacer.style.margin = '32px 0 0';
-  if (SCORED_PILLARS.has(pillar)) {
-    const meta = DOMAIN_META[pillar];
-    const motif = meta ? `<svg class="pillar-break-motif" viewBox="0 0 34 34" aria-hidden="true">${meta.icon}</svg>` : '';
-    spacer.innerHTML = `
-      ${motif}
-      <svg class="pillar-break-visual" viewBox="0 0 360 30" aria-hidden="true">
-        <path d="M4 15H148" />
-        <path d="M212 15H356" />
-        <path class="strong plus-line" d="M174 15H186" />
-        <path class="strong plus-line" d="M180 9V21" />
-      </svg>
-    `;
-  }
+  spacer.style.margin = '32px 0 0';
   stream.appendChild(spacer);
   await fadeIn(spacer, 60);
-  if (SCORED_PILLARS.has(pillar)) await wait(reduceMotion ? 60 : 220);
 }
 
 /* ─────────────────────────────────────────────────────────────────────────
