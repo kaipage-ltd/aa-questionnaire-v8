@@ -1754,6 +1754,14 @@
     color: var(--ink);
     margin-right: 8px;
   }
+  /* Transient "loading the next section" cue on the milestone beat, so the pause
+     reads as "preparing what's next" rather than "finished". */
+  .aphorism-stage .shimmer-verb {
+    display: flex;
+    justify-content: center;
+    margin: 28px 0 0;
+    padding-bottom: 0;
+  }
 
   /* Byline credit on reveal */
   .byline {
@@ -3115,9 +3123,16 @@ async function renderAphorism({ text, current }) {
   await wait(reduceMotion ? 50 : 200);
   requestAnimationFrame(() => node.classList.add('is-in'));
   if (current) {
-    // Hold longer, then advance WITHOUT fading out: the section-complete beat
-    // must remain visible when the user scrolls back up.
-    await wait(reduceMotion ? 240 : 2600);
+    // Hold the milestone (it persists, never fades), then show a brief, transient
+    // "loading the next section" shimmer so the pause reads as "preparing what's
+    // next" rather than "finished and then it jumps" (Saverio: it felt janky).
+    await wait(reduceMotion ? 200 : 1500);
+    const loader = el('div', 'shimmer-verb');
+    loader.innerHTML = `<span class="glyph"></span><span class="verb">Composing ${escapeHtml(current)}</span>`;
+    node.appendChild(loader);
+    requestAnimationFrame(() => loader.classList.add('is-in'));
+    await wait(reduceMotion ? 200 : 1300);
+    loader.remove();
   } else {
     await wait(reduceMotion ? 200 : 1800);
     node.classList.add('is-out');
