@@ -143,7 +143,7 @@ export const HURDLE_COPY = {
     hurdleCard: {
       lede: 'One of these four is not like the others.',
       body: 'It is not that Visibility is just a low number. It is that every other ambition has to stand on it. A business that cannot trust what it sees does not have four problems. It has one, and the other numbers are quietly paying for it.',
-      close: 'Your weakest area is **Visibility**: the distance between having data and having a picture leadership can act on.'
+      close: 'Your first constraint is **Visibility**: the distance between having data and having a picture leadership can act on.'
     },
     reframe: {
       lede: 'So here is what is actually happening, and it is not just a data problem.',
@@ -171,7 +171,7 @@ export const HURDLE_COPY = {
     hurdleCard: {
       lede: 'One of these four is not like the others.',
       body: 'It is not that Velocity is your lowest score. It is that Velocity sits underneath the other three. A business that sees clearly and moves slowly does not have four problems. It has one, and the other numbers are quietly paying for it.',
-      close: 'Your weakest area is **Velocity**: the distance between knowing and doing.'
+      close: 'Your first constraint is **Velocity**: the distance between knowing and doing.'
     },
     reframe: {
       lede: 'So here is what is actually happening, and it is not what you think.',
@@ -199,7 +199,7 @@ export const HURDLE_COPY = {
     hurdleCard: {
       lede: 'One of these four is not like the others.',
       body: 'It is not that Coherence is just a weak score. It is that Coherence decides whether the business can act as one system. A business with separate pictures does not have four problems. It has one, and the other numbers are quietly paying for it.',
-      close: 'Your weakest area is **Coherence**: the distance between separate team pictures and one business decision.'
+      close: 'Your first constraint is **Coherence**: the distance between separate team pictures and one business decision.'
     },
     reframe: {
       lede: 'So here is what is actually happening, and it is not just a collaboration problem.',

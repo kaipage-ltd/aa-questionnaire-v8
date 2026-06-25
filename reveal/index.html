@@ -125,17 +125,23 @@
     inset: 0;
     display: none;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: center;
-    padding: clamp(82px, 10vh, 128px) clamp(36px, 8vw, 112px) clamp(88px, 10vh, 126px);
+    /* Reduced from clamp(82-128) so dense cards (cost, close) fit more screens. */
+    padding: clamp(58px, 7vh, 100px) clamp(36px, 8vw, 112px) clamp(74px, 8vh, 108px);
     text-align: left;
+    overflow-y: auto;
+    overscroll-behavior: contain;
   }
   .card.is-active { display: flex; }
   .card.dark { background: var(--dark); color: var(--paper); }
+  /* margin:auto centers the content when there is room and lets it scroll
+     (never clip top or bottom) when a persona's copy runs long. */
   .card-inner {
     position: relative;
     z-index: 2;
     width: min(100%, 680px);
+    margin: auto 0;
   }
   .card-inner.is-wide { width: min(100%, 760px); }
 
@@ -194,8 +200,8 @@
   }
   .dark .eyebrow { color: var(--dark-faint); }
   .lede {
-    font-size: 25px;
-    line-height: 1.46;
+    font-size: 24px;
+    line-height: 1.4;
     font-weight: 400;
     color: var(--ink);
     letter-spacing: 0;
@@ -203,9 +209,9 @@
   .dark .lede { color: var(--paper); }
   p.body {
     font-size: 19px;
-    line-height: 1.62;
+    line-height: 1.54;
     color: var(--ink-soft);
-    margin-top: 18px;
+    margin-top: 14px;
   }
   .dark p.body { color: var(--dark-soft); }
   .body em, .lede em { font-style: italic; }
@@ -267,9 +273,9 @@
   .score-meaning strong { color: var(--ink); }
   .close-line {
     font-size: 21px;
-    line-height: 1.5;
+    line-height: 1.45;
     color: var(--ink);
-    margin-top: 26px;
+    margin-top: 18px;
   }
   .score-brief {
     width: min(100%, 680px);
@@ -424,7 +430,7 @@
   .cost-model-panel,
   .compound-panel,
   .implementation-panel {
-    margin-top: 22px;
+    margin-top: 16px;
   }
   .cost-model-panel .brief-row,
   .compound-panel .brief-row,
@@ -441,7 +447,7 @@
     display: grid;
     grid-template-columns: 138px minmax(0, 1fr);
     gap: 18px;
-    padding: 13px 0;
+    padding: 10px 0;
     border-top: 1px solid rgba(221, 214, 198, 0.72);
   }
   .brief-row:first-child { border-top: 0; }
@@ -461,7 +467,7 @@
   }
   .brief-row.is-quote .brief-value { font-style: italic; }
   .output-list {
-    margin-top: 24px;
+    margin-top: 18px;
     border-top: 1px solid var(--rule);
     border-bottom: 1px solid var(--rule);
   }
@@ -469,10 +475,10 @@
     display: grid;
     grid-template-columns: 34px minmax(0, 1fr);
     gap: 14px;
-    padding: 14px 0;
+    padding: 11px 0;
     border-top: 1px solid rgba(221, 214, 198, 0.72);
-    font-size: 18px;
-    line-height: 1.45;
+    font-size: 17px;
+    line-height: 1.42;
     color: var(--ink);
   }
   .output-item:first-child { border-top: 0; }
@@ -564,7 +570,7 @@
     display: inline-flex;
     align-items: center;
     gap: 11px;
-    margin-top: 30px;
+    margin-top: 24px;
     padding: 16px 32px;
     background: var(--paper);
     color: var(--ink);
@@ -600,10 +606,10 @@
   .qualifier {
     font-family: var(--mono);
     font-size: 11px;
-    line-height: 1.7;
+    line-height: 1.6;
     letter-spacing: 0.04em;
     color: var(--ink-faint);
-    margin-top: 22px;
+    margin-top: 15px;
   }
   .calendar-panel {
     display: none;
@@ -1250,11 +1256,10 @@ function buildCard(card) {
     media.style.backgroundImage = `url('../assets/img/${card.media}.jpg')`;
     section.appendChild(media);
   }
-  const visualType = visualTypeFor(card);
-  if (visualType) {
-    section.classList.add('has-visual');
-    section.append(buildVisual(visualType));
-  }
+  // The abstract line-art "visual" slot is retired: it forced the cost card into
+  // a narrow column (clipping long copy) and sat off-brand against the
+  // photographic peaks. Cost now reads full-width like the other cream cards.
+  // (ART + visualTypeFor stay defined for the guard test and future use.)
   const inner = el('div', 'card-inner');
   if (['turn', 'number', 'shape', 'hurdle', 'quote', 'cost', 'firstMove', 'close'].includes(card.type)) inner.classList.add('is-wide');
   section.appendChild(inner);
@@ -1291,7 +1296,7 @@ function buildCard(card) {
     card.pillars.forEach((pillar) => {
       const row = el('div', `bar-row ${pillar.role === 'hurdle' ? 'hurdle' : pillar.role === 'normal' ? 'muted' : ''}`.trim());
       const head = el('div', 'bar-head');
-      head.append(el('span', 'bar-name', `${pillar.label}${pillar.role === 'hurdle' ? ' - your weakest area' : ''}`));
+      head.append(el('span', 'bar-name', `${pillar.label}${pillar.role === 'hurdle' ? ' - first constraint' : ''}`));
       head.append(el('span', 'bar-val', String(pillar.value)));
       const track = el('div', 'bar-track');
       // Ghosted benchmark (where advanced brands sit) behind the respondent bar,
