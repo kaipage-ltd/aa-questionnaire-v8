@@ -34,7 +34,7 @@ const answers = {
 
 const privacy = {
   accepted: true,
-  version: '2026-06-23',
+  version: '2026-06-25',
   noticeUrl: '/privacy/'
 };
 
@@ -106,7 +106,7 @@ test('submit issues a reveal token and printable profile URL', async () => {
   assert.equal(body.actionPlan.artefactName, 'Decision Path Timing Map');
   assert.match(body.actionPlan.mondayMove, /recurring decision/i);
   assert.equal(body.privacy.accepted, true);
-  assert.equal(body.privacy.version, '2026-06-23');
+  assert.equal(body.privacy.version, '2026-06-25');
   assert.equal(body.privacy.noticeUrl, '/privacy/');
   assert.equal(body.privacy.acceptedAt, body.submittedAt);
 });
@@ -575,7 +575,7 @@ test('reveal route resolves a submitted token', async () => {
   assert.match(body.reveal.cards.find((card) => card.type === 'shape').body, /Velocity|gap|delay/);
   assert.equal(body.reveal.summary.persona, 'The Lagging Tanker');
   assert.equal(body.reveal.summary.actionPlan.artefactName, body.reveal.actionPlan.artefactName);
-  assert.equal(body.reveal.privacy.version, '2026-06-23');
+  assert.equal(body.reveal.privacy.version, '2026-06-25');
   assert.equal(body.reveal.privacy.noticeUrl, '/privacy/');
   assert.equal('answers' in body.reveal, false);
 });

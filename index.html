@@ -223,14 +223,19 @@
   .q-id::before { content: '[ '; color: var(--ink-whisper); }
   .q-id::after { content: ' ]'; color: var(--ink-whisper); }
   .question-mode {
+    display: inline-block;
     font-family: var(--sans);
     font-size: 10.5px;
-    font-weight: 560;
+    font-weight: 600;
     line-height: 1;
     letter-spacing: 0.18em;
     text-transform: uppercase;
-    color: var(--ink-faint);
-    margin: 0 0 16px;
+    color: var(--ink-soft);
+    background: var(--paper-tint);
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    padding: 6px 10px 5px;
+    margin: 0 0 18px;
   }
 
   /* SYSTEM turn body */
@@ -2467,7 +2472,7 @@ function getDemoScenario() {
    ───────────────────────────────────────────────────────────────────────── */
 
 const stream = document.getElementById('stream');
-const PRIVACY_NOTICE_VERSION = '2026-06-23';
+const PRIVACY_NOTICE_VERSION = '2026-06-25';
 const PRIVACY_NOTICE_URL = '/privacy/';
 const TURNSTILE_SCRIPT_URL = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
 const BOT_CHECK_TIMEOUT_MS = 120000;

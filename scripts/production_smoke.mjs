@@ -59,7 +59,7 @@ async function main() {
     assert(submitBody.emailResult?.listId === 3, `unexpected listId=${submitBody.emailResult?.listId}`);
     assert(submitBody.emailSent === expectEmailSent, `emailSent=${submitBody.emailSent}, expected ${expectEmailSent}`);
     assert(Boolean(submitBody.actionPlan?.artefactName), 'missing action-plan artefact');
-    assert(submitBody.privacy?.version === '2026-06-23', `privacy_version=${submitBody.privacy?.version}`);
+    assert(submitBody.privacy?.version === '2026-06-25', `privacy_version=${submitBody.privacy?.version}`);
 
     const pdfRes = await page.request.get(submitBody.pdfUrl);
     const pdfBytes = new Uint8Array(await pdfRes.body());
