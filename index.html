@@ -728,8 +728,8 @@
   .pillar-rail-item.is-done { color: var(--ink-faint); }
   .pillar-rail-item.is-current {
     color: var(--ink);
-    font-weight: 500;
-    border-bottom: 1px solid var(--ink);
+    font-weight: 600;
+    border-bottom: 2px solid var(--ink);
   }
   .pillar-rail-sep {
     width: 16px;
@@ -738,25 +738,46 @@
     background: var(--rule-soft);
     flex: none;
   }
+  /* Non-pillar steps (Role, Channels, final barriers): a plain section label,
+     not a half-lit pillar rail. */
+  .section-tag {
+    font-family: var(--mono);
+    font-size: 9.5px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin: 0 0 20px;
+  }
 
-  /* Back-navigation  -  quiet "change this answer" affordance */
-  .answer-edit { margin-top: 16px; }
+  /* Back-navigation  -  "change this answer" surfaces on interaction only.
+     Hidden by default; revealed when you hover a past (answered) question. */
+  .answer-edit {
+    margin-top: 16px;
+    opacity: 0;
+    transform: translateY(-2px);
+    transition: opacity 240ms var(--ease-out), transform 240ms var(--ease-out);
+    pointer-events: none;
+  }
+  .question-block:hover .answer-edit,
+  .answer-edit:focus-within { opacity: 1; transform: none; pointer-events: auto; }
   .answer-edit-btn {
     background: none;
     border: none;
-    padding: 0 0 2px;
+    padding: 0 0 3px;
     cursor: pointer;
     font-family: var(--mono);
-    font-size: 10px;
+    font-size: 11px;
     letter-spacing: 0.16em;
     text-transform: uppercase;
-    color: var(--ink-whisper);
-    border-bottom: 1px solid var(--rule);
+    color: var(--ink-soft);
+    border-bottom: 1px solid var(--ink-soft);
     transition: color 300ms var(--ease-out), border-color 300ms var(--ease-out);
   }
-  .answer-edit-btn:hover {
-    color: var(--ink-soft);
-    border-bottom-color: var(--ink-soft);
+  .answer-edit-btn:hover { color: var(--ink); border-bottom-color: var(--ink); }
+  /* Touch devices have no hover: keep it discoverable but quiet. */
+  @media (hover: none) and (pointer: coarse) {
+    .answer-edit { opacity: 1; transform: none; pointer-events: auto; margin-top: 14px; }
+    .answer-edit-btn { font-size: 10px; color: var(--ink-faint); border-bottom-color: var(--rule); }
   }
 
   /* Domain map  -  editorial progress, not a progress bar */
@@ -2699,19 +2720,20 @@ async function appendRule() {
   return r;
 }
 
-/* Per-question pillar progress  -  the four scored pillars as an editorial rail.
-   Intake steps (Role / Channel Context) show all four as upcoming; Self-Perception
-   shows all four complete. Never sticky; rides in-flow at the head of the question. */
-function railIndexFor(pillar) {
-  const i = DOMAIN_SEQUENCE.indexOf(pillar);
-  if (i >= 0) return i;
-  if (pillar === 'Self-Perception') return DOMAIN_SEQUENCE.length;
-  return -1;
-}
+/* Per-question pillar progress. The rail shows only on the four scored pillars,
+   with the current pillar clearly lit. Non-pillar steps (Role, Channel Context,
+   Self-Perception) get a plain section label instead of a half-lit rail, so the
+   tracker never looks out of place. Never sticky; rides in-flow above the question. */
 function renderPillarRail(pillar) {
+  const cur = DOMAIN_SEQUENCE.indexOf(pillar);
+  if (cur < 0) {
+    const label = pillar === 'Self-Perception' ? 'Last question' : 'Getting started';
+    const tag = el('div', 'section-tag', label);
+    tag.setAttribute('aria-hidden', 'true');
+    return tag;
+  }
   const rail = el('div', 'pillar-rail');
   rail.setAttribute('aria-hidden', 'true');
-  const cur = railIndexFor(pillar);
   DOMAIN_SEQUENCE.forEach((domain, i) => {
     if (i > 0) rail.appendChild(el('span', 'pillar-rail-sep'));
     const cls = i < cur ? 'is-done' : i === cur ? 'is-current' : '';
@@ -3135,7 +3157,6 @@ async function renderPillar({ pillar }) {
 async function renderSingle(q) {
   const block = el('div', 'question-block');
   block.appendChild(renderPillarRail(q.pillar));
-  block.appendChild(el('div', 'q-id', formatQId(q.id)));
   block.appendChild(el('div', 'question-mode', questionModeText(q.type)));
   const stemP = el('p', 'sys-body');
   block.appendChild(stemP);
@@ -3278,7 +3299,6 @@ async function renderMulti(q) {
   document.body.classList.add('multi-confirm-active');
   const block = el('div', `question-block multi-block${q.options.length > 6 ? ' long-multi' : ''}`);
   block.appendChild(renderPillarRail(q.pillar));
-  block.appendChild(el('div', 'q-id', formatQId(q.id)));
   block.appendChild(el('div', 'question-mode', questionModeText(q.type)));
   const stemP = el('p', 'sys-body');
   block.appendChild(stemP);
