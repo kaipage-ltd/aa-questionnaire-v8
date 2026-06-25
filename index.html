@@ -3787,8 +3787,8 @@ async function renderGate(scenario) {
   gate.noValidate = true;
   gate.innerHTML = `
     <div class="gate-eyebrow">THE PICTURE IS READY</div>
-    <h2 class="gate-title">See your profile, and take it with you.</h2>
-    <p class="gate-line">The moment you submit, your profile opens on screen. We also send the reveal link and a printable PDF to your inbox, so you can return to it anytime.</p>
+    <h2 class="gate-title">Where should we send your profile?</h2>
+    <p class="gate-line">Your readiness profile is ready. Tell us where to send it, and the reveal plus a printable PDF land in your inbox, usually within a minute.</p>
     <div class="gate-includes" aria-label="What the profile includes">
       <div class="gate-includes-row">
         <span class="gate-includes-num">01</span>
@@ -3849,9 +3849,9 @@ async function renderGate(scenario) {
     </div>
     <div class="gate-footer">PRIVATE · CONFIDENTIAL · NEVER SHARED</div>
     <div class="gate-result" id="gateResult">
-      <div class="q-id">Profile ready</div>
-      <p class="gate-result-copy" id="gateResultCopy">Your profile is ready. Open it now — a copy is also on its way to your inbox.</p>
-      <p class="gate-result-copy"><em>The email usually lands inside a minute, so you can return to your profile anytime.</em></p>
+      <div class="q-id">Profile sent</div>
+      <p class="gate-result-copy" id="gateResultCopy">Your profile is on its way to your inbox.</p>
+      <p class="gate-result-copy"><em>It usually lands within a minute, and the reveal opens straight from the email.</em></p>
       <div class="profile-dispatch" aria-hidden="true">
         <div class="dispatch-top">
           <span class="dispatch-kicker">Look for this email</span>
@@ -3962,27 +3962,33 @@ async function renderGate(scenario) {
       profile: result.profile
     };
 
-    gate.classList.add('is-submitted');
-    document.body.classList.add('gate-submitted');
     gate.querySelector('#gateResultCopy').textContent = result.emailSent
-      ? `Your profile is ready. Open it now — we have also sent a copy to ${email}.`
-      : `Your profile is ready. Open it now — email delivery is not configured in this preview, so a copy was not sent to ${email}.`;
+      ? `Your profile is on its way to ${email}.`
+      : `Your profile is ready, but email delivery is not configured in this preview, so it has not been sent to ${email}.`;
     gate.querySelector('#dispatchEmail').textContent = email;
 
-    // Always surface the reveal as the primary action: the respondent SEES the
-    // profile on screen, not only in the inbox (Saverio: manage that expectation).
+    // Email-only access: the reveal is reached solely via the emailed link, so a
+    // real (verified) work email is required to see the profile. In review mode
+    // (?demoNav=1) we surface an on-screen link so reviewers can preview without
+    // an inbox; real respondents never get on-screen access.
     const existingCta = gate.querySelector('.gate-reveal-cta');
     if (existingCta) existingCta.remove();
-    if (result.revealUrl) {
+    const reviewMode = document.documentElement.classList.contains('demo-nav-enabled');
+    if (reviewMode && result.revealUrl) {
       const cta = document.createElement('a');
       cta.className = 'gate-reveal-cta confirm-btn';
       cta.href = result.revealUrl;
-      cta.textContent = 'View your profile now →';
+      cta.textContent = 'Open profile (review only) →';
       const dispatch = gate.querySelector('.profile-dispatch');
       if (dispatch) dispatch.parentNode.insertBefore(cta, dispatch);
       else gate.querySelector('#gateResult').appendChild(cta);
     }
 
+    // A brief beat before the confirmation lands — the hand-off to the inbox
+    // gets a moment of ceremony rather than a hard cut (Saverio: "how it loads").
+    await hold('Sending to your inbox', 1200);
+    gate.classList.add('is-submitted');
+    document.body.classList.add('gate-submitted');
     gate.querySelector('#gateResult').classList.add('is-visible');
     smoothScrollTo(gate, 0.04);
   });
