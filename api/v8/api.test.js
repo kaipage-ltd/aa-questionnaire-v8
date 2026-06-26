@@ -580,6 +580,21 @@ test('reveal route resolves a submitted token', async () => {
   assert.equal('answers' in body.reveal, false);
 });
 
+test('reveal demo path returns cards without a token or submit (no Turnstile/email)', async () => {
+  const response = await reveal(new Request('https://v8.example.test/api/v8/reveal?demo=t-ve'));
+  assert.equal(response.status, 200);
+  const body = await response.json();
+  assert.equal(body.ok, true);
+  assert.equal(body.reveal.demo, true);
+  assert.equal(body.reveal.characterName, 'The Late Caller');
+  assert.equal(body.reveal.cards.length, 8);
+  assert.equal(body.reveal.cards[0].type, 'turn');
+  assert.equal('answers' in body.reveal, false);
+
+  const unknown = await reveal(new Request('https://v8.example.test/api/v8/reveal?demo=not-a-key'));
+  assert.equal(unknown.status, 404);
+});
+
 test('single-channel respondents can still surface a material Coherence hurdle', () => {
   const cleaned = sanitiseAnswers({
     Q1: 1,

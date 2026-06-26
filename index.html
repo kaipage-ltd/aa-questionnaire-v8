@@ -107,17 +107,22 @@
   /* ── Continuous cinematic atmosphere (chosen variant B): the archway scene
      darkened + blurred into an ambient world the whole conversation lives in.
      One world from the first screen to the reveal — no set-pieces. ── */
-  body::before {
-    content: '';
+  /* Two crossfading image layers so the world can EVOLVE per phase (the sea
+     weather: archway → fog → storm → quiet → sunny) without a cut. */
+  .atmos {
     position: fixed;
     inset: -4%;
-    background: url('assets/img/hero-archway.jpg') center 35% / cover no-repeat;
+    background-size: cover;
+    background-position: center 35%;
+    background-repeat: no-repeat;
     filter: blur(9px) brightness(0.42) saturate(0.92);
     transform: scale(1.06);
     z-index: 0;
     pointer-events: none;
-    transition: filter 1300ms var(--ease-out), transform 1600ms var(--ease-out);
+    opacity: 0;
+    transition: opacity 1100ms var(--ease-out), filter 1300ms var(--ease-out), transform 1600ms var(--ease-out);
   }
+  .atmos.is-active { opacity: 1; }
   body::after {
     content: '';
     position: fixed;
@@ -134,7 +139,7 @@
   /* ── A MOMENT inside the one world: the atmosphere comes forward (focus + light),
      the conversation recedes, and the beat lands held + cinematic. Then it settles
      back. The set-pieces keep their drama without becoming separate screens. ── */
-  body.is-moment::before { filter: blur(2.5px) brightness(0.62) saturate(1.02); transform: scale(1.012); }
+  body.is-moment .atmos.is-active { filter: blur(2.5px) brightness(0.62) saturate(1.02); transform: scale(1.012); }
   body.is-moment::after {
     background:
       linear-gradient(155deg, rgba(8,6,3,0.24) 0%, rgba(8,6,3,0.44) 55%, rgba(6,4,2,0.60) 100%),
@@ -172,7 +177,8 @@
   }
   .moment.is-in .m-eyebrow, .moment.is-in .m-line, .moment.is-in .m-sub { opacity: 1; transform: none; }
   @media (prefers-reduced-motion: reduce) {
-    body::before, body::after, body.is-moment .stage { transition: none !important; }
+    .atmos { transition: opacity 200ms linear !important; }
+    body::after, body.is-moment .stage { transition: none !important; }
     .moment, .moment .m-eyebrow, .moment .m-line, .moment .m-sub {
       transition: opacity 200ms linear !important; transform: none !important; }
   }
@@ -912,9 +918,9 @@
     min-height: 122px;
     padding: 12px 10px 10px;
     position: relative;
-    color: var(--ink-whisper);
-    background: rgba(247, 245, 239, 0.34);
-    border: 1px solid var(--rule-soft);
+    color: var(--ink-mute);
+    background: rgba(243, 234, 217, 0.05);
+    border: 1px solid rgba(243, 234, 217, 0.10);
   }
   .domain-card::before,
   .domain-card::after {
@@ -934,13 +940,13 @@
   }
   .domain-card.is-complete {
     color: var(--ink-soft);
-    background: var(--paper-warm);
-    border-color: var(--rule);
+    background: rgba(243, 234, 217, 0.07);
+    border-color: rgba(243, 234, 217, 0.16);
   }
   .domain-card.is-current {
     color: var(--ink);
-    background: var(--paper-tint);
-    border-color: var(--ink);
+    background: rgba(205, 168, 111, 0.10);
+    border-color: var(--gold);
   }
   .domain-icon {
     width: 42px;
@@ -971,7 +977,7 @@
     font-family: var(--serif);
     font-size: 14px;
     line-height: 1.25;
-    color: var(--ink-faint);
+    color: var(--ink-mute);
   }
   .domain-card.is-current .domain-note,
   .domain-card.is-complete .domain-note { color: var(--ink-soft); }
@@ -2402,6 +2408,8 @@
 </head>
 <body>
 
+<div class="atmos is-active" id="atmos1" aria-hidden="true" style="background-image:url('assets/img/hero-archway.jpg')"></div>
+<div class="atmos" id="atmos2" aria-hidden="true"></div>
 <div class="atmos-grain" aria-hidden="true"></div>
 
 <main class="stage">
@@ -3600,7 +3608,36 @@ async function renderAphorism({ text, current }) {
    PILLAR TRANSITION  -  silent breathing room. The pillar mark up top inks up.
    ───────────────────────────────────────────────────────────────────────── */
 
+// The world evolves with the phase: the sea's weather across the four domains.
+// Role / Channel Context stay on the archway; Self-Perception stays on the last.
+const PHASE_ATMOS = {
+  Visibility: 'fog-on-sea',
+  Velocity: 'sea-storm',
+  Coherence: 'quiet-after-storm',
+  Leverage: 'sunny-sea'
+};
+
+// Crossfade the world's image between two stacked layers, so the atmosphere can
+// evolve per phase without a cut. Reduced motion = the CSS transition is short.
+let __atmosLayers = null, __atmosActive = 0, __atmosName = 'hero-archway';
+function setAtmosphere(name) {
+  if (!name || name === __atmosName) return;
+  if (!__atmosLayers) __atmosLayers = [document.getElementById('atmos1'), document.getElementById('atmos2')];
+  if (!__atmosLayers[0] || !__atmosLayers[1]) return;
+  __atmosName = name;
+  const incoming = __atmosLayers[1 - __atmosActive];
+  const outgoing = __atmosLayers[__atmosActive];
+  incoming.style.backgroundImage = `url('assets/img/${name}.jpg')`;
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    incoming.classList.add('is-active');
+    outgoing.classList.remove('is-active');
+    __atmosActive = 1 - __atmosActive;
+  }));
+}
+
 async function renderPillar({ pillar }) {
+  // The world evolves with the phase: archway → fog → storm → quiet → sunny.
+  if (PHASE_ATMOS[pillar]) setAtmosphere(PHASE_ATMOS[pillar]);
   // A silent breath only. The new section is already marked by the milestone beat
   // above (its domain map) and by the pillar rail lighting up on the next
   // question, so the old motif + extra "+" divider here were duplication.

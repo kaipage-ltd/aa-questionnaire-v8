@@ -800,13 +800,16 @@
     inset: 0;
     display: grid;
     place-items: center;
-    background: var(--paper);
+    padding: 0 32px;
+    text-align: center;
+    background: rgba(8, 6, 3, 0.55);
     z-index: 80;
     font-family: var(--mono);
     font-size: 11px;
+    line-height: 1.6;
     letter-spacing: 0.18em;
     text-transform: uppercase;
-    color: var(--ink-faint);
+    color: var(--ink-soft);
   }
   .loading.is-hidden { display: none; }
 
@@ -1555,24 +1558,15 @@ async function loadToken(token) {
 }
 
 async function loadDemo(key) {
-  const scenario = DEMO_SCENARIOS[key] || DEMO_SCENARIOS['t-ve'];
-  const res = await fetch('/api/v8/submit', {
-    method: 'POST',
-    headers: { 'content-type': 'application/json' },
-    body: JSON.stringify({
-      name: 'James',
-      email: `demo+${key}@atelierandavenue.com`,
-      answers: scenario.answers,
-      privacy: {
-        accepted: true,
-        version: PRIVACY_NOTICE_VERSION,
-        noticeUrl: PRIVACY_NOTICE_URL
-      }
-    })
-  });
+  // Read-only demo endpoint: no submit, no Turnstile, no email/Brevo side effects.
+  const demoKey = DEMO_SCENARIOS[key] ? key : 't-ve';
+  const res = await fetch(`/api/v8/reveal?demo=${encodeURIComponent(demoKey)}`);
   const body = await res.json();
-  if (!res.ok || !body.ok) throw new Error(body.error || 'Demo submit failed');
-  await loadToken(new URL(body.revealUrl).searchParams.get('token'));
+  if (!res.ok || !body.ok) throw new Error(body.error || 'Demo failed');
+  revealIdentity = { name: body.reveal.name || '', email: body.reveal.email || '' };
+  revealHurdle = body.reveal.hurdle || '';
+  document.title = `${body.reveal.characterName} - AI Readiness Diagnostic`;
+  mount(body.reveal.cards);
 }
 
 function buildDemoHarness() {
