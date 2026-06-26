@@ -1258,7 +1258,7 @@
   .demo-action.secondary:hover { border-color: var(--ink); }
 
   .gate-card {
-    max-width: 520px;
+    max-width: 560px;
   }
   .gate-eyebrow {
     font-family: var(--mono);
@@ -1266,40 +1266,44 @@
     letter-spacing: 0.22em;
     text-transform: uppercase;
     color: var(--ink-faint);
-    margin-bottom: 22px;
+    margin-bottom: 16px;
   }
   .gate-title {
     font-family: var(--serif);
-    font-size: clamp(34px, 7vw, 48px);
+    font-size: clamp(38px, 7vw, 52px);
     font-weight: 400;
     line-height: 1.05;
     letter-spacing: -0.024em;
-    margin: 0 0 18px;
+    margin: 0 0 14px;
     color: var(--ink);
   }
   .gate-line {
     font-family: var(--serif);
-    font-size: 18px;
-    line-height: 1.5;
+    font-size: 20px;
+    line-height: 1.34;
     font-style: italic;
     color: var(--ink-soft);
-    margin: 0 0 24px;
+    margin: 0 0 20px;
   }
   .gate-includes {
     display: grid;
-    grid-template-columns: 1fr;
-    gap: 10px;
-    margin: 0 0 34px;
-    padding: 16px 0 18px;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0;
+    margin: 0 0 24px;
+    padding: 12px 0 13px;
     border-top: 1px solid var(--rule-soft);
     border-bottom: 1px solid var(--rule-soft);
   }
   .gate-includes-row {
     display: grid;
-    grid-template-columns: 34px 1fr;
-    gap: 14px;
+    grid-template-columns: 1fr;
+    gap: 6px;
     align-items: baseline;
+    padding: 0 14px;
+    border-left: 1px solid var(--rule-soft);
   }
+  .gate-includes-row:first-child { border-left: none; padding-left: 0; }
+  .gate-includes-row:last-child { padding-right: 0; }
   .gate-includes-num {
     font-family: var(--mono);
     font-size: 10px;
@@ -1307,12 +1311,14 @@
     color: var(--ink-faint);
   }
   .gate-includes-text {
-    font-family: var(--serif);
-    font-size: 17px;
-    line-height: 1.35;
+    font-family: var(--mono);
+    font-size: 11px;
+    line-height: 1.3;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
     color: var(--ink);
   }
-  .gate-field { margin-bottom: 28px; }
+  .gate-field { margin-bottom: 22px; }
   .gate-field label {
     display: block;
     font-family: var(--mono);
@@ -1320,7 +1326,7 @@
     letter-spacing: 0.22em;
     text-transform: uppercase;
     color: var(--ink-faint);
-    margin-bottom: 8px;
+    margin-bottom: 5px;
   }
   .gate-optional {
     opacity: 0.55;
@@ -1329,7 +1335,7 @@
   .gate-field .input-wrap { position: relative; }
   .gate-field input {
     width: 100%;
-    padding: 8px 0;
+    padding: 6px 0;
     background: transparent;
     border: none;
     outline: none;
@@ -1362,13 +1368,13 @@
   .gate-field input:focus ~ .rule-line-thick { transform: scaleX(1); }
   .gate-field.is-error .rule-line { background: rgba(180, 30, 30, 0.5); }
   .gate-field .error-text {
-    min-height: 18px;
-    margin-top: 8px;
+    min-height: 15px;
+    margin-top: 5px;
     font-size: 12px;
     color: rgba(180, 30, 30, 0.8);
   }
   .gate-privacy {
-    margin: -4px 0 28px;
+    margin: -2px 0 18px;
   }
   .privacy-check {
     display: grid;
@@ -1376,8 +1382,8 @@
     gap: 12px;
     align-items: start;
     font-family: var(--serif);
-    font-size: 14.5px;
-    line-height: 1.45;
+    font-size: 13px;
+    line-height: 1.38;
     color: var(--ink-soft);
     cursor: pointer;
   }
@@ -1413,7 +1419,7 @@
     align-items: center;
     flex-wrap: wrap;
     gap: 10px 14px;
-    margin: 10px 0 0 32px;
+    margin: 8px 0 0 32px;
   }
   .privacy-link {
     appearance: none;
@@ -1432,14 +1438,14 @@
   a.privacy-link { display: inline-block; }
   .privacy-link:hover { color: var(--ink-soft); }
   .gate-privacy .error-text {
-    min-height: 18px;
-    margin: 8px 0 0 32px;
+    min-height: 15px;
+    margin: 6px 0 0 32px;
     font-size: 12px;
     color: rgba(180, 30, 30, 0.8);
   }
   .bot-check {
     min-height: 22px;
-    margin: -8px 0 24px 32px;
+    margin: -8px 0 16px 32px;
   }
   .bot-check-frame {
     min-height: 0;
@@ -1465,7 +1471,7 @@
     overflow: hidden;
   }
   .gate-footer {
-    margin-top: 22px;
+    margin-top: 14px;
     font-family: var(--mono);
     font-size: 10px;
     letter-spacing: 0.18em;
@@ -1620,10 +1626,16 @@
     line-height: 1.5;
     color: var(--ink);
   }
+  .gate-result-copy.is-primary {
+    font-size: clamp(38px, 7vw, 52px);
+    line-height: 1.05;
+    letter-spacing: -0.024em;
+    margin-bottom: 18px;
+  }
   .gate-result-copy em { color: var(--ink-soft); }
   .profile-dispatch {
     position: relative;
-    margin: 26px 0 0;
+    margin: 24px 0 0;
     padding: 0 0 0 18px;
     border-left: 1px solid var(--rule-bold);
     background: transparent;
@@ -1656,8 +1668,8 @@
   }
   .dispatch-title {
     font-family: var(--serif);
-    font-size: 22px;
-    line-height: 1.34;
+    font-size: 20px;
+    line-height: 1.28;
     letter-spacing: 0;
     color: var(--ink);
     margin: 0 0 8px;
@@ -1666,17 +1678,10 @@
     font-style: italic;
     color: var(--ink-soft);
   }
-  .dispatch-subtitle {
-    margin: 0 0 22px;
-    font-family: var(--serif);
-    font-size: 17px;
-    line-height: 1.45;
-    color: var(--ink-soft);
-  }
   .dispatch-email {
     display: grid;
     gap: 6px;
-    margin: 0 0 24px;
+    margin: 0 0 18px;
     padding: 12px 0;
     border-top: 1px solid var(--rule-soft);
     border-bottom: 1px solid var(--rule-soft);
@@ -1739,6 +1744,9 @@
     border: 1px solid var(--ink);
     text-decoration: none;
   }
+  .gate-card > .confirm-row {
+    margin: 12px 0 4px;
+  }
   .gate-card .confirm-btn::after {
     color: var(--paper);
   }
@@ -1751,23 +1759,39 @@
   }
   @media (max-width: 640px) {
     .profile-dispatch { padding: 0 0 0 16px; }
-    .dispatch-title { font-size: 20px; line-height: 1.35; }
+    .dispatch-title { font-size: 19px; line-height: 1.3; }
     .dispatch-email-value { font-size: 16px; line-height: 1.22; }
     .dispatch-row { gap: 14px; }
     .dispatch-value { font-size: 16px; }
+    .gate-title {
+      font-size: 44px;
+      line-height: 1.02;
+      margin-bottom: 12px;
+    }
+    .gate-line {
+      font-size: 18px;
+      line-height: 1.32;
+      margin-bottom: 16px;
+    }
     .gate-includes {
-      gap: 9px;
-      margin-bottom: 30px;
-      padding: 14px 0 16px;
+      margin-bottom: 18px;
+      padding: 10px 0 11px;
     }
     .gate-includes-row {
-      grid-template-columns: 28px 1fr;
-      gap: 12px;
+      gap: 5px;
+      padding: 0 10px;
     }
     .gate-includes-text {
-      font-size: 16px;
-      line-height: 1.36;
+      font-size: 10px;
+      line-height: 1.24;
+      letter-spacing: 0.12em;
     }
+    .gate-field { margin-bottom: 16px; }
+    .gate-privacy { margin-bottom: 14px; }
+    .privacy-check { font-size: 12.5px; line-height: 1.34; }
+    .bot-check { margin-bottom: 12px; }
+    .gate-card > .confirm-row { margin-top: 8px; }
+    .gate-result-copy.is-primary { font-size: 42px; }
   }
   .demo-harness .demo-close {
     background: none;
@@ -1929,6 +1953,7 @@
 
     .sys-body { font-size: 18px; }
     .begin-block .sys-body { font-size: 16px; line-height: 1.42; }
+    .question-block .sys-body { font-size: 28px; line-height: 1.12; }
     .q-id { margin-bottom: 14px; }
     .question-mode { font-size: 10.5px; margin-bottom: 14px; }
 
@@ -2082,8 +2107,8 @@
       margin-bottom: 10px;
     }
     .question-block .sys-body {
-      font-size: 17px;
-      line-height: 1.38;
+      font-size: 24px;
+      line-height: 1.14;
     }
     .question-block .opts {
       margin-top: 18px;
@@ -2108,23 +2133,22 @@
       margin-bottom: 16px;
     }
     .gate-title {
-      font-size: 32px;
-      line-height: 1.05;
-      margin-bottom: 14px;
+      font-size: 36px;
+      line-height: 1.02;
+      margin-bottom: 10px;
     }
     .gate-line {
       font-size: 16px;
-      line-height: 1.42;
-      margin-bottom: 18px;
+      line-height: 1.3;
+      margin-bottom: 12px;
     }
     .gate-includes {
-      gap: 8px;
-      margin-bottom: 22px;
-      padding: 12px 0;
+      margin-bottom: 14px;
+      padding: 9px 0;
     }
     .gate-includes-text {
-      font-size: 15.5px;
-      line-height: 1.28;
+      font-size: 9.5px;
+      line-height: 1.2;
     }
     .gate-field {
       margin-bottom: 18px;
@@ -2141,9 +2165,9 @@
       margin-top: 5px;
     }
     .gate-card .confirm-row {
-      padding-top: 16px;
-      padding-bottom: 10px;
-      margin-top: 14px;
+      padding-top: 10px;
+      padding-bottom: 6px;
+      margin-top: 8px;
     }
     .gate-card .confirm-btn {
       padding: 13px 18px;
@@ -2880,6 +2904,14 @@ function questionScrollRatio(node) {
   return 0.22;
 }
 
+function returnToLatestBeat(currentBeat) {
+  const beats = Array.from(stream.querySelectorAll('.beat, .reflection'));
+  const target = beats.reverse().find((node) => node !== currentBeat);
+  if (!target) return;
+  const ratio = target.querySelector?.('.gate-card') ? 0.04 : questionScrollRatio(target);
+  setTimeout(() => smoothScrollTo(target, ratio), reduceMotion ? 0 : 260);
+}
+
 function fadeIn(node, delay = 0) {
   return new Promise(resolve => {
     requestAnimationFrame(() => {
@@ -3347,13 +3379,13 @@ async function renderIntro() {
   // Fade the rest in
   p2.style.opacity = '1';
   await wait(reduceMotion ? 50 : 200);
-  await streamText(p2, 'In eight minutes, you will see where the business loses signal: what it can see, how fast decisions move, whether teams work from one picture and what that means for AI readiness.');
+  await streamText(p2, 'Eight minutes. Find where signal breaks.');
   domainMap.style.opacity = '1';
   domainMap.classList.add('is-in');
   await wait(reduceMotion ? 60 : 360);
   p3.style.opacity = '1';
   await wait(reduceMotion ? 50 : 160);
-  await streamText(p3, 'Answer from today, not the version you are trying to become. If two answers feel close, choose the harsher one. The reveal will be more useful.');
+  await streamText(p3, 'Answer from today. The sharper the answer, the better the profile.');
 
   // Flow straight into the first question after the briefing lands.
   await wait(reduceMotion ? 140 : 560);
@@ -3687,6 +3719,7 @@ async function renderSingle(q) {
       state.answers[q.id] = idx;
       lockSingle(idx, { ack: true });
       updateBottomSpace();
+      returnToLatestBeat(beat);
     };
     optEls.forEach(opt => opt.addEventListener('click', onPick));
   });
@@ -3877,6 +3910,7 @@ async function renderMulti(q) {
       hint.style.opacity = '0';
       lockMulti(picked);
       updateBottomSpace();
+      returnToLatestBeat(beat);
     };
     confirmBtn.addEventListener('click', onConfirm);
   });
@@ -4181,20 +4215,20 @@ async function renderGate(scenario) {
   gate.noValidate = true;
   gate.innerHTML = `
     <div class="gate-eyebrow">THE PICTURE IS READY</div>
-    <h2 class="gate-title">Where should we send your profile?</h2>
-    <p class="gate-line">Your readiness profile is ready. Tell us where to send it, and the reveal plus a printable PDF land in your inbox, usually within a minute.</p>
+    <h2 class="gate-title">Your profile is ready.</h2>
+    <p class="gate-line">What your answers unlocked.</p>
     <div class="gate-includes" aria-label="What the profile includes">
       <div class="gate-includes-row">
         <span class="gate-includes-num">01</span>
-        <span class="gate-includes-text">Your readiness score and the business character behind it</span>
+        <span class="gate-includes-text">Score</span>
       </div>
       <div class="gate-includes-row">
         <span class="gate-includes-num">02</span>
-        <span class="gate-includes-text">The weak point holding the system back, with evidence from your answers</span>
+        <span class="gate-includes-text">Weak point</span>
       </div>
       <div class="gate-includes-row">
         <span class="gate-includes-num">03</span>
-        <span class="gate-includes-text">The first move worth making, plus what not to do yet</span>
+        <span class="gate-includes-text">First move</span>
       </div>
     </div>
     <div class="gate-field" data-field="name">
@@ -4227,7 +4261,7 @@ async function renderGate(scenario) {
     <div class="gate-privacy" data-field="privacy">
       <label class="privacy-check" for="gatePrivacy">
         <input id="gatePrivacy" name="privacyAccepted" type="checkbox" required>
-        <span>I have read the Privacy Notice and understand that Atelier + Avenue will use my answers, name, company name and work email to generate and deliver my AI-readiness profile.</span>
+        <span>I have read the Privacy Notice and agree that Atelier + Avenue can use my answers, name, company name and work email to generate and send my profile.</span>
       </label>
       <div class="privacy-actions">
         <a class="privacy-link" href="${PRIVACY_NOTICE_URL}" target="_blank" rel="noopener">Read the Privacy Notice</a>
@@ -4239,42 +4273,27 @@ async function renderGate(scenario) {
       <div class="error-text" data-turnstile-status></div>
     </div>
     <div class="confirm-row is-in">
-      <button class="confirm-btn" type="submit">Send my AI-readiness profile</button>
+      <button class="confirm-btn" type="submit">Send my profile</button>
     </div>
     <div class="gate-footer">PRIVATE · CONFIDENTIAL · NEVER SHARED</div>
     <div class="gate-result" id="gateResult">
       <div class="q-id">Profile sent</div>
-      <p class="gate-result-copy" id="gateResultCopy">Your profile is on its way to your inbox.</p>
-      <p class="gate-result-copy"><em>It usually lands within a minute, and the reveal opens straight from the email.</em></p>
+      <p class="gate-result-copy is-primary" id="gateResultCopy">Check your inbox.</p>
+      <p class="gate-result-copy" id="gateResultLine"><em>It usually lands within a minute.</em></p>
       <div class="profile-dispatch" aria-hidden="true">
         <div class="dispatch-top">
-          <span class="dispatch-kicker">Look for this email</span>
+          <span class="dispatch-kicker">Open the email</span>
           <svg class="dispatch-mark" viewBox="0 0 52 52" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
             <rect x="0" y="20.8" width="52" height="10.4" />
             <rect x="20.8" y="0" width="10.4" height="52" />
           </svg>
         </div>
-        <p class="dispatch-title">Your A+A AI-readiness profile is ready.</p>
-        <p class="dispatch-subtitle">A short read on the operating pattern your answers revealed.</p>
+        <p class="dispatch-title">Your AI-readiness profile is ready.</p>
         <div class="dispatch-email">
           <span class="dispatch-email-label">Sent to</span>
           <span class="dispatch-email-value" id="dispatchEmail">your inbox</span>
         </div>
-        <div class="dispatch-list">
-          <div class="dispatch-row">
-            <span class="dispatch-label">01</span>
-            <span class="dispatch-value">The character of the business your answers described</span>
-          </div>
-          <div class="dispatch-row">
-            <span class="dispatch-label">02</span>
-            <span class="dispatch-value">Where the signal is breaking</span>
-          </div>
-          <div class="dispatch-row">
-            <span class="dispatch-label">03</span>
-            <span class="dispatch-value">The first move worth making</span>
-          </div>
-        </div>
-        <div class="dispatch-note">If it is not there shortly, check spam or promotions.</div>
+        <div class="dispatch-note">Check spam or promotions if it is not there shortly.</div>
       </div>
     </div>
   `;
@@ -4324,7 +4343,7 @@ async function renderGate(scenario) {
       botCheck = await botController.execute();
     } catch (err) {
       submitButton.disabled = false;
-      submitButton.textContent = 'Send my AI-readiness profile';
+      submitButton.textContent = 'Send my profile';
       setError('botCheck', 'Verification could not complete. Please try again.');
       return;
     }
@@ -4333,7 +4352,7 @@ async function renderGate(scenario) {
     const result = await submitProfile({ name, email, company, answers: state.answers, scenario, privacy, botCheck });
     if (!result.ok) {
       submitButton.disabled = false;
-      submitButton.textContent = 'Send my AI-readiness profile';
+      submitButton.textContent = 'Send my profile';
       if (String(result.error || '').startsWith('bot_check_')) {
         setError('botCheck', result.error === 'bot_check_unconfigured'
           ? 'Verification is not configured. Please try again later.'
@@ -4357,8 +4376,11 @@ async function renderGate(scenario) {
     };
 
     gate.querySelector('#gateResultCopy').textContent = result.emailSent
-      ? `Your profile is on its way to ${email}.`
-      : `Your profile is ready, but email delivery is not configured in this preview, so it has not been sent to ${email}.`;
+      ? 'Check your inbox.'
+      : 'Profile ready.';
+    gate.querySelector('#gateResultLine').innerHTML = result.emailSent
+      ? '<em>It usually lands within a minute.</em>'
+      : '<em>Email delivery is not configured in this preview.</em>';
     gate.querySelector('#dispatchEmail').textContent = email;
 
     // Email-only access: the reveal is reached solely via the emailed link, so a
