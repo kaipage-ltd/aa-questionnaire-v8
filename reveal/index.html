@@ -114,7 +114,7 @@
     right: 0;
     display: flex;
     gap: 4px;
-    padding: 14px 18px;
+    padding: calc(14px + env(safe-area-inset-top, 0px)) max(18px, env(safe-area-inset-right, 0px)) 14px max(18px, env(safe-area-inset-left, 0px));
     z-index: 40;
   }
   .seg {
@@ -738,7 +738,7 @@
   /* ── Per-card advance affordance (R3): a real button, not a hint ─ */
   .card-advance {
     position: absolute;
-    bottom: 34px;
+    bottom: calc(28px + env(safe-area-inset-bottom, 0px));
     left: 50%;
     transform: translateX(-50%);
     z-index: 36;
@@ -766,10 +766,19 @@
   .card-advance.on-dark { background: rgba(250, 248, 242, 0.08); border-color: var(--paper); color: var(--paper); }
   .card-advance.on-dark:hover { background: var(--paper); color: var(--dark); }
 
+  /* Touch: hover states latch after a tap on iOS, so reset them; and keep the
+     densest card copy clear of the home indicator. */
+  @media (hover: none) and (pointer: coarse) {
+    .card-advance:hover { background: var(--paper-dim); color: var(--ink); transform: translateX(-50%); }
+    .card-advance.on-dark:hover { background: rgba(250, 248, 242, 0.08); color: var(--paper); transform: translateX(-50%); }
+    .cta:hover { transform: none; box-shadow: none; background: var(--paper); }
+    .card { padding-bottom: calc(clamp(74px, 8vh, 108px) + env(safe-area-inset-bottom, 0px)); }
+  }
+
   .hint {
     display: none;
     position: absolute;
-    bottom: 20px;
+    bottom: calc(18px + env(safe-area-inset-bottom, 0px));
     left: 0;
     right: 0;
     text-align: center;
@@ -871,8 +880,22 @@
   }
 
   @media (max-width: 680px) {
-    .progress { padding: 12px 14px; gap: 3px; }
-    .card { padding: 76px 28px 86px; }
+    .progress { padding: calc(12px + env(safe-area-inset-top, 0px)) 14px 12px; gap: 3px; }
+    /* Clear the notch + progress bar at the top. */
+    .card { padding: calc(72px + env(safe-area-inset-top, 0px)) 26px calc(16px + env(safe-area-inset-bottom, 0px)); }
+    .card-inner { padding-bottom: 14px; }
+    /* Pin the advance button to the visible bottom (sticky) instead of the
+       scrolling content end, so dense-card copy scrolls cleanly ABOVE it rather
+       than tucking underneath, and it clears the home indicator. */
+    .card-advance {
+      position: sticky;
+      left: auto;
+      bottom: 4px;
+      transform: none;
+      margin: 14px auto 0;
+      flex: 0 0 auto;
+    }
+    .card-advance:hover { transform: none; }
     /* On phones the image slots are hidden and the card returns to full-width copy. */
     .visual { display: none; }
     .card.has-visual { align-items: center; }
