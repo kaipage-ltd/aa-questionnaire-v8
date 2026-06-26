@@ -51,6 +51,18 @@ test('the close card renders the character close line', () => {
   assert.match(playerHtml, /close-line/, 'close card must render the closing beat');
 });
 
+test('each reveal card type has a distinct photographic background', () => {
+  const block = playerHtml.match(/const CARD_BACKGROUNDS = \{[\s\S]*?\n\};/)?.[0] || '';
+  for (const type of ['turn', 'number', 'shape', 'hurdle', 'quote', 'cost', 'firstMove', 'close']) {
+    assert.match(block, new RegExp(`${type}: \\{ name: '[^']+'`), `${type} must define a background image`);
+  }
+  const assets = [...block.matchAll(/name: '([^']+)'/g)].map((match) => match[1]);
+  assert.equal(assets.length, 8, 'the eight-card reveal needs eight background entries');
+  assert.equal(new Set(assets).size, assets.length, 'each card background asset must be different');
+  assert.match(playerHtml, /function backgroundForCard/, 'the player must resolve media by card type');
+  assert.match(playerHtml, /section\.dataset\.media/, 'cards should expose the selected asset for browser checks');
+});
+
 test('image slots carry real artwork and never a placeholder label', () => {
   assert.doesNotMatch(playerHtml, /IMAGE TO COME/, 'a placeholder label must never ship to respondents');
   for (const key of ['cost-velocity', 'cost-visibility', 'cost-coherence', 'fit-door']) {

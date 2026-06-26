@@ -177,9 +177,8 @@
   }
   .card-inner.is-wide { width: min(100%, 760px); }
 
-  /* Cinematic media behind the dark peak cards (quote + close). Same warm
-     near-monochrome world as the opening hero and the interstitials: colour
-     enters at the peaks, through photography, never through UI. */
+  /* Cinematic media behind every reveal card. Each beat gets its own image, but
+     the overlay keeps the whole journey inside the same dark A+A world. */
   .card.has-media { background: #0b0a07; }
   .card-media {
     position: absolute;
@@ -886,11 +885,11 @@
   @media (max-width: 680px) {
     .progress { padding: calc(12px + env(safe-area-inset-top, 0px)) 14px 12px; gap: 3px; }
     /* Clear the notch + progress bar at the top. */
-    .card { padding: calc(72px + env(safe-area-inset-top, 0px)) 26px calc(16px + env(safe-area-inset-bottom, 0px)); }
+    .card { padding: calc(72px + env(safe-area-inset-top, 0px)) 26px calc(96px + env(safe-area-inset-bottom, 0px)); }
+    .card.is-close { padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px)); }
     .card-inner { padding-bottom: 14px; }
-    /* Pin the advance button to the visible bottom (sticky) instead of the
-       scrolling content end, so dense-card copy scrolls cleanly ABOVE it rather
-       than tucking underneath, and it clears the home indicator. */
+    /* Pin most advance buttons to the visible bottom. The cost card has a taller
+       calculation table, so its button flows after the content below. */
     .card-advance {
       position: sticky;
       left: auto;
@@ -898,6 +897,11 @@
       transform: none;
       margin: 14px auto 0;
       flex: 0 0 auto;
+    }
+    .card.is-cost .card-advance {
+      position: relative;
+      bottom: auto;
+      margin-top: 22px;
     }
     .card-advance:hover { transform: none; }
     /* On phones the image slots are hidden and the card returns to full-width copy. */
@@ -1182,6 +1186,24 @@ function p(className, text, delay) {
 // The A+A wordmark, shown on the reveal's opening card.
 const AA_WORDMARK = `<svg viewBox="0 0 1620 400" fill="currentColor" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Atelier + Avenue"><path d="M1501 76.3711L1501 41.7653L1619.14 41.7653L1619.14 76.3711L1501 76.3711Z"/><path d="M1542.77 0L1577.37 0V118.137H1542.77V0Z"/><path d="M1396.63 83.2392C1396.63 91.4479 1394.41 98.8749 1389.98 105.52C1385.55 112.165 1379.1 117.051 1370.63 120.179L1400.54 176.467H1352.06L1328.22 127.41H1312.19V176.467H1269V42H1351.28C1360.92 42 1369.13 43.8893 1375.91 47.6679C1382.81 51.3163 1387.96 56.3327 1391.35 62.7173C1394.87 68.9716 1396.63 75.8122 1396.63 83.2392ZM1352.65 84.9982C1352.65 81.4802 1351.48 78.5485 1349.13 76.2031C1346.79 73.8578 1343.92 72.6851 1340.53 72.6851H1312.19V97.5068H1340.53C1343.92 97.5068 1346.79 96.3341 1349.13 93.9887C1351.48 91.5131 1352.65 88.5162 1352.65 84.9982Z"/><path d="M1045 42H1161.29V74.2487H1088.19V92.8161H1150.74V123.697H1088.19V144.218H1162.66V176.467H1045V42Z"/><path d="M896 176.467V42H939.194V176.467H896Z"/><path d="M680 42H723.194V142.069H792.186V176.467H680V42Z"/><path d="M456 42H572.291V74.2487H499.194V92.8161H561.737V123.697H499.194V144.218H573.659V176.467H456V42Z"/><path d="M102.609 176.467L96.9414 157.509H49.8388L44.1709 176.467H0L49.0571 42H99.2868L148.344 176.467H102.609ZM58.8294 127.41H87.9509L73.8787 79.5257H73.097L58.8294 127.41Z"/><path d="M312.365 76.3986V176.467H269.171V76.3986H225V42H356.34V76.3986H312.365Z"/><path d="M1334 265H1450.29V297.249H1377.19V315.816H1439.74V346.697H1377.19V367.218H1451.66V399.467H1334V265Z"/><path d="M1223.88 342.328C1223.88 360.7 1218.08 374.707 1206.49 384.349C1194.89 393.991 1178.41 398.812 1157.04 398.812C1135.67 398.812 1119.12 393.991 1107.39 384.349C1095.8 374.707 1090 360.7 1090 342.328V262H1133.19V341.742C1133.19 349.299 1135.21 355.358 1139.25 359.919C1143.29 364.349 1149.16 366.564 1156.84 366.564C1164.53 366.564 1170.39 364.284 1174.43 359.723C1178.6 355.163 1180.69 349.169 1180.69 341.742V262H1223.88V342.328Z"/><path d="M941.16 399.467L884.676 334.188V399.467H845V265H882.721L939.205 331.256V265H978.881V399.467H941.16Z"/><path d="M626 265H742.291V297.249H669.194V315.816H731.737V346.697H669.194V367.218H743.659V399.467H626V265Z"/><path d="M431.689 399.467L384 265H430.125L457.097 354.905H457.879L485.046 265H529.217L481.723 399.467H431.689Z"/><path d="M271.609 399.467L265.941 380.509H218.839L213.171 399.467H169L218.057 265H268.287L317.344 399.467H271.609ZM227.829 350.41H256.951L242.879 302.526H242.097L227.829 350.41Z"/></svg>`;
 
+const CARD_BACKGROUNDS = {
+  turn: { name: 'hero-archway', position: 'center 36%' },
+  number: { name: 'fog-on-sea', position: 'center 42%' },
+  shape: { name: 'colonnade', position: 'center 50%' },
+  hurdle: { name: 'sea-storm', position: 'center 48%' },
+  quote: { name: 'marble-sphere', position: 'center 45%' },
+  cost: { name: 'quiet-after-storm', position: 'center 48%' },
+  firstMove: { name: 'sunny-sea', position: 'center 48%' },
+  close: { name: 'city-london', position: 'center 46%' }
+};
+
+function backgroundForCard(card) {
+  if (card?.media) {
+    return { name: String(card.media), position: card.mediaPosition || 'center' };
+  }
+  return CARD_BACKGROUNDS[card?.type] || null;
+}
+
 function buildBriefPanel(rows, className) {
   const panel = el('div', `brief-panel${className ? ` ${className}` : ''}`);
   (rows || []).forEach((row) => {
@@ -1308,10 +1330,14 @@ function buildCard(card) {
   const section = el('section', `card is-${card.type}${card.dark ? ' dark' : ''}`);
   section.dataset.beat = card.beat || '';
   if (card.peak) section.dataset.peak = card.peak;
-  if (card.media) {
+  const mediaSpec = backgroundForCard(card);
+  if (mediaSpec) {
     section.classList.add('has-media');
+    section.dataset.media = mediaSpec.name;
     const media = el('div', 'card-media');
-    media.style.backgroundImage = `url('../assets/img/${card.media}.jpg')`;
+    media.dataset.asset = mediaSpec.name;
+    media.style.backgroundImage = `url('../assets/img/${mediaSpec.name}.jpg')`;
+    media.style.backgroundPosition = mediaSpec.position || 'center';
     section.appendChild(media);
   }
   // The abstract line-art "visual" slot is retired: it forced the cost card into
