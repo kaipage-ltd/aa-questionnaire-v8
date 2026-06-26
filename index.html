@@ -37,20 +37,23 @@
   }
 
   :root {
-    /* Warm near-monochrome, converged onto the A+A brand tokens (Brand/tokens). */
-    --ink: #22211f;          /* brand ink  - canonical text */
-    --ink-soft: #4d4c4a;     /* slate */
-    --ink-mute: #6f6a64;     /* warm mid grey */
-    --ink-faint: #918f8c;    /* stone */
-    --ink-whisper: #bdbab5;  /* ash */
-    --paper: #f7f3ed;        /* brand cream/linen  - light means cream, not white */
-    --paper-soft: #f1ebe1;   /* warm hover */
-    --paper-warm: #f3eee4;   /* warm fill */
-    --paper-tint: #ece4d5;   /* deeper warm tint (label fills) */
-    --rule: #dcd5c7;         /* warm hairline (shared with the reveal) */
-    --rule-soft: #e8e1d4;
-    --rule-bold: #22211f;
-    --selection: #e9e0cc;
+    /* The conversation lives inside the site's cinematic atmosphere (variant B):
+       light type on a continuous warm-dark world. Tokens keep their names but
+       flip to light-on-dark so every existing class follows. */
+    --ink: #f3ead9;                       /* canonical light type */
+    --ink-soft: rgba(243, 234, 217, 0.74);
+    --ink-mute: rgba(243, 234, 217, 0.54);
+    --ink-faint: rgba(243, 234, 217, 0.40);
+    --ink-whisper: rgba(243, 234, 217, 0.26);
+    --paper: #0b0805;                     /* dark base; the atmosphere sits above it */
+    --paper-soft: rgba(243, 234, 217, 0.05);  /* hover fill */
+    --paper-warm: rgba(243, 234, 217, 0.08);  /* selected / user fill */
+    --paper-tint: rgba(243, 234, 217, 0.11);  /* label fill */
+    --rule: rgba(243, 234, 217, 0.14);    /* hairline on dark */
+    --rule-soft: rgba(243, 234, 217, 0.07);
+    --rule-bold: #f3ead9;
+    --selection: rgba(205, 168, 111, 0.32);
+    --gold: #cda86f;                      /* warm accent: eyebrows, selected marker */
 
     /* Two families only. The brand has no accent colour and no mono face: the
        former "mono" chrome retires to tracked Instrument Sans (brand eyebrows). */
@@ -97,22 +100,90 @@
   }
 
   body {
-    background-image:
-      radial-gradient(circle at 18% 22%, rgba(0,0,0,0.014) 0%, transparent 55%),
-      radial-gradient(circle at 82% 78%, rgba(0,0,0,0.014) 0%, transparent 55%);
     min-height: 100vh;
     overflow-x: hidden;
   }
 
+  /* ── Continuous cinematic atmosphere (chosen variant B): the archway scene
+     darkened + blurred into an ambient world the whole conversation lives in.
+     One world from the first screen to the reveal — no set-pieces. ── */
   body::before {
     content: '';
     position: fixed;
-    inset: 0;
-    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' seed='4'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.04 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
-    opacity: 0.5;
+    inset: -4%;
+    background: url('assets/img/hero-archway.jpg') center 35% / cover no-repeat;
+    filter: blur(9px) brightness(0.42) saturate(0.92);
+    transform: scale(1.06);
+    z-index: 0;
     pointer-events: none;
+    transition: filter 1300ms var(--ease-out), transform 1600ms var(--ease-out);
+  }
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
     z-index: 1;
-    mix-blend-mode: multiply;
+    pointer-events: none;
+    background:
+      linear-gradient(155deg, rgba(8,6,3,0.42) 0%, rgba(8,6,3,0.66) 55%, rgba(6,4,2,0.82) 100%),
+      radial-gradient(120% 90% at 78% 16%, rgba(229,188,121,0.10) 0%, transparent 55%),
+      radial-gradient(ellipse 84% 76% at 48% 44%, transparent 40%, rgba(0,0,0,0.6) 100%);
+    transition: background 1300ms var(--ease-out);
+  }
+
+  /* ── A MOMENT inside the one world: the atmosphere comes forward (focus + light),
+     the conversation recedes, and the beat lands held + cinematic. Then it settles
+     back. The set-pieces keep their drama without becoming separate screens. ── */
+  body.is-moment::before { filter: blur(2.5px) brightness(0.62) saturate(1.02); transform: scale(1.012); }
+  body.is-moment::after {
+    background:
+      linear-gradient(155deg, rgba(8,6,3,0.24) 0%, rgba(8,6,3,0.44) 55%, rgba(6,4,2,0.60) 100%),
+      radial-gradient(120% 92% at 78% 12%, rgba(229,188,121,0.20) 0%, transparent 55%),
+      radial-gradient(ellipse 88% 80% at 48% 42%, transparent 48%, rgba(0,0,0,0.48) 100%);
+  }
+  body.is-moment .stage { opacity: 0.08; filter: blur(2px);
+    transition: opacity 700ms var(--ease-out), filter 700ms var(--ease-out); }
+  .moment {
+    position: fixed; inset: 0; z-index: 6; display: flex; align-items: center;
+    opacity: 0; transition: opacity 1000ms var(--ease-out);
+  }
+  .moment.is-in { opacity: 1; }
+  .moment-inner { width: 100%; max-width: 1080px; margin: 0 auto; padding: 0 clamp(28px, 6vw, 100px); }
+  .moment .m-eyebrow {
+    font-family: var(--sans); font-size: 13px; font-weight: 500; letter-spacing: 0.18em;
+    text-transform: uppercase; color: var(--gold); margin-bottom: 26px;
+    display: flex; align-items: center; gap: 10px;
+    opacity: 0; transform: translateY(14px);
+    transition: opacity 900ms var(--ease-out) 220ms, transform 900ms var(--ease-out) 220ms;
+  }
+  .moment .m-eyebrow .m-tick { color: rgba(205,168,111,0.7); }
+  .moment .m-line {
+    font-family: var(--serif); font-weight: 400; font-size: clamp(40px, 6.4vw, 82px);
+    line-height: 1.04; letter-spacing: -0.015em; color: var(--ink); max-width: 15em;
+    opacity: 0; transform: translateY(20px);
+    transition: opacity 1050ms var(--ease-out) 360ms, transform 1150ms var(--ease-out) 360ms;
+  }
+  .moment .m-line em { font-style: italic; }
+  .moment .m-sub {
+    font-family: var(--sans); font-size: clamp(17px, 1.9vw, 21px); line-height: 1.5;
+    color: var(--ink-soft); max-width: 34em; margin-top: 26px;
+    opacity: 0; transform: translateY(20px);
+    transition: opacity 1050ms var(--ease-out) 560ms, transform 1150ms var(--ease-out) 560ms;
+  }
+  .moment.is-in .m-eyebrow, .moment.is-in .m-line, .moment.is-in .m-sub { opacity: 1; transform: none; }
+  @media (prefers-reduced-motion: reduce) {
+    body::before, body::after, body.is-moment .stage { transition: none !important; }
+    .moment, .moment .m-eyebrow, .moment .m-line, .moment .m-sub {
+      transition: opacity 200ms linear !important; transform: none !important; }
+  }
+  .atmos-grain {
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    opacity: 0.045;
+    mix-blend-mode: screen;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
   }
 
   ::selection { background: var(--selection); color: var(--ink); }
@@ -2076,8 +2147,7 @@
      and the document begins writing itself as the image settles.
      ───────────────────────────────────────────────────────────────────────── */
 
-  /* The cream title moves onto the hero; the document keeps only its letterhead. */
-  .doc-head { display: none; }
+  /* The conversation opens in-world: wordmark + title + subline anchor the start. */
 
   .hero {
     position: fixed;
@@ -2332,17 +2402,7 @@
 </head>
 <body>
 
-<div class="hero" id="hero">
-  <div class="hero-media" aria-hidden="true"></div>
-  <div class="hero-inner">
-    <img class="hero-logo" src="assets/img/aa-logo-cream.svg" alt="Atelier + Avenue" width="259" height="64">
-    <div class="hero-content">
-      <p class="hero-eyebrow">The AI Readiness Diagnostic</p>
-      <h1 class="hero-headline">Does your business know more than it can <em>use?</em></h1>
-      <button class="hero-begin" id="heroBegin" type="button">Begin</button>
-    </div>
-  </div>
-</div>
+<div class="atmos-grain" aria-hidden="true"></div>
 
 <main class="stage">
 
@@ -3483,16 +3543,56 @@ function showInterstitial({ image, eyebrow, line, emphasis, lede, body }) {
   });
 }
 
+// A MOMENT inside the one world: the atmosphere swells forward, the conversation
+// recedes, and the beat lands held + cinematic, then it settles back. The
+// set-pieces keep their drama without becoming separate screens.
+function showMoment({ eyebrow, line, emphasis, sub, dwell }) {
+  return new Promise((resolve) => {
+    document.body.classList.add('is-moment');
+    const m = el('div', 'moment');
+    const inner = el('div', 'moment-inner');
+    if (eyebrow) {
+      const e = el('div', 'm-eyebrow');
+      e.innerHTML = `<span class="m-tick">+</span>${escapeHtml(eyebrow)}`;
+      inner.appendChild(e);
+    }
+    const lineEl = el('div', 'm-line');
+    lineEl.innerHTML = emphasizeLine(line, emphasis);
+    inner.appendChild(lineEl);
+    if (sub) inner.appendChild(el('div', 'm-sub', sub));
+    m.appendChild(inner);
+    document.body.appendChild(m);
+    requestAnimationFrame(() => requestAnimationFrame(() => m.classList.add('is-in')));
+
+    let done = false;
+    const finish = () => {
+      if (done) return;
+      done = true;
+      document.removeEventListener('keydown', onKey);
+      m.classList.remove('is-in');
+      document.body.classList.remove('is-moment');
+      setTimeout(() => { m.remove(); resolve(); }, reduceMotion ? 200 : 900);
+    };
+    const timer = setTimeout(finish, reduceMotion ? 700 : (dwell || 3600));
+    const go = () => { clearTimeout(timer); finish(); };
+    const onKey = (e) => {
+      if (e.key === 'Enter' || e.key === ' ' || e.key === 'ArrowRight') { e.preventDefault(); go(); }
+    };
+    // The held beat is tappable to move on early, and auto-advances otherwise.
+    m.addEventListener('click', go);
+    setTimeout(() => document.addEventListener('keydown', onKey), 450);
+  });
+}
+
 async function renderAphorism({ text, current }) {
+  // The pacing beat gets its moment: the world comes forward, the line lands.
   const doneName = current ? DOMAIN_SEQUENCE[DOMAIN_SEQUENCE.indexOf(current) - 1] : null;
   const meta = INTERSTITIAL_LINES[text] || {};
-  await showInterstitial({
-    image: meta.image || 'fog-on-sea',
+  await showMoment({
     eyebrow: doneName ? `${doneName} complete` : null,
     line: text,
     emphasis: meta.emphasis
   });
-  // Back on the cream canvas, the model resumes composing the next section.
   if (current) await hold(`Composing ${current}`, reduceMotion ? 180 : 1100, { scroll: true });
 }
 
@@ -3846,14 +3946,15 @@ async function renderMulti(q) {
    ───────────────────────────────────────────────────────────────────────── */
 
 async function renderReflection() {
-  // The midpoint. A held "stepping back" beat, then the full-bleed sea-storm
-  // moment carrying the halfway reflection, before the harder second half.
+  // The midpoint gets its moment too: a held "stepping back" beat where the
+  // world comes forward, then the conversation resumes for the harder half.
   await hold('Holding', reduceMotion ? 150 : 720);
-  await showInterstitial({
-    image: 'sea-storm',
+  await showMoment({
     eyebrow: 'Halfway',
-    lede: "You've moved through what the business can see and how fast it can act on what it sees.",
-    body: 'The next layer is coherence: whether the seeing and the acting are connected to the same picture or running on parallel tracks.'
+    line: "You've moved through what the business can see, and how fast it acts on it.",
+    emphasis: 'how fast it acts on it.',
+    sub: 'The next layer is coherence: whether the seeing and the acting are connected to one picture, or running on parallel tracks.',
+    dwell: 4200
   });
 }
 
