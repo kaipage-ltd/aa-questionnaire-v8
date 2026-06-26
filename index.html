@@ -1993,8 +1993,8 @@
 
     .kbd-hint { font-size: 11px; gap: 14px; margin-top: 22px; }
 
-    /* Sticky Confirm on multi-select  -  page-anchored bar with cream fade above */
-    .confirm-row {
+    /* Sticky Confirm on multi-select  -  page-anchored bar with a soft fade above */
+    .multi-block .confirm-row {
       position: sticky;
       bottom: max(12px, env(safe-area-inset-bottom));
       padding: 22px 0 14px;
@@ -2004,7 +2004,7 @@
       background: var(--paper);
       z-index: 8;
     }
-    .confirm-row::before {
+    .multi-block .confirm-row::before {
       content: '';
       position: absolute;
       top: -28px;
@@ -2165,123 +2165,13 @@
     .shimmer-verb .glyph { animation: none !important; }
   }
 
-  /* ─────────────────────────────────────────────────────────────────────────
-     THRESHOLD HERO  -  the dark brand world the visitor arrives from. On Begin
-     it recedes INTO the cream session beneath it (one gesture, not a hard cut),
-     and the document begins writing itself as the image settles.
-     ───────────────────────────────────────────────────────────────────────── */
-
   /* The conversation opens in-world: wordmark + title + subline anchor the start. */
-
-  .hero {
-    position: fixed;
-    inset: 0;
-    z-index: 50;
-    background: #0b0a07;
-    overflow: hidden;
-    transition: opacity 920ms var(--ease-out), transform 920ms var(--ease-out), filter 920ms var(--ease-out);
-  }
-  .hero.is-dismissing {
-    opacity: 0;
-    transform: translateY(-2.4%) scale(1.035);
-    filter: blur(7px);
-    pointer-events: none;
-  }
-  .hero-media {
-    position: absolute;
-    inset: 0;
-    background-image:
-      linear-gradient(to bottom, rgba(8,7,5,0.06) 0%, rgba(8,7,5,0.28) 44%, rgba(8,7,5,0.78) 100%),
-      linear-gradient(to right, rgba(8,7,5,0.58) 0%, rgba(8,7,5,0.14) 46%, rgba(8,7,5,0) 80%),
-      url('assets/img/hero-archway.jpg');
-    background-size: cover;
-    background-position: 62% 36%;
-    transform: scale(1.05);
-    animation: heroDrift 18s var(--ease-out) forwards;
-  }
-  @keyframes heroDrift { to { transform: scale(1); } }
-  .hero-inner {
-    position: relative;
-    z-index: 2;
-    height: 100%;
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 40px clamp(28px, 6vw, 88px) clamp(56px, 9vh, 104px);
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-  }
-  .hero-logo {
-    width: 184px;
-    height: auto;
-    display: block;
-    opacity: 0;
-    transform: translateY(-8px);
-    animation: heroRise 1000ms var(--ease-out) 80ms forwards;
-  }
-  .hero-content { max-width: 820px; }
-  .hero-content > * {
-    opacity: 0;
-    transform: translateY(16px);
-    animation: heroRise 1000ms var(--ease-out) forwards;
-  }
-  .hero-eyebrow {
-    font-family: var(--sans);
-    font-size: 13.5px;
-    font-weight: 400;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: rgba(255,251,245,0.62);
-    margin: 0 0 24px;
-    animation-delay: 240ms;
-  }
-  .hero-headline {
-    font-family: var(--serif);
-    font-weight: 400;
-    font-size: clamp(44px, 7vw, 92px);
-    line-height: 1.04;
-    letter-spacing: -0.014em;
-    color: #fbf7f0;
-    margin: 0 0 30px;
-    animation-delay: 360ms;
-  }
-  .hero-headline em { font-style: italic; }
-  .hero-begin {
-    font-family: var(--sans);
-    font-size: 15px;
-    font-weight: 600;
-    letter-spacing: 0.005em;
-    color: var(--ink);
-    background: #f7f3ed;
-    border: 1px solid rgba(247,243,237,0.0);
-    border-radius: 60px;
-    padding: 14px 32px;
-    cursor: pointer;
-    animation-delay: 560ms;
-    transition: transform 360ms var(--ease-out), background 240ms var(--ease-soft), box-shadow 360ms var(--ease-out);
-  }
-  .hero-begin:hover { background: #fffdf9; transform: translateY(-1px); box-shadow: 0 12px 30px rgba(0,0,0,0.28); }
-  .hero-begin:focus-visible { outline: 2px solid rgba(255,251,245,0.6); outline-offset: 3px; }
-  @keyframes heroRise { to { opacity: 1; transform: none; } }
-
-  @media (max-width: 700px) {
-    .hero-logo { width: 132px; }
-    .hero-inner { padding: 28px 22px clamp(40px, 7vh, 72px); }
-    .hero-headline { font-size: clamp(34px, 9vw, 52px); margin-bottom: 26px; }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .hero { transition: opacity 200ms linear; }
-    .hero.is-dismissing { transform: none; filter: none; }
-    .hero-media { animation: none; transform: scale(1); }
-    .hero-logo, .hero-content > * { animation: none; opacity: 1; transform: none; }
-  }
 
   /* ─────────────────────────────────────────────────────────────────────────
      INTERSTITIALS  -  between sections the model "steps back to look at the
      bigger picture": a brief full-bleed cinematic image carrying the pacing
-     line, then it dissolves back to the cream question canvas. Same gesture as
-     the hero, in reverse. Sea-to-readiness arc closes the loop to the homepage.
+     line, then it dissolves back to the conversation in the same world.
+     Sea-to-readiness arc closes the loop to the homepage.
      ───────────────────────────────────────────────────────────────────────── */
   .interstitial {
     position: fixed;
@@ -2415,7 +2305,7 @@
   }
 
   /* The cohesive cross-dissolve itself: the whole canvas cross-fades between the
-     cream questions and the image moment, bridged with a subtle blur (Emil
+     conversation and image moments, bridged with a subtle blur (Emil
      Kowalski's "blur to bridge difficult crossfades"). Scoped so it only fires
      for section breaks. ~600-720ms reads as a calm breath, not a UI flick. */
   html.vt-section::view-transition-old(root) { animation: 560ms var(--ease-out) both vtFadeOut; }
@@ -3449,10 +3339,10 @@ async function renderIntro() {
   await appendBeat(block, { noScroll: true });
 
   // Stream the held opening
-  await streamText(heldP, 'AI readiness is not about how many tools you have. It is whether the business can use what it already knows.', { msPerChar: 22 });
+  await streamText(heldP, 'AI readiness is not about how many tools you have. It is whether the business can use what it already knows.', { msPerChar: 18 });
 
   // Hold silence  -  let the opening land
-  await wait(reduceMotion ? 80 : 1400);
+  await wait(reduceMotion ? 80 : 900);
 
   // Fade the rest in
   p2.style.opacity = '1';
@@ -3462,12 +3352,11 @@ async function renderIntro() {
   domainMap.classList.add('is-in');
   await wait(reduceMotion ? 60 : 360);
   p3.style.opacity = '1';
-  await wait(reduceMotion ? 50 : 220);
+  await wait(reduceMotion ? 50 : 160);
   await streamText(p3, 'Answer from today, not the version you are trying to become. If two answers feel close, choose the harsher one. The reveal will be more useful.');
 
-  // The hero "Begin" was the entry gesture, so the briefing now flows straight
-  // into the first question instead of gating on a second button.
-  await wait(reduceMotion ? 140 : 1000);
+  // Flow straight into the first question after the briefing lands.
+  await wait(reduceMotion ? 140 : 560);
   updateBottomSpace();
 }
 
@@ -3476,8 +3365,8 @@ async function renderIntro() {
    ───────────────────────────────────────────────────────────────────────── */
 
 async function renderPrepare() {
-  await hold('Reading', 800);
-  await hold('Composing the first question', 1400);
+  await hold('Reading', 520);
+  await hold('Composing the first question', 900);
 }
 
 /* ─────────────────────────────────────────────────────────────────────────
@@ -4655,40 +4544,8 @@ function showDemoBadge(scenario) {
   document.body.appendChild(badge);
 }
 
-/* ─────────────────────────────────────────────────────────────────────────
-   THRESHOLD START  -  the dark hero is the single entry gesture. On Begin it
-   dissolves and the cream session starts writing beneath it. Demo/skip modes
-   bypass the hero entirely.
-   ───────────────────────────────────────────────────────────────────────── */
-(function bootThreshold() {
-  const heroEl = document.getElementById('hero');
-  const heroBegin = document.getElementById('heroBegin');
-
-  const startSession = () => { document.body.classList.add('session-started'); run(); };
-
-  // Demo / scenario mode skips the threshold (it jumps straight to the gate).
-  if (getDemoScenario() || !heroEl || !heroBegin) {
-    if (heroEl) heroEl.remove();
-    startSession();
-    return;
-  }
-
-  const cross = () => {
-    heroEl.classList.add('is-dismissing');
-    setTimeout(() => heroEl.remove(), reduceMotion ? 240 : 980);
-    startSession();
-  };
-
-  heroBegin.addEventListener('click', cross, { once: true });
-  document.addEventListener('keydown', function onEnter(e) {
-    if (e.key === 'Enter' && document.getElementById('hero') && !heroEl.classList.contains('is-dismissing')) {
-      e.preventDefault();
-      document.removeEventListener('keydown', onEnter);
-      cross();
-    }
-  });
-  setTimeout(() => heroBegin.focus({ preventScroll: true }), 720);
-})();
+document.body.classList.add('session-started');
+run();
 </script>
 </body>
 </html>

@@ -147,6 +147,10 @@
   }
   .zone.prev { left: 0; width: 24%; }
   .zone.next { right: 0; width: 76%; }
+  body.is-close-card .zone.next {
+    pointer-events: none;
+    cursor: default;
+  }
 
   .card {
     position: absolute;
@@ -1498,6 +1502,7 @@ function render() {
   // copy and the cream pill stay crisp.
   document.body.classList.toggle('peak-forward', !!card?.dataset.peak);
   const data = cards[i] || {};
+  document.body.classList.toggle('is-close-card', data.type === 'close');
   // Position only. The internal funnel labels (Problem / Agitation / Peak) are not
   // client-facing language and reading them breaks the spell of the reveal.
   beatTag.textContent = `${String(i + 1).padStart(2, '0')} / ${String(cards.length).padStart(2, '0')}`;
