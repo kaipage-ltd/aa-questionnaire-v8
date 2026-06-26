@@ -204,6 +204,10 @@ export function deriveActionPlan(profile) {
   };
 }
 
+// Booking link for the close-card CTA. Overridable per-environment via
+// PUBLIC_CALENDAR_URL; this default keeps the button live everywhere.
+const DEFAULT_CALENDAR_URL = 'https://calendly.com/atelier-and-avenue-saverio-bianchi/atelier-and-avenue-intro-20min';
+
 export function deriveRevealInsights(answers, profile, context = {}) {
   const persona = PERSONA[profile.key];
   const firstName = firstNameOf(context.name);
@@ -310,6 +314,7 @@ export function deriveRevealInsights(answers, profile, context = {}) {
     {
       type: 'close',
       beat: 'Solution',
+      dark: true,
       eyebrow: STATIC.card13.eyebrow,
       characterName: profile.characterName,
       actionPlan,
@@ -319,7 +324,11 @@ export function deriveRevealInsights(answers, profile, context = {}) {
       closeLine: persona.closeLine,
       button: STATIC.card13.button,
       qualifier: STATIC.card13.qualifier,
-      calendarUrl: context.calendarUrl || '#'
+      // Only let an env/context value override when it is a real https URL, so a
+      // stale or empty PUBLIC_CALENDAR_URL never breaks the booking link.
+      calendarUrl: (typeof context.calendarUrl === 'string' && /^https:\/\//i.test(context.calendarUrl))
+        ? context.calendarUrl
+        : DEFAULT_CALENDAR_URL
     }
   ];
 

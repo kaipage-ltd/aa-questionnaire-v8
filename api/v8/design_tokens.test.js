@@ -1,22 +1,26 @@
-// Drift guard: the PDF palette in design_tokens.js mirrors the reveal's :root
-// custom properties by hand (the plain-HTML reveal cannot import a JS module
-// into its <style> block). If someone retunes the reveal palette, this fails
-// until design_tokens.js is updated to match.
+// The on-screen reveal now lives in the dark cinematic world (light type on the
+// continuous atmosphere). The PDF is a printed leave-behind, so it stays on the
+// light brand palette. The two surfaces intentionally diverge, so this guards
+// the PDF palette (api/_lib/design_tokens.js) directly rather than mirroring the
+// reveal's :root.
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { readFileSync } from 'node:fs';
-import { join, dirname } from 'node:path';
-import { fileURLToPath } from 'node:url';
 
 import { TOKENS } from '../_lib/design_tokens.js';
 
-test('PDF design tokens match the reveal palette', () => {
-  const revealHtml = readFileSync(
-    join(dirname(fileURLToPath(import.meta.url)), '..', '..', 'reveal', 'index.html'),
-    'utf8'
-  );
-  const rootBlock = revealHtml.match(/:root\s*\{([\s\S]*?)\}/)?.[1] || '';
-  for (const [name, hex] of Object.entries(TOKENS)) {
-    assert.equal(rootBlock.includes(hex), true, `token ${name} (${hex}) missing from reveal :root`);
+test('PDF keeps the light brand palette (a printed report stays on paper)', () => {
+  const expected = {
+    paper: '#f7f3ed',     // cream surface
+    paperDim: '#efeae0',
+    ink: '#22211f',       // ink text
+    inkSoft: '#4d4c4a',
+    inkFaint: '#918f8c',
+    rule: '#dcd5c7',
+    dark: '#1c1b18',      // warm near-black band
+    darkSoft: '#bdbab5',
+    darkFaint: '#8a8782'
+  };
+  for (const [name, hex] of Object.entries(expected)) {
+    assert.equal(TOKENS[name], hex, `PDF token ${name} drifted from the light brand palette`);
   }
 });

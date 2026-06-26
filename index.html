@@ -14,27 +14,58 @@
   }
 </script>
 <style>
+  /* ── A+A brand faces, self-hosted (Instrument Serif + Instrument Sans) ── */
+  @font-face {
+    font-family: 'Instrument Serif';
+    font-style: normal; font-weight: 400; font-display: swap;
+    src: url('assets/fonts/InstrumentSerif-Regular.ttf') format('truetype');
+  }
+  @font-face {
+    font-family: 'Instrument Serif';
+    font-style: italic; font-weight: 400; font-display: swap;
+    src: url('assets/fonts/InstrumentSerif-Italic.ttf') format('truetype');
+  }
+  @font-face {
+    font-family: 'Instrument Sans';
+    font-style: normal; font-weight: 400 600; font-display: swap;
+    src: url('assets/fonts/InstrumentSans-Variable.ttf') format('truetype-variations');
+  }
+  @font-face {
+    font-family: 'Instrument Sans';
+    font-style: italic; font-weight: 400 600; font-display: swap;
+    src: url('assets/fonts/InstrumentSans-Italic-Variable.ttf') format('truetype-variations');
+  }
+
   :root {
-    --ink: #1a1a1a;
-    --ink-soft: #4a4a4a;
-    --ink-mute: #6b6b6b;
-    --ink-faint: #8a8a8a;
-    --ink-whisper: #b8b6b0;
-    --paper: #fafaf7;
-    --paper-soft: #f4f3ee;
-    --paper-warm: #f7f5ef;
-    --paper-tint: #f1ede2;
-    --rule: #d8d6d0;
-    --rule-soft: #e6e4de;
-    --rule-bold: #1a1a1a;
-    --selection: #ebe6d2;
+    /* The conversation lives inside the site's cinematic atmosphere (variant B):
+       light type on a continuous warm-dark world. Tokens keep their names but
+       flip to light-on-dark so every existing class follows. */
+    --ink: #f3ead9;                       /* canonical light type */
+    --ink-soft: rgba(243, 234, 217, 0.74);
+    --ink-mute: rgba(243, 234, 217, 0.54);
+    --ink-faint: rgba(243, 234, 217, 0.40);
+    --ink-whisper: rgba(243, 234, 217, 0.26);
+    --paper: #0b0805;                     /* dark base; the atmosphere sits above it */
+    --paper-soft: rgba(243, 234, 217, 0.05);  /* hover fill */
+    --paper-warm: rgba(243, 234, 217, 0.08);  /* selected / user fill */
+    --paper-tint: rgba(243, 234, 217, 0.11);  /* label fill */
+    --rule: rgba(243, 234, 217, 0.14);    /* hairline on dark */
+    --rule-soft: rgba(243, 234, 217, 0.07);
+    --rule-bold: #f3ead9;
+    --selection: rgba(205, 168, 111, 0.32);
+    --gold: #cda86f;                      /* warm accent: eyebrows, selected marker */
 
-    --serif: 'Iowan Old Style', 'Palatino Linotype', Palatino, Georgia, serif;
+    /* Two families only. The brand has no accent colour and no mono face: the
+       former "mono" chrome retires to tracked Instrument Sans (brand eyebrows). */
+    --serif: 'Instrument Serif', 'Iowan Old Style', 'Palatino Linotype', Palatino, Georgia, serif;
     --sans: 'Instrument Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    --mono: 'SF Mono', 'JetBrains Mono', Menlo, Consolas, monospace;
+    --mono: 'Instrument Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 
-    --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+    /* Motion craft (Emil Kowalski): ease-out for entrances, ease-in-out for
+       on-screen morphs. Replace default curves; they lack intentionality. */
+    --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
     --ease-soft: cubic-bezier(0.4, 0, 0.2, 1);
+    --ease-morph: cubic-bezier(0.77, 0, 0.175, 1);
   }
 
   * { box-sizing: border-box; }
@@ -50,7 +81,7 @@
     padding: 0;
     background: var(--paper);
     color: var(--ink);
-    font-family: var(--serif);
+    font-family: var(--sans);
     font-size: 16px;
     line-height: 1.55;
     -webkit-font-smoothing: antialiased;
@@ -69,22 +100,114 @@
   }
 
   body {
-    background-image:
-      radial-gradient(circle at 18% 22%, rgba(0,0,0,0.014) 0%, transparent 55%),
-      radial-gradient(circle at 82% 78%, rgba(0,0,0,0.014) 0%, transparent 55%);
     min-height: 100vh;
     overflow-x: hidden;
   }
 
-  body::before {
+  /* ── Continuous cinematic atmosphere (chosen variant B): the archway scene
+     darkened + blurred into an ambient world the whole conversation lives in.
+     One world from the first screen to the reveal — no set-pieces. ── */
+  /* Two crossfading image layers so the world can EVOLVE per phase (the sea
+     weather: archway → fog → storm → quiet → sunny) without a cut. */
+  .atmos {
+    position: fixed;
+    inset: -4%;
+    background-size: cover;
+    background-position: center 35%;
+    background-repeat: no-repeat;
+    filter: blur(9px) brightness(0.42) saturate(0.92);
+    transform: scale(1.06);
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 1100ms var(--ease-out), filter 1300ms var(--ease-out), transform 1600ms var(--ease-out);
+  }
+  .atmos.is-active { opacity: 1; }
+  body::after {
     content: '';
     position: fixed;
     inset: 0;
-    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' seed='4'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.04 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
-    opacity: 0.5;
-    pointer-events: none;
     z-index: 1;
-    mix-blend-mode: multiply;
+    pointer-events: none;
+    background:
+      linear-gradient(155deg, rgba(8,6,3,0.42) 0%, rgba(8,6,3,0.66) 55%, rgba(6,4,2,0.82) 100%),
+      radial-gradient(120% 90% at 78% 16%, rgba(229,188,121,0.10) 0%, transparent 55%),
+      radial-gradient(ellipse 84% 76% at 48% 44%, transparent 40%, rgba(0,0,0,0.6) 100%);
+    transition: background 1300ms var(--ease-out);
+  }
+
+  /* ── A MOMENT inside the one world: the atmosphere comes forward (focus + light),
+     the conversation recedes, and the beat lands held + cinematic. Then it settles
+     back. The set-pieces keep their drama without becoming separate screens. ── */
+  body.is-moment .atmos.is-active { filter: blur(2.5px) brightness(0.62) saturate(1.02); transform: scale(1.012); }
+  body.is-moment::after {
+    background:
+      linear-gradient(155deg, rgba(8,6,3,0.24) 0%, rgba(8,6,3,0.44) 55%, rgba(6,4,2,0.60) 100%),
+      radial-gradient(120% 92% at 78% 12%, rgba(229,188,121,0.20) 0%, transparent 55%),
+      radial-gradient(ellipse 88% 80% at 48% 42%, transparent 48%, rgba(0,0,0,0.48) 100%);
+  }
+  body.is-moment .stage { opacity: 0.08; filter: blur(2px);
+    transition: opacity 700ms var(--ease-out), filter 700ms var(--ease-out); }
+  .moment {
+    position: fixed; inset: 0; z-index: 6; display: flex; align-items: center;
+    opacity: 0; transition: opacity 1000ms var(--ease-out);
+  }
+  .moment.is-in { opacity: 1; }
+  .moment-inner { width: 100%; max-width: 1080px; margin: 0 auto; padding: 0 clamp(28px, 6vw, 100px); }
+  .moment .m-eyebrow {
+    font-family: var(--sans); font-size: 13px; font-weight: 500; letter-spacing: 0.18em;
+    text-transform: uppercase; color: var(--gold); margin-bottom: 26px;
+    display: flex; align-items: center; gap: 10px;
+    opacity: 0; transform: translateY(14px);
+    transition: opacity 900ms var(--ease-out) 220ms, transform 900ms var(--ease-out) 220ms;
+  }
+  .moment .m-eyebrow .m-tick { color: rgba(205,168,111,0.7); }
+  .moment .m-line {
+    font-family: var(--serif); font-weight: 400; font-size: clamp(40px, 6.4vw, 82px);
+    line-height: 1.04; letter-spacing: -0.015em; color: var(--ink); max-width: 15em;
+    opacity: 0; transform: translateY(20px);
+    transition: opacity 1050ms var(--ease-out) 360ms, transform 1150ms var(--ease-out) 360ms;
+  }
+  .moment .m-line em { font-style: italic; }
+  .moment .m-sub {
+    font-family: var(--sans); font-size: clamp(17px, 1.9vw, 21px); line-height: 1.5;
+    color: var(--ink-soft); max-width: 34em; margin-top: 26px;
+    opacity: 0; transform: translateY(20px);
+    transition: opacity 1050ms var(--ease-out) 560ms, transform 1150ms var(--ease-out) 560ms;
+  }
+  .moment.is-in .m-eyebrow, .moment.is-in .m-line, .moment.is-in .m-sub { opacity: 1; transform: none; }
+  @media (prefers-reduced-motion: reduce) {
+    .atmos { transition: opacity 200ms linear !important; }
+    body::after, body.is-moment .stage { transition: none !important; }
+    .moment, .moment .m-eyebrow, .moment .m-line, .moment .m-sub {
+      transition: opacity 200ms linear !important; transform: none !important; }
+  }
+  .atmos-grain {
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    opacity: 0.045;
+    mix-blend-mode: screen;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  }
+
+  /* Mobile: more bleed so the fixed atmosphere does not reveal an edge when the
+     iOS address bar shows/hides, and a slightly lighter blur for paint cost. */
+  @media (max-width: 640px) {
+    .atmos { inset: -9%; filter: blur(7px) brightness(0.42) saturate(0.92); }
+  }
+
+  /* Touch: hover states latch after a tap on iOS, so neutralise the sticky ones;
+     and drop the ↵ keyboard glyph (there is no return key on a phone). */
+  @media (hover: none) and (pointer: coarse) {
+    .opt:hover { background: transparent; }
+    .opt:hover .opt-text { transform: none; }
+    .opt:hover .opt-key { color: var(--ink-whisper); }
+    .confirm-btn::after { display: none; }
+    .confirm-btn:hover { padding-right: 2px; }
+    .user-block:hover { background: var(--paper-warm); border-left-color: var(--ink-whisper); }
+    .kbd-restart:hover { color: var(--ink-whisper); }
   }
 
   ::selection { background: var(--selection); color: var(--ink); }
@@ -239,9 +362,10 @@
   }
 
   /* SYSTEM turn body */
+  /* Streamed system prose is body copy: Instrument Sans, like the site. */
   .sys-body {
-    font-family: var(--serif);
-    font-size: 21px;
+    font-family: var(--sans);
+    font-size: 20px;
     line-height: 1.5;
     color: var(--ink);
     margin: 0 0 4px;
@@ -249,6 +373,17 @@
   }
   .sys-body em { font-style: italic; color: var(--ink-soft); }
   .sys-body + .sys-body { margin-top: 14px; }
+
+  /* The question stem is the SECTION HEADING: Instrument Serif, tight, like the
+     site's serif headlines. The one emphasis word rides as serif italic. */
+  .question-block .sys-body {
+    font-family: var(--serif);
+    font-weight: 400;
+    line-height: 1.14;
+    letter-spacing: -0.01em;
+    color: var(--ink);
+  }
+  .question-block .sys-body em { color: var(--ink); }
 
   /* Streaming caret  -  tapered fountain-pen lift */
   .caret {
@@ -336,7 +471,7 @@
     border: none;
     background: transparent;
     text-align: left;
-    font-family: var(--serif);
+    font-family: var(--sans);
     font-size: 18px;
     line-height: 1.45;
     color: var(--ink);
@@ -445,8 +580,8 @@
       margin-bottom: 18px;
     }
     .question-block .sys-body {
-      font-size: 26px;
-      line-height: 1.36;
+      font-size: 30px;
+      line-height: 1.16;
     }
     .question-block .opts {
       margin-top: 34px;
@@ -587,8 +722,8 @@
   .opt.is-current-pick { background: var(--paper-warm); }
   .opt.is-current-pick .opt-num { color: var(--ink); }
   .user-body {
-    font-family: var(--serif);
-    font-size: 18px;
+    font-family: var(--sans);
+    font-size: 17px;
     font-style: italic;
     line-height: 1.5;
     color: var(--ink-soft);
@@ -801,9 +936,9 @@
     min-height: 122px;
     padding: 12px 10px 10px;
     position: relative;
-    color: var(--ink-whisper);
-    background: rgba(247, 245, 239, 0.34);
-    border: 1px solid var(--rule-soft);
+    color: var(--ink-mute);
+    background: rgba(243, 234, 217, 0.05);
+    border: 1px solid rgba(243, 234, 217, 0.10);
   }
   .domain-card::before,
   .domain-card::after {
@@ -823,13 +958,13 @@
   }
   .domain-card.is-complete {
     color: var(--ink-soft);
-    background: var(--paper-warm);
-    border-color: var(--rule);
+    background: rgba(243, 234, 217, 0.07);
+    border-color: rgba(243, 234, 217, 0.16);
   }
   .domain-card.is-current {
     color: var(--ink);
-    background: var(--paper-tint);
-    border-color: var(--ink);
+    background: rgba(205, 168, 111, 0.10);
+    border-color: var(--gold);
   }
   .domain-icon {
     width: 42px;
@@ -860,7 +995,7 @@
     font-family: var(--serif);
     font-size: 14px;
     line-height: 1.25;
-    color: var(--ink-faint);
+    color: var(--ink-mute);
   }
   .domain-card.is-current .domain-note,
   .domain-card.is-complete .domain-note { color: var(--ink-soft); }
@@ -1858,8 +1993,8 @@
 
     .kbd-hint { font-size: 11px; gap: 14px; margin-top: 22px; }
 
-    /* Sticky Confirm on multi-select  -  page-anchored bar with cream fade above */
-    .confirm-row {
+    /* Sticky Confirm on multi-select  -  page-anchored bar with a soft fade above */
+    .multi-block .confirm-row {
       position: sticky;
       bottom: max(12px, env(safe-area-inset-bottom));
       padding: 22px 0 14px;
@@ -1869,7 +2004,7 @@
       background: var(--paper);
       z-index: 8;
     }
-    .confirm-row::before {
+    .multi-block .confirm-row::before {
       content: '';
       position: absolute;
       top: -28px;
@@ -2029,9 +2164,162 @@
     .shimmer-verb .verb { animation: none !important; background: none !important; -webkit-text-fill-color: var(--ink) !important; }
     .shimmer-verb .glyph { animation: none !important; }
   }
+
+  /* The conversation opens in-world: wordmark + title + subline anchor the start. */
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     INTERSTITIALS  -  between sections the model "steps back to look at the
+     bigger picture": a brief full-bleed cinematic image carrying the pacing
+     line, then it dissolves back to the conversation in the same world.
+     Sea-to-readiness arc closes the loop to the homepage.
+     ───────────────────────────────────────────────────────────────────────── */
+  .interstitial {
+    position: fixed;
+    inset: 0;
+    z-index: 48;
+    background: #0b0a07;
+    overflow: hidden;
+    opacity: 0;
+    transition: opacity 780ms var(--ease-out);
+    cursor: pointer;
+  }
+  .interstitial.is-in { opacity: 1; }
+  .interstitial.is-out { opacity: 0; transition-duration: 680ms; }
+  .interstitial-media {
+    position: absolute;
+    inset: 0;
+    background-size: cover;
+    background-position: center;
+    transform: scale(1.06);
+    transition: transform 7s var(--ease-out);
+  }
+  .interstitial.is-in .interstitial-media { transform: scale(1); }
+  .interstitial::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(to bottom, rgba(8,7,5,0.28) 0%, rgba(8,7,5,0.32) 42%, rgba(8,7,5,0.74) 100%),
+      linear-gradient(to right, rgba(8,7,5,0.52) 0%, rgba(8,7,5,0.10) 56%, rgba(8,7,5,0) 92%);
+  }
+  .interstitial-inner {
+    position: relative;
+    z-index: 2;
+    height: 100%;
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 40px clamp(28px, 6vw, 88px) clamp(56px, 10vh, 112px);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+  }
+  .interstitial-inner > * {
+    opacity: 0;
+    transform: translateY(16px);
+    transition: opacity 820ms var(--ease-out), transform 820ms var(--ease-out);
+  }
+  .interstitial.is-in .interstitial-inner > * { opacity: 1; transform: none; }
+  .interstitial.is-in .interstitial-eyebrow { transition-delay: 220ms; }
+  .interstitial.is-in .interstitial-line,
+  .interstitial.is-in .interstitial-lede { transition-delay: 360ms; }
+  .interstitial.is-in .interstitial-body { transition-delay: 540ms; }
+  .interstitial.is-in .interstitial-cue { transition-delay: 820ms; }
+  .interstitial-eyebrow {
+    font-family: var(--sans);
+    font-size: 13.5px;
+    font-weight: 400;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: rgba(255,251,245,0.6);
+    margin: 0 0 22px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .interstitial-eyebrow::before { content: '+'; color: rgba(255,251,245,0.5); }
+  .interstitial-line {
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: clamp(38px, 6vw, 78px);
+    line-height: 1.05;
+    letter-spacing: -0.012em;
+    color: #fbf7f0;
+    margin: 0;
+    max-width: 15em;
+  }
+  .interstitial-line em { font-style: italic; }
+  .interstitial-lede {
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: clamp(26px, 3.6vw, 42px);
+    line-height: 1.16;
+    color: #fbf7f0;
+    margin: 0;
+    max-width: 17em;
+  }
+  .interstitial-body {
+    font-family: var(--sans);
+    font-size: clamp(16px, 2vw, 20px);
+    line-height: 1.5;
+    color: rgba(251,247,240,0.72);
+    margin: 20px 0 0;
+    max-width: 34em;
+  }
+  .interstitial-cue {
+    align-self: flex-start;
+    margin-top: 42px;
+    font-family: var(--sans);
+    font-size: 11.5px;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: rgba(255,251,245,0.82);
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid rgba(255,251,245,0.42);
+    padding: 6px 2px 5px;
+    cursor: pointer;
+    transition: color 240ms var(--ease-soft), border-color 240ms var(--ease-soft);
+  }
+  .interstitial-cue::after { content: ' \2192'; }
+  .interstitial-cue:hover { color: #fff; border-color: rgba(255,251,245,0.9); }
+
+  @media (max-width: 700px) {
+    .interstitial-inner { padding: 28px 22px clamp(44px, 9vh, 86px); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .interstitial, .interstitial-inner > * { transition: opacity 200ms linear !important; transform: none !important; }
+    .interstitial-media { transition: none; transform: scale(1); }
+  }
+
+  /* When the View Transitions API drives the section break, the overlay is
+     already settled inside the snapshot and the browser cross-fade is the whole
+     entrance, so its own transitions/animations are switched off. */
+  .interstitial.settled,
+  .interstitial.settled .interstitial-media,
+  .interstitial.settled .interstitial-inner > * {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+    animation: none !important;
+  }
+
+  /* The cohesive cross-dissolve itself: the whole canvas cross-fades between the
+     conversation and image moments, bridged with a subtle blur (Emil
+     Kowalski's "blur to bridge difficult crossfades"). Scoped so it only fires
+     for section breaks. ~600-720ms reads as a calm breath, not a UI flick. */
+  html.vt-section::view-transition-old(root) { animation: 560ms var(--ease-out) both vtFadeOut; }
+  html.vt-section::view-transition-new(root) { animation: 720ms var(--ease-out) both vtFadeIn; }
+  @keyframes vtFadeOut { from { opacity: 1; filter: blur(0); } to { opacity: 0; filter: blur(7px); } }
+  @keyframes vtFadeIn  { from { opacity: 0; filter: blur(7px); } to { opacity: 1; filter: blur(0); } }
 </style>
 </head>
 <body>
+
+<div class="atmos is-active" id="atmos1" aria-hidden="true" style="background-image:url('assets/img/hero-archway.jpg')"></div>
+<div class="atmos" id="atmos2" aria-hidden="true"></div>
+<div class="atmos-grain" aria-hidden="true"></div>
+
 <main class="stage">
 
   <div class="brand-mark">
@@ -3048,19 +3336,13 @@ async function renderIntro() {
   p3.style.transition = 'opacity 700ms var(--ease-out)';
   block.append(p2, domainMap, p3);
 
-  const beginRow = el('div', 'confirm-row');
-  const beginBtn = el('button', 'confirm-btn', 'Begin');
-  beginBtn.type = 'button';
-  beginRow.append(beginBtn);
-  block.appendChild(beginRow);
-
   await appendBeat(block, { noScroll: true });
 
   // Stream the held opening
-  await streamText(heldP, 'AI readiness is not about how many tools you have. It is whether the business can use what it already knows.', { msPerChar: 22 });
+  await streamText(heldP, 'AI readiness is not about how many tools you have. It is whether the business can use what it already knows.', { msPerChar: 18 });
 
   // Hold silence  -  let the opening land
-  await wait(reduceMotion ? 80 : 1400);
+  await wait(reduceMotion ? 80 : 900);
 
   // Fade the rest in
   p2.style.opacity = '1';
@@ -3070,30 +3352,12 @@ async function renderIntro() {
   domainMap.classList.add('is-in');
   await wait(reduceMotion ? 60 : 360);
   p3.style.opacity = '1';
-  await wait(reduceMotion ? 50 : 220);
+  await wait(reduceMotion ? 50 : 160);
   await streamText(p3, 'Answer from today, not the version you are trying to become. If two answers feel close, choose the harsher one. The reveal will be more useful.');
 
-  setTimeout(() => {
-    beginRow.classList.add('is-in');
-    smoothScrollTo(beginRow, 0.72);
-  }, 200);
-
-  return new Promise(resolve => {
-    const go = () => {
-      document.removeEventListener('keydown', keyHandler);
-      beginBtn.disabled = true;
-      block.closest('.beat')?.classList.add('is-retired');
-      block.setAttribute('aria-hidden', 'true');
-      updateBottomSpace();
-      resolve();
-    };
-    beginBtn.addEventListener('click', go);
-    const keyHandler = (e) => {
-      if (e.key === 'Enter') { e.preventDefault(); go(); }
-    };
-    document.addEventListener('keydown', keyHandler);
-    setTimeout(() => beginBtn.focus({ preventScroll: true }), 500);
-  });
+  // Flow straight into the first question after the briefing lands.
+  await wait(reduceMotion ? 140 : 560);
+  updateBottomSpace();
 }
 
 /* ─────────────────────────────────────────────────────────────────────────
@@ -3101,57 +3365,186 @@ async function renderIntro() {
    ───────────────────────────────────────────────────────────────────────── */
 
 async function renderPrepare() {
-  await hold('Reading', 800);
-  await hold('Composing the first question', 1400);
+  await hold('Reading', 520);
+  await hold('Composing the first question', 900);
 }
 
 /* ─────────────────────────────────────────────────────────────────────────
-   APHORISM  -  held display italic, auto-advance
+   INTERSTITIALS  -  full-bleed cinematic image moments (the model steps back).
+   Reuse the site's own photos in a sea-to-readiness arc that closes the loop
+   back to the homepage. Tap / Continue / Enter advances (the Stories pattern).
    ───────────────────────────────────────────────────────────────────────── */
 
-async function renderAphorism({ text, current }) {
-  const node = el('div', current ? 'aphorism-stage is-section' : 'aphorism');
-  if (current) {
-    // Name the section that was just completed, so this reads as a milestone
-    // beat that stays legible on scroll-up (Saverio: these disappeared too fast).
-    const doneName = DOMAIN_SEQUENCE[DOMAIN_SEQUENCE.indexOf(current) - 1];
-    if (doneName) {
-      const mark = el('div', 'aphorism-mark');
-      mark.innerHTML = `<span class="tick">+</span>${escapeHtml(doneName)} complete`;
-      node.appendChild(mark);
+const INTERSTITIAL_LINES = {
+  'The picture is starting to form.': { image: 'fog-on-sea', emphasis: 'form.' },
+  'Almost ready to show you.':        { image: 'marble-sphere', emphasis: 'show you.' }
+};
+
+function emphasizeLine(text, emphasis) {
+  if (!emphasis || !text.includes(emphasis)) return escapeHtml(text);
+  const i = text.lastIndexOf(emphasis);
+  return escapeHtml(text.slice(0, i)) + '<em>' + escapeHtml(emphasis) + '</em>' + escapeHtml(text.slice(i + emphasis.length));
+}
+
+// Wrap a DOM swap in a scoped View Transition so the canvas cross-dissolves
+// (blur-bridged) between the cream questions and the image moment. Falls back to
+// an instant swap where the API is absent or motion is reduced.
+function withSectionTransition(domUpdate) {
+  if (!document.startViewTransition || reduceMotion) {
+    domUpdate();
+    return Promise.resolve();
+  }
+  document.documentElement.classList.add('vt-section');
+  const t = document.startViewTransition(domUpdate);
+  return t.finished.catch(() => {}).finally(() => document.documentElement.classList.remove('vt-section'));
+}
+
+function showInterstitial({ image, eyebrow, line, emphasis, lede, body }) {
+  return new Promise((resolve) => {
+    const overlay = el('div', 'interstitial');
+    overlay.setAttribute('role', 'group');
+    overlay.setAttribute('aria-label', line || lede || 'A moment to step back');
+    const media = el('div', 'interstitial-media');
+    media.style.backgroundImage = `url('assets/img/${image}.jpg')`;
+    overlay.appendChild(media);
+
+    const inner = el('div', 'interstitial-inner');
+    if (eyebrow) inner.appendChild(el('p', 'interstitial-eyebrow', eyebrow));
+    if (line) {
+      const h = el('h2', 'interstitial-line');
+      h.innerHTML = emphasizeLine(line, emphasis);
+      inner.appendChild(h);
     }
-    node.appendChild(el('div', 'aphorism', text));
-    const domainMap = renderDomainMap({ current, compact: true });
-    domainMap.classList.add('is-in');
-    node.appendChild(domainMap);
-  } else {
-    node.textContent = text;
-  }
-  stream.appendChild(node);
-  smoothScrollTo(node, 0.32);
-  await wait(reduceMotion ? 50 : 200);
-  requestAnimationFrame(() => node.classList.add('is-in'));
-  if (current) {
-    // Hold the milestone (it persists, never fades), then a brief, transient
-    // "loading the next section" beat that scrolls into view, so the pause reads
-    // as "preparing what's next" rather than "finished then jump". It is appended
-    // to the stream and scrolled to (the milestone is tall and would otherwise
-    // push the cue below the fold on desktop), then removed before the next
-    // question lands; it never persists on scroll-up.
-    await wait(reduceMotion ? 200 : 1400);
-    await hold(`Composing ${current}`, reduceMotion ? 200 : 1300, { scroll: true });
-  } else {
-    await wait(reduceMotion ? 200 : 1800);
-    node.classList.add('is-out');
-    await wait(reduceMotion ? 100 : 700);
-  }
+    if (lede) inner.appendChild(el('p', 'interstitial-lede', lede));
+    if (body) inner.appendChild(el('p', 'interstitial-body', body));
+    const cue = el('button', 'interstitial-cue', 'Continue');
+    cue.type = 'button';
+    inner.appendChild(cue);
+    overlay.appendChild(inner);
+
+    const supportsVT = !!document.startViewTransition && !reduceMotion;
+    if (supportsVT) {
+      // Settled inside the snapshot: the browser cross-fade is the entrance.
+      overlay.classList.add('settled');
+      withSectionTransition(() => document.body.appendChild(overlay));
+    } else {
+      document.body.appendChild(overlay);
+      requestAnimationFrame(() => requestAnimationFrame(() => overlay.classList.add('is-in')));
+    }
+
+    let done = false;
+    const finish = () => {
+      if (done) return;
+      done = true;
+      document.removeEventListener('keydown', onKey);
+      if (supportsVT) {
+        withSectionTransition(() => overlay.remove()).then(resolve);
+      } else {
+        overlay.classList.remove('is-in');
+        overlay.classList.add('is-out');
+        setTimeout(() => { overlay.remove(); resolve(); }, reduceMotion ? 180 : 680);
+      }
+    };
+    const onKey = (e) => {
+      if (e.key === 'Enter' || e.key === ' ' || e.key === 'ArrowRight') { e.preventDefault(); finish(); }
+    };
+    overlay.addEventListener('click', finish);
+    // Brief delay before input is live so a held Enter from the previous answer
+    // does not skip the moment, and the image has a beat to register.
+    setTimeout(() => {
+      document.addEventListener('keydown', onKey);
+      cue.focus({ preventScroll: true });
+    }, reduceMotion ? 60 : 640);
+  });
+}
+
+// A MOMENT inside the one world: the atmosphere swells forward, the conversation
+// recedes, and the beat lands held + cinematic, then it settles back. The
+// set-pieces keep their drama without becoming separate screens.
+function showMoment({ eyebrow, line, emphasis, sub, dwell }) {
+  return new Promise((resolve) => {
+    document.body.classList.add('is-moment');
+    const m = el('div', 'moment');
+    const inner = el('div', 'moment-inner');
+    if (eyebrow) {
+      const e = el('div', 'm-eyebrow');
+      e.innerHTML = `<span class="m-tick">+</span>${escapeHtml(eyebrow)}`;
+      inner.appendChild(e);
+    }
+    const lineEl = el('div', 'm-line');
+    lineEl.innerHTML = emphasizeLine(line, emphasis);
+    inner.appendChild(lineEl);
+    if (sub) inner.appendChild(el('div', 'm-sub', sub));
+    m.appendChild(inner);
+    document.body.appendChild(m);
+    requestAnimationFrame(() => requestAnimationFrame(() => m.classList.add('is-in')));
+
+    let done = false;
+    const finish = () => {
+      if (done) return;
+      done = true;
+      document.removeEventListener('keydown', onKey);
+      m.classList.remove('is-in');
+      document.body.classList.remove('is-moment');
+      setTimeout(() => { m.remove(); resolve(); }, reduceMotion ? 200 : 900);
+    };
+    const timer = setTimeout(finish, reduceMotion ? 700 : (dwell || 3600));
+    const go = () => { clearTimeout(timer); finish(); };
+    const onKey = (e) => {
+      if (e.key === 'Enter' || e.key === ' ' || e.key === 'ArrowRight') { e.preventDefault(); go(); }
+    };
+    // The held beat is tappable to move on early, and auto-advances otherwise.
+    m.addEventListener('click', go);
+    setTimeout(() => document.addEventListener('keydown', onKey), 450);
+  });
+}
+
+async function renderAphorism({ text, current }) {
+  // The pacing beat gets its moment: the world comes forward, the line lands.
+  const doneName = current ? DOMAIN_SEQUENCE[DOMAIN_SEQUENCE.indexOf(current) - 1] : null;
+  const meta = INTERSTITIAL_LINES[text] || {};
+  await showMoment({
+    eyebrow: doneName ? `${doneName} complete` : null,
+    line: text,
+    emphasis: meta.emphasis
+  });
+  if (current) await hold(`Composing ${current}`, reduceMotion ? 180 : 1100, { scroll: true });
 }
 
 /* ─────────────────────────────────────────────────────────────────────────
    PILLAR TRANSITION  -  silent breathing room. The pillar mark up top inks up.
    ───────────────────────────────────────────────────────────────────────── */
 
+// The world evolves with the phase: the sea's weather across the four domains.
+// Role / Channel Context stay on the archway; Self-Perception stays on the last.
+const PHASE_ATMOS = {
+  Visibility: 'fog-on-sea',
+  Velocity: 'sea-storm',
+  Coherence: 'quiet-after-storm',
+  Leverage: 'sunny-sea'
+};
+
+// Crossfade the world's image between two stacked layers, so the atmosphere can
+// evolve per phase without a cut. Reduced motion = the CSS transition is short.
+let __atmosLayers = null, __atmosActive = 0, __atmosName = 'hero-archway';
+function setAtmosphere(name) {
+  if (!name || name === __atmosName) return;
+  if (!__atmosLayers) __atmosLayers = [document.getElementById('atmos1'), document.getElementById('atmos2')];
+  if (!__atmosLayers[0] || !__atmosLayers[1]) return;
+  __atmosName = name;
+  const incoming = __atmosLayers[1 - __atmosActive];
+  const outgoing = __atmosLayers[__atmosActive];
+  incoming.style.backgroundImage = `url('assets/img/${name}.jpg')`;
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    incoming.classList.add('is-active');
+    outgoing.classList.remove('is-active');
+    __atmosActive = 1 - __atmosActive;
+  }));
+}
+
 async function renderPillar({ pillar }) {
+  // The world evolves with the phase: archway → fog → storm → quiet → sunny.
+  if (PHASE_ATMOS[pillar]) setAtmosphere(PHASE_ATMOS[pillar]);
   // A silent breath only. The new section is already marked by the milestone beat
   // above (its domain map) and by the pillar rail lighting up on the next
   // question, so the old motif + extra "+" divider here were duplication.
@@ -3497,46 +3890,16 @@ async function renderMulti(q) {
    ───────────────────────────────────────────────────────────────────────── */
 
 async function renderReflection() {
-  await hold('Holding', 800);
-
-  const block = el('div', 'reflection');
-
-  const p1 = el('p', 'sys-body lede');
-  const p2 = el('p', 'sys-body');
-  const domainMap = renderDomainMap({ current: 'Coherence' });
-  block.append(p1, p2, domainMap);
-
-  const continueRow = el('div', 'confirm-row');
-  const continueBtn = el('button', 'confirm-btn', 'Continue');
-  continueBtn.type = 'button';
-  continueRow.append(continueBtn);
-  block.appendChild(continueRow);
-
-  await appendBeat(block);
-
-  await streamText(p1, "You've moved through what the business can see and how fast it can act on what it sees.");
-  await wait(reduceMotion ? 40 : 280);
-  await streamText(p2, 'The next layer is coherence  -  whether the seeing and the acting are connected to the same picture or running on parallel tracks.');
-  domainMap.classList.add('is-in');
-  await wait(reduceMotion ? 60 : 260);
-
-  setTimeout(() => continueRow.classList.add('is-in'), 300);
-
-  await new Promise(resolve => {
-    const go = () => {
-      document.removeEventListener('keydown', keyHandler);
-      continueBtn.disabled = true;
-      resolve();
-    };
-    continueBtn.addEventListener('click', go);
-    const keyHandler = (e) => {
-      if (e.key === 'Enter') { e.preventDefault(); go(); }
-    };
-    document.addEventListener('keydown', keyHandler);
-    setTimeout(() => continueBtn.focus({ preventScroll: true }), 500);
+  // The midpoint gets its moment too: a held "stepping back" beat where the
+  // world comes forward, then the conversation resumes for the harder half.
+  await hold('Holding', reduceMotion ? 150 : 720);
+  await showMoment({
+    eyebrow: 'Halfway',
+    line: "You've moved through what the business can see, and how fast it acts on it.",
+    emphasis: 'how fast it acts on it.',
+    sub: 'The next layer is coherence: whether the seeing and the acting are connected to one picture, or running on parallel tracks.',
+    dwell: 4200
   });
-
-  await appendRule();
 }
 
 /* ─────────────────────────────────────────────────────────────────────────
@@ -4181,6 +4544,7 @@ function showDemoBadge(scenario) {
   document.body.appendChild(badge);
 }
 
+document.body.classList.add('session-started');
 run();
 </script>
 </body>

@@ -14,40 +14,45 @@
   }
 </script>
 <style>
+  /* A+A brand faces (same self-hosted files the questionnaire uses). */
   @font-face {
-    font-family: 'Newsreader';
-    font-style: normal;
-    font-weight: 200 800;
-    font-display: swap;
-    src: url('fonts/Newsreader%5Bopsz%2Cwght%5D.ttf') format('truetype-variations');
+    font-family: 'Instrument Serif';
+    font-style: normal; font-weight: 400; font-display: swap;
+    src: url('fonts/InstrumentSerif-Regular.ttf') format('truetype');
   }
   @font-face {
-    font-family: 'Newsreader';
-    font-style: italic;
-    font-weight: 200 800;
-    font-display: swap;
-    src: url('fonts/Newsreader-Italic%5Bopsz%2Cwght%5D.ttf') format('truetype-variations');
+    font-family: 'Instrument Serif';
+    font-style: italic; font-weight: 400; font-display: swap;
+    src: url('fonts/InstrumentSerif-Italic.ttf') format('truetype');
   }
   @font-face {
-    font-family: 'Geist Mono';
-    font-style: normal;
-    font-weight: 100 900;
-    font-display: swap;
-    src: url('fonts/GeistMono-Variable.ttf') format('truetype-variations');
+    font-family: 'Instrument Sans';
+    font-style: normal; font-weight: 400 600; font-display: swap;
+    src: url('fonts/InstrumentSans-Variable.ttf') format('truetype-variations');
+  }
+  @font-face {
+    font-family: 'Instrument Sans';
+    font-style: italic; font-weight: 400 600; font-display: swap;
+    src: url('fonts/InstrumentSans-Italic-Variable.ttf') format('truetype-variations');
   }
 
   :root {
-    --paper: #faf8f2;
-    --paper-dim: #f1ede2;
-    --ink: #211d16;
-    --ink-soft: #5b5346;
-    --ink-faint: #9c9382;
-    --rule: #ddd6c6;
-    --dark: #1c1812;
-    --dark-soft: #b8b1a0;
-    --dark-faint: #6f685a;
-    --serif: "Newsreader", "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
-    --mono: "Geist Mono", "SF Mono", Menlo, Consolas, monospace;
+    /* The reveal is the same cinematic world as the questionnaire, deepening:
+       light type on the continuous dark atmosphere. (The PDF keeps its own light
+       palette in api/_lib/design_tokens.js — a printed report stays on paper.) */
+    --paper: #f7f3ed;          /* kept ONLY for the cream pill + light accents */
+    --paper-dim: rgba(243, 234, 217, 0.06);
+    --ink: #f3ead9;            /* light type on the dark world */
+    --ink-soft: rgba(243, 234, 217, 0.74);
+    --ink-faint: rgba(243, 234, 217, 0.42);
+    --rule: rgba(243, 234, 217, 0.14);
+    --dark: #1c1b18;
+    --dark-soft: #bdbab5;
+    --dark-faint: #8a8782;
+    --gold: #cda86f;
+    --serif: "Instrument Serif", "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+    --sans: "Instrument Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    --mono: "Instrument Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   }
 
   html { font-optical-sizing: auto; }
@@ -56,11 +61,36 @@
 
   html, body {
     height: 100%;
-    background: var(--paper);
-    font-family: var(--serif);
+    background: #0b0805;
+    font-family: var(--sans);
     -webkit-font-smoothing: antialiased;
     color: var(--ink);
     overflow: hidden;
+  }
+
+  /* Same continuous atmosphere as the questionnaire (archway, darkened + blurred). */
+  body::before {
+    content: ''; position: fixed; inset: -4%;
+    background: url('../assets/img/hero-archway.jpg') center 35% / cover no-repeat;
+    filter: blur(9px) brightness(0.40) saturate(0.92); transform: scale(1.06);
+    z-index: 0; pointer-events: none;
+    transition: filter 1300ms var(--ease-out, ease), transform 1600ms var(--ease-out, ease);
+  }
+  body::after {
+    content: ''; position: fixed; inset: 0; z-index: 1; pointer-events: none;
+    background:
+      linear-gradient(155deg, rgba(8,6,3,0.46) 0%, rgba(8,6,3,0.70) 55%, rgba(6,4,2,0.84) 100%),
+      radial-gradient(120% 90% at 78% 16%, rgba(229,188,121,0.09) 0%, transparent 55%),
+      radial-gradient(ellipse 84% 76% at 48% 44%, transparent 40%, rgba(0,0,0,0.62) 100%);
+    transition: background 1300ms var(--ease-out, ease);
+  }
+  /* Peak cards: the world comes forward (moderate, so the cream copy stays clean). */
+  body.peak-forward::before { filter: blur(4px) brightness(0.52) saturate(0.98); transform: scale(1.03); }
+  body.peak-forward::after {
+    background:
+      linear-gradient(155deg, rgba(8,6,3,0.40) 0%, rgba(8,6,3,0.60) 55%, rgba(6,4,2,0.74) 100%),
+      radial-gradient(120% 92% at 78% 14%, rgba(229,188,121,0.14) 0%, transparent 55%),
+      radial-gradient(ellipse 86% 78% at 48% 42%, transparent 44%, rgba(0,0,0,0.55) 100%);
   }
 
   html:not(.demo-nav-enabled) .demo-launch,
@@ -72,7 +102,8 @@
     width: 100vw;
     height: 100vh;
     height: 100dvh;
-    background: var(--paper);
+    background: transparent;
+    z-index: 2;
     overflow: hidden;
   }
 
@@ -83,13 +114,13 @@
     right: 0;
     display: flex;
     gap: 4px;
-    padding: 14px 18px;
+    padding: calc(14px + env(safe-area-inset-top, 0px)) max(18px, env(safe-area-inset-right, 0px)) 14px max(18px, env(safe-area-inset-left, 0px));
     z-index: 40;
   }
   .seg {
     flex: 1;
     height: 2px;
-    background: rgba(33, 29, 22, 0.16);
+    background: rgba(243, 234, 217, 0.18);
     border-radius: 2px;
     overflow: hidden;
   }
@@ -116,25 +147,60 @@
   }
   .zone.prev { left: 0; width: 24%; }
   .zone.next { right: 0; width: 76%; }
+  body.is-close-card .zone.next {
+    pointer-events: none;
+    cursor: default;
+  }
 
   .card {
     position: absolute;
     inset: 0;
     display: none;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: center;
-    padding: clamp(82px, 10vh, 128px) clamp(36px, 8vw, 112px) clamp(88px, 10vh, 126px);
+    /* Reduced from clamp(82-128) so dense cards (cost, close) fit more screens. */
+    padding: clamp(58px, 7vh, 100px) clamp(36px, 8vw, 112px) clamp(74px, 8vh, 108px);
     text-align: left;
+    overflow-y: auto;
+    overscroll-behavior: contain;
   }
   .card.is-active { display: flex; }
-  .card.dark { background: var(--dark); color: var(--paper); }
+  .card.dark { background: transparent; color: var(--paper); }
+  /* margin:auto centers the content when there is room and lets it scroll
+     (never clip top or bottom) when a persona's copy runs long. */
   .card-inner {
     position: relative;
     z-index: 2;
     width: min(100%, 680px);
+    margin: auto 0;
   }
   .card-inner.is-wide { width: min(100%, 760px); }
+
+  /* Cinematic media behind the dark peak cards (quote + close). Same warm
+     near-monochrome world as the opening hero and the interstitials: colour
+     enters at the peaks, through photography, never through UI. */
+  .card.has-media { background: #0b0a07; }
+  .card-media {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    background-size: cover;
+    background-position: center;
+  }
+  .card-media::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(to bottom, rgba(10,9,7,0.58) 0%, rgba(10,9,7,0.62) 44%, rgba(10,9,7,0.82) 100%),
+      linear-gradient(to right, rgba(10,9,7,0.42) 0%, rgba(10,9,7,0.08) 60%, rgba(10,9,7,0) 95%);
+  }
+  .card.is-active .card-media { animation: mediaSettle 7s cubic-bezier(0.22, 0.61, 0.36, 1) both; }
+  @keyframes mediaSettle { from { transform: scale(1.06); } to { transform: scale(1); } }
+  @media (prefers-reduced-motion: reduce) {
+    .card-media { animation: none !important; transform: none !important; }
+  }
 
   /* Image slots (cost + fit cards). Currently filled with authored interim line
      art in the brand register; the Midjourney photographic assets specified in
@@ -166,8 +232,8 @@
   }
   .dark .eyebrow { color: var(--dark-faint); }
   .lede {
-    font-size: 25px;
-    line-height: 1.46;
+    font-size: 24px;
+    line-height: 1.4;
     font-weight: 400;
     color: var(--ink);
     letter-spacing: 0;
@@ -175,9 +241,9 @@
   .dark .lede { color: var(--paper); }
   p.body {
     font-size: 19px;
-    line-height: 1.62;
+    line-height: 1.54;
     color: var(--ink-soft);
-    margin-top: 18px;
+    margin-top: 14px;
   }
   .dark p.body { color: var(--dark-soft); }
   .body em, .lede em { font-style: italic; }
@@ -198,6 +264,7 @@
   }
 
   .turn-name {
+    font-family: var(--serif);
     font-size: 56px;
     line-height: 1;
     font-weight: 400;
@@ -238,9 +305,9 @@
   .score-meaning strong { color: var(--ink); }
   .close-line {
     font-size: 21px;
-    line-height: 1.5;
+    line-height: 1.45;
     color: var(--ink);
-    margin-top: 26px;
+    margin-top: 18px;
   }
   .score-brief {
     width: min(100%, 680px);
@@ -248,7 +315,7 @@
     text-align: left;
   }
   .score-brief.brief-panel {
-    border-color: rgba(221, 214, 198, 0.92);
+    border-color: rgba(243, 234, 217, 0.16);
   }
   .score-brief .brief-row {
     grid-template-columns: 142px minmax(0, 1fr);
@@ -303,7 +370,7 @@
   }
   .bar-track {
     height: 3px;
-    background: rgba(33, 29, 22, 0.10);
+    background: rgba(243, 234, 217, 0.12);
     border-radius: 3px;
     overflow: hidden;
   }
@@ -395,7 +462,7 @@
   .cost-model-panel,
   .compound-panel,
   .implementation-panel {
-    margin-top: 22px;
+    margin-top: 16px;
   }
   .cost-model-panel .brief-row,
   .compound-panel .brief-row,
@@ -412,8 +479,8 @@
     display: grid;
     grid-template-columns: 138px minmax(0, 1fr);
     gap: 18px;
-    padding: 13px 0;
-    border-top: 1px solid rgba(221, 214, 198, 0.72);
+    padding: 10px 0;
+    border-top: 1px solid rgba(243, 234, 217, 0.12);
   }
   .brief-row:first-child { border-top: 0; }
   .brief-label {
@@ -432,7 +499,7 @@
   }
   .brief-row.is-quote .brief-value { font-style: italic; }
   .output-list {
-    margin-top: 24px;
+    margin-top: 18px;
     border-top: 1px solid var(--rule);
     border-bottom: 1px solid var(--rule);
   }
@@ -440,10 +507,10 @@
     display: grid;
     grid-template-columns: 34px minmax(0, 1fr);
     gap: 14px;
-    padding: 14px 0;
-    border-top: 1px solid rgba(221, 214, 198, 0.72);
-    font-size: 18px;
-    line-height: 1.45;
+    padding: 11px 0;
+    border-top: 1px solid rgba(243, 234, 217, 0.12);
+    font-size: 17px;
+    line-height: 1.42;
     color: var(--ink);
   }
   .output-item:first-child { border-top: 0; }
@@ -456,6 +523,7 @@
   }
 
   .quote {
+    font-family: var(--serif);
     font-size: 38px;
     line-height: 1.28;
     font-style: italic;
@@ -533,32 +601,47 @@
   .cta {
     display: inline-flex;
     align-items: center;
-    gap: 12px;
-    margin-top: 30px;
-    padding: 17px 30px;
-    background: var(--ink);
-    color: var(--paper);
-    font-family: var(--mono);
-    font-size: 12px;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
+    gap: 11px;
+    margin-top: 24px;
+    padding: 16px 32px;
+    background: var(--paper);
+    color: #22211f;            /* ink on the cream pill (--ink is now light) */
+    font-family: var(--sans);
+    font-size: 14.5px;
+    font-weight: 600;
+    letter-spacing: 0.005em;
+    text-transform: none;
     border: none;
-    border-radius: 2px;
+    border-radius: 60px;
     cursor: pointer;
     text-decoration: none;
-    transition: transform 180ms ease, box-shadow 180ms ease;
+    transition: transform 220ms cubic-bezier(0.22, 0.61, 0.36, 1), box-shadow 220ms ease, background 200ms ease;
   }
   .cta:hover {
     transform: translateY(-2px);
-    box-shadow: 0 10px 26px rgba(33, 29, 22, 0.22);
+    background: #fffdf9;
+    box-shadow: 0 14px 34px rgba(0, 0, 0, 0.34);
+  }
+
+  /* Dark close card: the invitation reads as a brand dark section with a cream
+     pill. Dark-context variants for its denser content. */
+  .dark .close-line { color: var(--paper); }
+  .dark .qualifier { color: var(--dark-faint); }
+  .dark .output-list { border-color: rgba(250, 248, 242, 0.22); }
+  .dark .output-item { color: var(--paper); border-top-color: rgba(250, 248, 242, 0.14); }
+  .dark .output-index { color: var(--dark-faint); }
+  .dark .calendar-panel {
+    background: rgba(250, 248, 242, 0.06);
+    border-color: rgba(250, 248, 242, 0.22);
+    color: var(--dark-soft);
   }
   .qualifier {
     font-family: var(--mono);
     font-size: 11px;
-    line-height: 1.7;
+    line-height: 1.6;
     letter-spacing: 0.04em;
     color: var(--ink-faint);
-    margin-top: 22px;
+    margin-top: 15px;
   }
   .calendar-panel {
     display: none;
@@ -607,7 +690,7 @@
     position: absolute;
     left: 0; top: 0;
     height: 100%;
-    background: rgba(33, 29, 22, 0.22);
+    background: rgba(243, 234, 217, 0.16);
     border-radius: 3px;
     z-index: 0;
   }
@@ -659,7 +742,7 @@
   /* ── Per-card advance affordance (R3): a real button, not a hint ─ */
   .card-advance {
     position: absolute;
-    bottom: 34px;
+    bottom: calc(28px + env(safe-area-inset-bottom, 0px));
     left: 50%;
     transform: translateX(-50%);
     z-index: 36;
@@ -687,10 +770,19 @@
   .card-advance.on-dark { background: rgba(250, 248, 242, 0.08); border-color: var(--paper); color: var(--paper); }
   .card-advance.on-dark:hover { background: var(--paper); color: var(--dark); }
 
+  /* Touch: hover states latch after a tap on iOS, so reset them; and keep the
+     densest card copy clear of the home indicator. */
+  @media (hover: none) and (pointer: coarse) {
+    .card-advance:hover { background: var(--paper-dim); color: var(--ink); transform: translateX(-50%); }
+    .card-advance.on-dark:hover { background: rgba(250, 248, 242, 0.08); color: var(--paper); transform: translateX(-50%); }
+    .cta:hover { transform: none; box-shadow: none; background: var(--paper); }
+    .card { padding-bottom: calc(clamp(74px, 8vh, 108px) + env(safe-area-inset-bottom, 0px)); }
+  }
+
   .hint {
     display: none;
     position: absolute;
-    bottom: 20px;
+    bottom: calc(18px + env(safe-area-inset-bottom, 0px));
     left: 0;
     right: 0;
     text-align: center;
@@ -721,13 +813,16 @@
     inset: 0;
     display: grid;
     place-items: center;
-    background: var(--paper);
+    padding: 0 32px;
+    text-align: center;
+    background: rgba(8, 6, 3, 0.55);
     z-index: 80;
     font-family: var(--mono);
     font-size: 11px;
+    line-height: 1.6;
     letter-spacing: 0.18em;
     text-transform: uppercase;
-    color: var(--ink-faint);
+    color: var(--ink-soft);
   }
   .loading.is-hidden { display: none; }
 
@@ -789,8 +884,22 @@
   }
 
   @media (max-width: 680px) {
-    .progress { padding: 12px 14px; gap: 3px; }
-    .card { padding: 76px 28px 86px; }
+    .progress { padding: calc(12px + env(safe-area-inset-top, 0px)) 14px 12px; gap: 3px; }
+    /* Clear the notch + progress bar at the top. */
+    .card { padding: calc(72px + env(safe-area-inset-top, 0px)) 26px calc(16px + env(safe-area-inset-bottom, 0px)); }
+    .card-inner { padding-bottom: 14px; }
+    /* Pin the advance button to the visible bottom (sticky) instead of the
+       scrolling content end, so dense-card copy scrolls cleanly ABOVE it rather
+       than tucking underneath, and it clears the home indicator. */
+    .card-advance {
+      position: sticky;
+      left: auto;
+      bottom: 4px;
+      transform: none;
+      margin: 14px auto 0;
+      flex: 0 0 auto;
+    }
+    .card-advance:hover { transform: none; }
     /* On phones the image slots are hidden and the card returns to full-width copy. */
     .visual { display: none; }
     .card.has-visual { align-items: center; }
@@ -1199,11 +1308,16 @@ function buildCard(card) {
   const section = el('section', `card is-${card.type}${card.dark ? ' dark' : ''}`);
   section.dataset.beat = card.beat || '';
   if (card.peak) section.dataset.peak = card.peak;
-  const visualType = visualTypeFor(card);
-  if (visualType) {
-    section.classList.add('has-visual');
-    section.append(buildVisual(visualType));
+  if (card.media) {
+    section.classList.add('has-media');
+    const media = el('div', 'card-media');
+    media.style.backgroundImage = `url('../assets/img/${card.media}.jpg')`;
+    section.appendChild(media);
   }
+  // The abstract line-art "visual" slot is retired: it forced the cost card into
+  // a narrow column (clipping long copy) and sat off-brand against the
+  // photographic peaks. Cost now reads full-width like the other cream cards.
+  // (ART + visualTypeFor stay defined for the guard test and future use.)
   const inner = el('div', 'card-inner');
   if (['turn', 'number', 'shape', 'hurdle', 'quote', 'cost', 'firstMove', 'close'].includes(card.type)) inner.classList.add('is-wide');
   section.appendChild(inner);
@@ -1240,7 +1354,7 @@ function buildCard(card) {
     card.pillars.forEach((pillar) => {
       const row = el('div', `bar-row ${pillar.role === 'hurdle' ? 'hurdle' : pillar.role === 'normal' ? 'muted' : ''}`.trim());
       const head = el('div', 'bar-head');
-      head.append(el('span', 'bar-name', `${pillar.label}${pillar.role === 'hurdle' ? ' - your weakest area' : ''}`));
+      head.append(el('span', 'bar-name', `${pillar.label}${pillar.role === 'hurdle' ? ' - first constraint' : ''}`));
       head.append(el('span', 'bar-val', String(pillar.value)));
       const track = el('div', 'bar-track');
       // Ghosted benchmark (where advanced brands sit) behind the respondent bar,
@@ -1314,7 +1428,7 @@ function buildCard(card) {
     // The character close line is the peak-end beat the whole reveal builds to.
     if (card.closeLine) inner.append(p('close-line anim d3', card.closeLine));
     const ctaWrap = el('div', 'anim d3');
-    const cta = el('button', 'cta', `${card.button} ->`);
+    const cta = el('button', 'cta', `${card.button} →`);
     cta.type = 'button';
     cta.addEventListener('click', () => openCalendar(ctaWrap, card.calendarUrl));
     ctaWrap.append(cta);
@@ -1383,7 +1497,12 @@ function render() {
     seg.classList.toggle('active', index === i);
     seg.classList.toggle('dark-ctx', dark);
   });
+  // The quote (the sparse emotional peak) brings the world forward — its moment.
+  // The dense cards (incl. the close + its CTA) stay on the quiet atmosphere so
+  // copy and the cream pill stay crisp.
+  document.body.classList.toggle('peak-forward', !!card?.dataset.peak);
   const data = cards[i] || {};
+  document.body.classList.toggle('is-close-card', data.type === 'close');
   // Position only. The internal funnel labels (Problem / Agitation / Peak) are not
   // client-facing language and reading them breaks the spell of the reveal.
   beatTag.textContent = `${String(i + 1).padStart(2, '0')} / ${String(cards.length).padStart(2, '0')}`;
@@ -1467,24 +1586,15 @@ async function loadToken(token) {
 }
 
 async function loadDemo(key) {
-  const scenario = DEMO_SCENARIOS[key] || DEMO_SCENARIOS['t-ve'];
-  const res = await fetch('/api/v8/submit', {
-    method: 'POST',
-    headers: { 'content-type': 'application/json' },
-    body: JSON.stringify({
-      name: 'James',
-      email: `demo+${key}@atelierandavenue.com`,
-      answers: scenario.answers,
-      privacy: {
-        accepted: true,
-        version: PRIVACY_NOTICE_VERSION,
-        noticeUrl: PRIVACY_NOTICE_URL
-      }
-    })
-  });
+  // Read-only demo endpoint: no submit, no Turnstile, no email/Brevo side effects.
+  const demoKey = DEMO_SCENARIOS[key] ? key : 't-ve';
+  const res = await fetch(`/api/v8/reveal?demo=${encodeURIComponent(demoKey)}`);
   const body = await res.json();
-  if (!res.ok || !body.ok) throw new Error(body.error || 'Demo submit failed');
-  await loadToken(new URL(body.revealUrl).searchParams.get('token'));
+  if (!res.ok || !body.ok) throw new Error(body.error || 'Demo failed');
+  revealIdentity = { name: body.reveal.name || '', email: body.reveal.email || '' };
+  revealHurdle = body.reveal.hurdle || '';
+  document.title = `${body.reveal.characterName} - AI Readiness Diagnostic`;
+  mount(body.reveal.cards);
 }
 
 function buildDemoHarness() {

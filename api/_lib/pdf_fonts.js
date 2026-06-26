@@ -1,6 +1,6 @@
 // Brand fonts embedded as base64 data URIs so the PDF renders identically in a
 // lambda with no network and no system fonts. Files live in pdf_assets/fonts/
-// (same faces the reveal self-hosts) alongside their OFL licences.
+// (the same Instrument faces the reveal and questionnaire self-host).
 import { readFileSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -15,22 +15,22 @@ let cached;
 export function fontFaceCss() {
   cached ??= `
   @font-face {
-    font-family: 'Newsreader';
+    font-family: 'Instrument Serif';
     font-style: normal;
-    font-weight: 200 800;
-    src: url(data:font/ttf;base64,${b64('Newsreader[opsz,wght].ttf')}) format('truetype-variations');
+    font-weight: 400;
+    src: url(data:font/ttf;base64,${b64('InstrumentSerif-Regular.ttf')}) format('truetype');
   }
   @font-face {
-    font-family: 'Newsreader';
+    font-family: 'Instrument Serif';
     font-style: italic;
-    font-weight: 200 800;
-    src: url(data:font/ttf;base64,${b64('Newsreader-Italic[opsz,wght].ttf')}) format('truetype-variations');
+    font-weight: 400;
+    src: url(data:font/ttf;base64,${b64('InstrumentSerif-Italic.ttf')}) format('truetype');
   }
   @font-face {
-    font-family: 'Geist Mono';
+    font-family: 'Instrument Sans';
     font-style: normal;
-    font-weight: 100 900;
-    src: url(data:font/ttf;base64,${b64('GeistMono-Variable.ttf')}) format('truetype-variations');
+    font-weight: 400 600;
+    src: url(data:font/ttf;base64,${b64('InstrumentSans-Variable.ttf')}) format('truetype-variations');
   }`;
   return cached;
 }
