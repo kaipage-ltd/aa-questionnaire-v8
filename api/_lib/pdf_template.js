@@ -232,8 +232,8 @@ function coverPage(ctx, meta, profile) {
 function shapePage(ctx, meta, profile) {
   return `<section class="sheet">
   ${header('The operating shape')}
-  <div class="eyebrow mono">The shape behind the ${esc(String(ctx.score))}</div>
-  <h1 class="title">Four readings. They are not equal.</h1>
+  <div class="eyebrow mono">Benchmark vs the best</div>
+  <h1 class="title">Four readings. The best brands sit on the right.</h1>
   <p class="lede">${esc(ctx.shapeBody)}</p>
 
   <div style="margin-top:9mm; border-top:1px solid var(--rule);">
@@ -266,7 +266,7 @@ function evidencePage(ctx, meta, profile) {
   const evidence = (ctx.evidence.length ? ctx.evidence : ctx.receipts.map((text) => ({ read: text }))).slice(0, 3);
   return `<section class="sheet">
   ${header('Evidence')}
-  <div class="eyebrow mono">From your own answers</div>
+  <div class="eyebrow mono">Evidence behind the read</div>
   <h1 class="title">We are not guessing. You told us this.</h1>
   <p class="lede">${esc(ctx.receiptTail)}</p>
 
@@ -334,7 +334,7 @@ function firstMovePage(ctx, meta, profile) {
   <div class="dark-band" style="margin-top:auto; margin-bottom:10mm;">
     <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:10mm;">
       <div style="max-width:118mm;">
-        <div class="mono" style="font-size:7.4px;">The working session</div>
+        <div class="mono" style="font-size:7.4px;">The call</div>
         <div style="font-size:13px; line-height:1.5; color:#e6decd; margin-top:3mm;">${esc(ctx.fitBody)}</div>
         <div class="mono" style="font-size:7.4px; margin-top:5mm;">You leave with</div>
         <div style="font-size:10.5px; line-height:1.5; color:#d8d0be; margin-top:2mm;">${esc(ctx.sessionTakeaway)}</div>
@@ -370,7 +370,7 @@ function firstMoveSteps(ctx) {
     },
     {
       title: 'Close one delay.',
-      body: lines.find((line) => /whole first move|Close one|Fix one/i.test(line)) || 'Close one delay before asking the business to absorb another tool, meeting, or AI layer.'
+      body: lines.find((line) => /whole first move|Close one|Fix one/i.test(line)) || 'Close one delay before asking the business to absorb another tool, meeting or AI workstream.'
     }
   ];
 }
@@ -428,8 +428,8 @@ export function profileContext(profile, insights) {
     firstMoveLines,
     firstMoveLine: actionPlan.mondayMove || firstMoveLines[0] || `Inspect the ${profile.hurdle.toLowerCase()} gap first.`,
     fitBody: actionPlan.artefactName
-      ? `Thirty minutes with Saverio. Not a pitch. Bring one live ${profile.hurdle} problem and pressure-test the ${actionPlan.artefactName}: what to map, what to ignore and what to close first.`
-      : 'Thirty minutes with Saverio. Not a pitch. Bring the weak point to the call and pressure-test the first move worth making.',
+      ? `Thirty minutes with our CEO. Not a pitch. Bring one live ${profile.hurdle} problem and pressure-test the ${actionPlan.artefactName}: what to map, what to ignore and what to close first.`
+      : 'Thirty minutes with our CEO. Not a pitch. Bring the weak point to the call and pressure-test the first move worth making.',
     sessionTakeaway: actionPlan.artefactName
       ? `One live decision mapped as the ${actionPlan.artefactName}, the operating rule that protects it and a next-week proof measure.`
       : 'One live decision mapped, the operating rule that protects it and a next-week proof measure.',
@@ -488,10 +488,12 @@ function escRaw(value) {
     .replace(/'/g, '&#39;');
 }
 
-// Body text supports **bold** on the most important keywords (escaped first, so
-// nothing can inject HTML). Attributes stay raw — bold markup never belongs there.
+// Body text supports the house serif-italic marker after escaping first, so
+// nothing can inject HTML. Attributes stay raw because emphasis markup never belongs there.
 export function esc(value) {
-  return escRaw(value).replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+  return escRaw(value)
+    .replace(/\*\*([^*]+)\*\*/g, '<em>$1</em>')
+    .replace(/\*([^*]+)\*/g, '<em>$1</em>');
 }
 
 function escAttr(value) {

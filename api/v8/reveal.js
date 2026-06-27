@@ -16,7 +16,7 @@ export async function GET(req) {
 
   // Read-only demo path for review (gated to the known canned personas). Returns
   // the same shape as a real reveal but skips the email gate, Turnstile, the
-  // token and all side effects (no Brevo, no email) — it is fixed demo content.
+  // token and all side effects (no Brevo, no email). It is fixed demo content.
   const demo = url.searchParams.get('demo');
   if (demo) {
     const scenario = DEMO_SCENARIOS[demo];

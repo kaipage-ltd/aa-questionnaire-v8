@@ -4,16 +4,22 @@ import {
   BENCHMARK_LABEL,
   BUCKET_COPY,
   CARD6_IMPLICATIONS,
+  COST_COMPOUND,
+  COST_HERO,
   COST_SCENES,
   HURDLE_COPY,
+  MONDAY_FORWARD,
+  MOVE_BODY,
   MULTI_COPY,
   PERSONA,
   PILLAR_COPY,
   PILLAR_PLAIN,
   QUESTION_STEMS,
+  QUOTE_SOWHAT,
   RECEIPT_IMPLICATIONS,
   RECEIPT_PROOFS,
   SAFE_TO_QUOTE,
+  SESSION_OFFER,
   SP_GAP_COPY,
   SP_TO_HURDLE,
   STATIC
@@ -46,7 +52,7 @@ const CARD6_PRIORITY = {
 
 const ROLE_READ = [
   'Founder/CEO lens: unresolved drag becomes senior attention cost.',
-  'C-suite/board lens: unresolved drag becomes confidence, capital and operating rhythm cost.',
+  'C-suite lens: unresolved drag becomes confidence, capital and operating rhythm cost.',
   'Functional-lead lens: unresolved drag becomes handoff, ownership and repeat-decision cost.',
   'Operator lens: the reveal stays on the repeated decision path, not the job title.'
 ];
@@ -162,34 +168,34 @@ export function deriveActionPlan(profile) {
   const bucketLine = {
     Clarity: 'Keep it small enough to run this week.',
     Traction: 'Choose a growth decision that repeats often enough to compound.',
-    Scale: 'Choose a decision big enough to affect margin, inventory, capital or board confidence.'
+    Scale: 'Choose a decision big enough to affect margin, inventory, capital or leadership confidence.'
   }[bucket] || 'Choose one decision the business already repeats.';
   const base = {
     Visibility: {
       artefactName: 'Decision-Grade Number Map',
       why: 'Until one number is trusted, AI only speeds up debate.',
-      mondayMove: 'Choose **the number that should change the week**. Write its owner, source, decision, and the condition that would make the room stop trusting it.',
-      whatToBringToCall: 'Bring the metric everyone references but still has to defend: payback, margin, stock risk, channel quality, or the number currently slowing the room.',
-      avoidForNow: 'Do not start with a reporting rebuild, dashboard redesign, or AI summary layer. Make one number decision-grade first.'
+      mondayMove: 'Choose *the number that should change the week*. Write its owner, source, decision and the condition that would make the room stop trusting it.',
+      whatToBringToCall: 'Bring the metric everyone references but still has to defend: payback, margin, stock risk, channel quality or the number currently slowing the room.',
+      avoidForNow: 'Do not start with a reporting rebuild, dashboard redesign or summary layer. Make one number decision-grade first.'
     },
     Velocity: {
       artefactName: 'Decision Path Timing Map',
       why: 'The lost value is in the waiting, not only in the analysis.',
-      mondayMove: 'Choose **one recurring decision**. Mark where the signal starts, where it waits, who owns the call, and how many days the handoffs currently cost.',
-      whatToBringToCall: 'Bring the live decision path that keeps missing its window: campaign response, stock action, pricing call, hiring approval, or another repeated delay.',
-      avoidForNow: 'Do not add another meeting, dashboard, or AI layer before you know where the decision is actually waiting.'
+      mondayMove: 'Choose *one recurring decision*. Mark where the signal starts, where it waits, who owns the call and how many days the handoffs currently cost.',
+      whatToBringToCall: 'Bring the live decision path that keeps missing its window: campaign response, stock action, pricing call, hiring approval or another repeated delay.',
+      avoidForNow: 'Do not add another meeting, dashboard or tool before you know where the decision is actually waiting.'
     },
     Coherence: {
       artefactName: 'One-Source Decision Map',
       why: 'Separate teams can each be right and still slow the business.',
-      mondayMove: 'Choose **one cross-team decision**. Write the source, definition, owner, and escalation rule for when the numbers disagree.',
-      whatToBringToCall: 'Bring the decision where teams keep arriving with different pictures: channel performance, stock exposure, customer value, margin, or AI ownership.',
-      avoidForNow: 'Do not scale more AI pilots until one shared decision has one source, one definition, and one owner.'
+      mondayMove: 'Choose *one cross-team decision*. Write the source, definition, owner and escalation rule for when the numbers disagree.',
+      whatToBringToCall: 'Bring the decision where teams keep arriving with different pictures: channel performance, stock exposure, customer value, margin or AI ownership.',
+      avoidForNow: 'Do not scale more AI pilots until one shared decision has one source, one definition and one owner.'
     }
   }[hurdle] || {
     artefactName: 'First Constraint Map',
     why: 'The next useful move is to make one repeated decision cleaner.',
-    mondayMove: 'Choose **one recurring decision** and write the signal, owner, source, delay, and first fix.',
+    mondayMove: 'Choose *one recurring decision* and write the signal, owner, source, delay and first fix.',
     whatToBringToCall: 'Bring one live decision the business is already struggling to make cleanly.',
     avoidForNow: 'Do not broaden the work before the first constraint is visible.'
   };
@@ -225,7 +231,7 @@ export function deriveRevealInsights(answers, profile, context = {}) {
   const interpolateContext = { firstName, brandName, characterName: profile.characterName };
 
   // Folded receipts (now supporting evidence on the hurdle card, not a card of
-  // their own — answers support the message rather than being the centre).
+  // their own. Answers support the message rather than being the centre.
   const receiptImplications = weakAnswers.map(({ id, index }) => (
     RECEIPT_IMPLICATIONS[`${id}_${index}`] || answerOption(id, index)
   ));
@@ -254,16 +260,18 @@ export function deriveRevealInsights(answers, profile, context = {}) {
       score: profile.score,
       max: 100,
       interpretation: scoreInterpretation({ profile, strongest, hurdle: hurdlePillar, gap, highEvenShape, balancedEvenShape }),
-      after: STATIC.card2.after
+      after: scoreAfterLine(profile.score)
     },
     {
       type: 'shape',
       beat: 'Problem',
-      eyebrow: `The shape behind the ${profile.score}`,
-      lede: 'Four readings, against where advanced brands sit. They are **not equal**.',
+      eyebrow: 'WHERE YOU STAND VS THE BEST',
+      header: 'Benchmark vs *the best*.',
+      lede: 'Four readings. The best brands live on the right. Here is where you are.',
       pillars: pillars.map((pillar) => ({
         ...pillar,
         role: pillar.label === profile.hurdle ? 'hurdle' : pillar.label === strongest.label ? 'strong' : 'normal',
+        icon: pillar.label,
         plain: PILLAR_PLAIN[pillar.label] || '',
         benchmark: BENCHMARK[pillar.label] || 100
       })),
@@ -275,9 +283,10 @@ export function deriveRevealInsights(answers, profile, context = {}) {
     {
       type: 'hurdle',
       beat: 'Problem',
-      eyebrow: 'The one constraint',
+      eyebrow: 'THE ONE THING TO FIX FIRST',
       ...hurdleCard(profile.hurdle, highEvenShape, balancedEvenShape),
-      // Folded receipts: shown as compact supporting evidence beneath the point.
+      glyph: profile.hurdle,
+      // Folded receipts: shown only in the optional detail drawer.
       receipts: receiptImplications,
       evidence,
       tail: receiptTailLine
@@ -290,12 +299,16 @@ export function deriveRevealInsights(answers, profile, context = {}) {
       eyebrow: STATIC.card6.eyebrow,
       lead: STATIC.card6.lead,
       quote: quote.text,
+      sowhat: QUOTE_SOWHAT[quotePillar(quote.id)] || quoteImplication(quote, highEvenShape),
       implication: quoteImplication(quote, highEvenShape)
     },
     {
       type: 'cost',
       beat: 'Agitation',
       eyebrow: STATIC.card9.eyebrow,
+      hero: COST_HERO[profile.hurdle]?.[profile.bucket] || '',
+      compound: COST_COMPOUND[profile.bucket] || '',
+      glyph: profile.hurdle,
       model: costModel(profile),
       // Folded widening: the "If ignored" escalation rides on the cost card.
       compounders: compoundingModel(profile),
@@ -305,6 +318,10 @@ export function deriveRevealInsights(answers, profile, context = {}) {
       type: 'firstMove',
       beat: 'Promise',
       eyebrow: STATIC.card12.eyebrow,
+      header: "You don't fix all of it. You fix *one thing*.",
+      move: MOVE_BODY[profile.hurdle] || '',
+      forward: MONDAY_FORWARD,
+      glyph: profile.hurdle,
       actionPlan,
       // Folded surface: the one "what good looks like" promise frames the move.
       promise: surfaceLines.find((line) => /What good looks like/i.test(line)) || '',
@@ -318,8 +335,11 @@ export function deriveRevealInsights(answers, profile, context = {}) {
       eyebrow: STATIC.card13.eyebrow,
       characterName: profile.characterName,
       actionPlan,
-      lede: `${persona.fitLine} It is built around one practical artefact: ${actionPlan.artefactName}.`,
-      fitBody: `Thirty minutes with Saverio. Not a pitch. ${actionPlan.whatToBringToCall}`,
+      header: fill(persona.headline, interpolateContext),
+      offer: SESSION_OFFER,
+      glyph: profile.hurdle,
+      lede: fill(persona.headline, interpolateContext),
+      fitBody: SESSION_OFFER,
       outputs: sessionOutputs(profile, actionPlan),
       closeLine: persona.closeLine,
       button: STATIC.card13.button,
@@ -381,7 +401,7 @@ function normalisePillars(pillars) {
 function turnContextLine(answers) {
   const seat = [
     'the founder seat',
-    'a C-suite or board seat',
+    'a C-suite seat',
     'a functional-lead seat',
     'an operator seat'
   ][clamp(Number.isFinite(answers?.Q1) ? answers.Q1 : 3, 0, 3)];
@@ -457,6 +477,12 @@ function quoteImplication(quote, highEvenShape) {
   return CARD6_IMPLICATIONS[quote.id] || 'You selected that about your own business. Read it once more.';
 }
 
+function quotePillar(id) {
+  if (/^Q1[0-3]$/.test(String(id || ''))) return 'Coherence';
+  if (/^Q[6-9]$/.test(String(id || ''))) return 'Velocity';
+  return 'Visibility';
+}
+
 function displayQuote(id, index) {
   const text = answerOption(id, index);
   const special = {
@@ -519,9 +545,9 @@ function blockerCalibration({ orderedPicks, hurdle, noneSelected, convergent, na
     Coherence: 'The operating answers point first to Coherence: teams are not yet working from one shared picture before decisions start.'
   }[hurdle] || `The operating answers point first to ${hurdle}.`;
   const inspect = {
-    Visibility: 'Inspect the number whose owner, source, trust rule, or decision-right is still ambiguous.',
-    Velocity: 'Inspect the first handoff after signal appears: where it waits, who can move it, and what permission it is waiting for.',
-    Coherence: 'Inspect the recurring decision where teams arrive with different sources, definitions, or owners.'
+    Visibility: 'Inspect the number whose owner, source, trust rule or decision-right is still ambiguous.',
+    Velocity: 'Inspect the first handoff after signal appears: where it waits, who can move it and what permission it is waiting for.',
+    Coherence: 'Inspect the recurring decision where teams arrive with different sources, definitions or owners.'
   }[hurdle] || 'Inspect the first repeated decision where the diagnosis shows up.';
 
   if (noneSelected) {
@@ -556,10 +582,10 @@ function blockerCalibration({ orderedPicks, hurdle, noneSelected, convergent, na
 
 function scoreInterpretation({ profile, strongest, hurdle, gap, highEvenShape, balancedEvenShape }) {
   const scoreRead =
-    profile.score >= 80 ? 'Strong enough to turn into **advantage**, if the first constraint is not allowed to carry forward.' :
-    profile.score >= 65 ? 'Commercially usable readiness, with **one operating constraint** now doing too much work.' :
-    profile.score >= 45 ? 'Enough signal to act, but the operating system is still asking people to compensate for **weak wiring**.' :
-    'A useful early read: the value is not in the score, it is in finding **the first constraint** cleanly.';
+    profile.score >= 80 ? 'Strong enough to become *advantage*, if the first constraint does not carry forward.' :
+    profile.score >= 65 ? 'Commercially usable readiness, with *one operating constraint* doing too much work.' :
+    profile.score >= 45 ? 'Enough signal to act. Your operating system is still asking people to cover for *unclear handoffs*.' :
+    'The score is useful because it names *the first constraint* cleanly.';
   const strength = highEvenShape
     ? 'All four readings are high. The work is to choose which part of the system should carry more weight next.'
     : balancedEvenShape
@@ -571,7 +597,7 @@ function scoreInterpretation({ profile, strongest, hurdle, gap, highEvenShape, b
   const threshold = {
     Visibility: 'The next threshold is decision-grade evidence: one owner, one source, one trust rule, one decision changed.',
     Velocity: 'The next threshold is decision speed: first signal to first irreversible action, without another governance layer.',
-    Coherence: 'The next threshold is one shared picture: source, definition, owner, and escalation rule agreed before teams act.'
+    Coherence: 'The next threshold is one shared picture: source, definition, owner and escalation rule agreed before teams act.'
   }[hurdle.label] || 'The next threshold is one repeated decision made cleaner before more AI work is added.';
 
   return [
@@ -582,18 +608,25 @@ function scoreInterpretation({ profile, strongest, hurdle, gap, highEvenShape, b
   ];
 }
 
+export function scoreAfterLine(score) {
+  if (score < 45) return 'Strong brands sit near 90. That gap is what your operating system is quietly costing you.';
+  if (score < 65) return 'Enough to act on. One part of your operating system is making everything else work harder.';
+  if (score < 80) return 'Usable readiness. One thing is now doing too much of the work.';
+  return 'Strong. The question is no longer if you are ready. It is which strength to push next.';
+}
+
 function shapeRead({ hurdle, gap, highEvenShape, balancedEvenShape, leverage }) {
   // The bars above already show where the power is and which reading is the hurdle,
   // so the panel does not restate the score gap (card 2 owns that). It reads the shape
   // forward into what AI inherits from it.
   const constraint = highEvenShape || balancedEvenShape || gap <= 6
-    ? `${hurdle.label} is the first place to sharpen before the next AI layer leans on it.`
+    ? `${hurdle.label} is the first place to sharpen before AI leans on it.`
     : `${hurdle.label} is the reading the others are quietly waiting on. Until it lifts, the stronger readings cannot fully pay off.`;
   const aiImplication = {
-    Visibility: 'Any AI layer built on top inherits the trust problem unless the number, source, owner, and decision rule are made explicit.',
-    Velocity: 'Any AI layer built on top inherits the delay unless signal, owner, permission, and action path are wired together.',
-    Coherence: 'Any AI layer built on top inherits fragmentation unless source, definition, owner, and escalation rule are shared.'
-  }[hurdle.label] || 'Any AI layer built on top inherits the first operating constraint unless the repeated decision path is made cleaner.';
+    Visibility: 'AI inherits the same trust problem unless the number, source, owner and decision rule are explicit.',
+    Velocity: 'AI inherits the same delay unless the signal, owner, permission and action path are connected.',
+    Coherence: 'AI inherits the same split unless the source, definition, owner and escalation rule are shared.'
+  }[hurdle.label] || 'AI inherits the first operating constraint unless the repeated decision path is made cleaner.';
 
   return [
     { label: 'Where it leaks', value: constraint },
@@ -642,7 +675,7 @@ function shapeBody({ strongest, hurdle, gap, highEvenShape, balancedEvenShape })
     return `The readings are high and close. This is not a weak profile. It is a business with enough readiness that the next gain comes from choosing where to make the system sharper first. For you, that starts with ${hurdle.label}.`;
   }
   if (balancedEvenShape) {
-    return `The readings are close. This is not a dramatic gap, and it is not a weak profile. It is a business with a first place to sharpen. For you, that starts with ${hurdle.label}.`;
+    return `The readings are close. This is not a dramatic gap. It is not a weak profile. It is a business with a first place to sharpen. For you, that starts with ${hurdle.label}.`;
   }
   const strongLine = PILLAR_COPY[strongest.label]?.strong || `${strongest.label} is the strongest reading.`;
   const weakLine = PILLAR_COPY[hurdle.label]?.weak || `${hurdle.label} is the constraint.`;
@@ -653,19 +686,7 @@ function shapeBody({ strongest, hurdle, gap, highEvenShape, balancedEvenShape })
 }
 
 function hurdleCard(hurdle, highEvenShape, balancedEvenShape) {
-  if (balancedEvenShape) {
-    return {
-      lede: 'There is still a first place to inspect.',
-      body: `When the readings are close, the point is not to invent a crisis. It is to find the place where a small improvement would make the rest of the system easier to use. For you, that starts with ${hurdle}.`,
-      close: `Your first inspection point is ${hurdle}: the place to tighten before stronger AI work depends on it.`
-    };
-  }
-  if (!highEvenShape) return HURDLE_COPY[hurdle].hurdleCard;
-  return {
-    lede: 'There is still a first place to inspect.',
-    body: `When all four readings are strong, the question changes. It is no longer where the business is broken. It is which part of the operating system should carry more weight next. For you, that starts with ${hurdle}.`,
-    close: `Your first inspection point is ${hurdle}: the place to make stronger before the next layer of AI work depends on it.`
-  };
+  return HURDLE_COPY[hurdle].hurdleCard;
 }
 
 function receiptTail(hurdle, highEvenShape, balancedEvenShape) {
@@ -677,7 +698,7 @@ function receiptTail(hurdle, highEvenShape, balancedEvenShape) {
   }
   return {
     Visibility: 'Three answers. One pattern. The business has data, but the picture is still asking for trust it has not earned.',
-    Velocity: 'Three answers. One pattern. The business sees the play, and arrives after the whistle.',
+    Velocity: 'Three answers. One pattern. The business sees the play and arrives after the whistle.',
     Coherence: 'Three answers. One pattern. The teams are moving, but the picture is splitting before the decision lands.'
   }[hurdle] || STATIC.card5.tail;
 }
@@ -700,7 +721,7 @@ function costSceneBody(answers, profile, context, quote) {
   if (channels < 2) return scene;
   const count = ['two', 'three', 'four', 'five'][Math.min(channels, 5) - 2];
   const channelLine = {
-    Visibility: `And that is the picture on one route. You run ${count}, and each one keeps its own version of the numbers until someone reconciles them.`,
+    Visibility: `And that is the picture on one route. You run ${count} and each one keeps its own version of the numbers until someone reconciles them.`,
     Velocity: `And that is one decision on one route. You run ${count}. Every route adds its own wait before the call gets made.`,
     Coherence: `You run ${count} routes to market. That is ${count} versions of the week arriving at the same meeting.`
   }[profile.hurdle];
@@ -711,24 +732,24 @@ function costSceneBody(answers, profile, context, quote) {
 function costModel(profile) {
   const shared = {
     Visibility: {
-      hidden: 'The gap hides in reconciliation: reported performance, payback, source ownership, and the decision the number is allowed to change.',
+      hidden: 'The gap hides in reconciliation: reported performance, payback, source ownership and the decision the number is allowed to change.',
       track: 'Track how many days pass before the room trusts the number enough to act.',
-      yourNumber: 'Take one decision the room delayed because the figure was not trusted. Price the wait in **gross margin, not revenue**. That is the number this work protects.'
+      yourNumber: 'Take one decision the room delayed because the figure was not trusted. Price the wait in *gross margin, not revenue*. That is the number this work protects.'
     },
     Velocity: {
-      hidden: 'The gap hides after signal appears: decision framing, owner permission, handoffs, and the meeting where the call finally becomes real.',
+      hidden: 'The gap hides after signal appears: decision framing, owner permission, handoffs and the meeting where the call finally becomes real.',
       track: 'Track days from first signal to first irreversible action.',
-      yourNumber: 'Take one decision that landed late last quarter. Price the delay in **gross margin, not revenue**. That is the number this work protects.'
+      yourNumber: 'Take one decision that landed late last quarter. Price the delay in *gross margin, not revenue*. That is the number this work protects.'
     },
     Coherence: {
-      hidden: 'The gap hides between teams: separate sources, separate definitions, separate owners, and late reconciliation before the decision lands.',
-      track: 'Track how many people, tools, and definitions are needed before one answer is usable.',
-      yourNumber: 'Take one week of reconciling versions before deciding. Price that time in **gross margin, not revenue**. That is the number this work protects.'
+      hidden: 'The gap hides between teams: separate sources, separate definitions, separate owners and late reconciliation before the decision lands.',
+      track: 'Track how many people, tools and definitions are needed before one answer is usable.',
+      yourNumber: 'Take one week of reconciling versions before deciding. Price that time in *gross margin, not revenue*. That is the number this work protects.'
     }
   }[profile.hurdle] || {
     hidden: 'The gap hides inside the repeated decision path.',
     track: 'Track the delay from first signal to clean decision.',
-    yourNumber: 'Take one repeated decision that landed late. Price the delay in **gross margin, not revenue**. That is the number this work protects.'
+    yourNumber: 'Take one repeated decision that landed late. Price the delay in *gross margin, not revenue*. That is the number this work protects.'
   };
 
   const specific = {
@@ -743,7 +764,7 @@ function costModel(profile) {
       },
       Scale: {
         unit: 'Planning confidence waits for evidence to catch conviction.',
-        consequence: 'Board-level choices run on belief longer than they should.'
+        consequence: 'Leadership choices run on belief longer than they should.'
       }
     },
     Velocity: {
@@ -757,7 +778,7 @@ function costModel(profile) {
       },
       Scale: {
         unit: 'The market learns faster than the business can respond.',
-        consequence: 'Margin, inventory, customer behaviour, or capital choices move before the operating system catches up.'
+        consequence: 'Margin, inventory, customer behaviour or capital choices move before the operating system catches up.'
       }
     },
     Coherence: {
@@ -767,7 +788,7 @@ function costModel(profile) {
       },
       Traction: {
         unit: 'Teams create separate progress that does not add up.',
-        consequence: 'Duplicated pilots, duplicated definitions, and late post-mortems absorb growth energy.'
+        consequence: 'Duplicated pilots, duplicated definitions and late post-mortems absorb growth energy.'
       },
       Scale: {
         unit: 'Governance chases work that should have been connected before it started.',
@@ -801,9 +822,9 @@ function compoundingModel(profile) {
       later: 'The cost becomes market position: slower response starts to look like weaker instinct.'
     },
     Scale: {
-      now: 'At scale, the drag is no longer a team inconvenience.',
+      now: 'In a large business, the drag is no longer a team inconvenience.',
       next: 'If it stays open, governance expands to explain the delay instead of removing it.',
-      later: 'The cost becomes enterprise value: confidence, capital, and customer decisions move with less precision than they should.'
+      later: 'The cost shows up in enterprise value: confidence, capital and customer decisions move with less precision than they should.'
     }
   }[profile.bucket] || {
     now: 'The drag is visible in a repeated decision.',
@@ -811,9 +832,9 @@ function compoundingModel(profile) {
     later: 'The cost becomes harder to separate from the operating model.'
   };
   const hurdleLine = {
-    Visibility: 'Because the picture is not decision-grade, every stronger AI layer inherits uncertainty.',
-    Velocity: 'Because the path from signal to action is slow, stronger AI only makes the delay visible faster.',
-    Coherence: 'Because the picture splits before action, stronger AI can amplify separate work instead of compounding shared value.'
+    Visibility: 'Because the picture is not decision-grade, stronger AI work inherits uncertainty.',
+    Velocity: 'Because the path from signal to action is slow, stronger AI work only makes the delay visible faster.',
+    Coherence: 'Because the picture splits before action, stronger AI work can amplify separate work instead of compounding shared value.'
   }[profile.hurdle] || 'Because the first constraint is unresolved, stronger AI work inherits the operating drag.';
 
   return [
@@ -824,7 +845,7 @@ function compoundingModel(profile) {
 }
 
 function wideningBody(profile, context) {
-  // Drop the bucket copy's opening line ("And it is getting more expensive.") —
+  // Drop the bucket copy's opening line ("And it is getting more expensive.").
   // the card eyebrow already says it, so rendering it again stacked the same
   // sentence twice. The specific compounding-cost line leads instead.
   const body = BUCKET_COPY[profile.bucket].wideningGap.slice(1).map((line) => fill(line, context));
@@ -841,7 +862,7 @@ function wideningBody(profile, context) {
     },
     Coherence: {
       Clarity: 'The compounding cost is every important question becoming a rebuild before it becomes a decision.',
-      Traction: 'The compounding cost is separate progress: busy teams, duplicated work, and decisions that do not add up.',
+      Traction: 'The compounding cost is separate progress: busy teams, duplicated work and decisions that do not add up.',
       Scale: 'The compounding cost is governance chasing work that should have been connected before it started.'
     }
   }[profile.hurdle]?.[profile.bucket];
@@ -851,9 +872,9 @@ function wideningBody(profile, context) {
 
 function surfaceBody(hurdle) {
   const test = {
-    Visibility: 'The test: can one person explain where the number comes from, what would make it untrusted, and which decision changes when it moves?',
+    Visibility: 'The test: can one person explain where the number comes from, what would make it untrusted and which decision changes when it moves?',
     Velocity: 'The test: can you name the first place the signal waits after it appears, then remove one handoff without lowering the quality of the call?',
-    Coherence: 'The test: can the teams use one definition before the meeting starts, and know who decides when the numbers disagree?'
+    Coherence: 'The test: can the teams use one definition before the meeting starts and know who decides when the numbers disagree?'
   }[hurdle] || 'The test: can the work change a real repeated decision, not just produce a cleaner explanation?';
 
   return [...HURDLE_COPY[hurdle].surfaceVsEmbedded, test];
@@ -864,7 +885,7 @@ function embeddedImplementation(hurdle) {
     Visibility: [
       {
         label: 'Embedded move',
-        value: 'Choose one number and give it an owner, source, trust rule, and decision right.'
+        value: 'Choose one number and give it an owner, source, trust rule and decision right.'
       },
       {
         label: 'Decision changed',
@@ -890,7 +911,7 @@ function embeddedImplementation(hurdle) {
       },
       {
         label: 'Operating rule',
-        value: 'The signal is not complete until the next owner, deadline, and permission point are clear.'
+        value: 'The signal is not complete until the next owner, deadline and permission point are clear.'
       },
       {
         label: 'Proof test',
@@ -900,11 +921,11 @@ function embeddedImplementation(hurdle) {
     Coherence: [
       {
         label: 'Embedded move',
-        value: 'Choose one cross-team decision and set one source, one definition, and one escalation owner.'
+        value: 'Choose one cross-team decision and set one source, one definition and one escalation owner.'
       },
       {
         label: 'Decision changed',
-        value: 'Teams start from the same picture before they spend time, budget, or AI effort.'
+        value: 'Teams start from the same picture before they spend time, budget or AI effort.'
       },
       {
         label: 'Operating rule',
@@ -918,7 +939,7 @@ function embeddedImplementation(hurdle) {
   }[hurdle] || [
     {
       label: 'Embedded move',
-      value: 'Choose one repeated decision and wire the signal, owner, rule, and action together.'
+      value: 'Choose one repeated decision and wire the signal, owner, rule and action together.'
     },
     {
       label: 'Proof test',
@@ -929,10 +950,10 @@ function embeddedImplementation(hurdle) {
 
 function firstMoveProof(hurdle) {
   return {
-    Visibility: 'which number is allowed to change the week, who owns it, and what would make the room stop trusting it',
-    Velocity: 'where the signal first waits, who can move it, and how many days one cleaner handoff would return',
-    Coherence: 'which source counts, which definition wins, and who resolves the split before teams start acting'
-  }[hurdle] || 'where the repeated decision is weak, who owns it, and what would make the next call cleaner';
+    Visibility: 'which number is allowed to change the week, who owns it and what would make the room stop trusting it',
+    Velocity: 'where the signal first waits, who can move it and how many days one cleaner handoff would return',
+    Coherence: 'which source counts, which definition wins and who resolves the split before teams start acting'
+  }[hurdle] || 'where the repeated decision is weak, who owns it and what would make the next call cleaner';
 }
 
 function firstMoveBody({ actionPlan, hurdle, quote }) {
@@ -962,22 +983,22 @@ function sessionOutputs(profile, actionPlan) {
   const stagePressure = {
     Clarity: 'small enough to run this week without creating a programme around it',
     Traction: 'tied to a repeated growth decision where momentum is currently leaking',
-    Scale: 'large enough to affect margin, capital, inventory, customer confidence, or board-level decisions'
+    Scale: 'large enough to affect margin, capital, inventory, customer confidence or leadership decisions'
   }[profile.bucket] || 'attached to one repeated decision the business already makes';
   const output = {
     Visibility: {
-      decision: 'One decision-grade number chosen: source, owner, trust rule, and the decision it is allowed to change.',
-      rule: 'A trust rule for the room: what would make the number safe to act on, and what would make it unsafe.',
+      decision: 'One decision-grade number chosen: source, owner, trust rule and the decision it is allowed to change.',
+      rule: 'A trust rule for the room: what would make the number safe to act on and what would make it unsafe.',
       proof: 'A next-week proof measure: how many days pass before leadership can use the number without rebuilding it.'
     },
     Velocity: {
-      decision: 'One decision path chosen: signal, owner, first waiting point, permission, and deadline.',
+      decision: 'One decision path chosen: signal, owner, first waiting point, permission and deadline.',
       rule: 'A release rule for the handoff: who can move the signal before the opportunity window closes.',
       proof: 'A next-week proof measure: days from first signal to first irreversible action.'
     },
     Coherence: {
-      decision: 'One cross-team decision chosen: source, definition, owner, and escalation rule.',
-      rule: 'A one-picture rule for the room: which source wins, which definition counts, and who resolves disagreement.',
+      decision: 'One cross-team decision chosen: source, definition, owner and escalation rule.',
+      rule: 'A one-picture rule for the room: which source wins, which definition counts and who resolves disagreement.',
       proof: 'A next-week proof measure: how much reconciliation is removed before the meeting starts.'
     }
   }[profile.hurdle] || {

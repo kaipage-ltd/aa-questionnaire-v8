@@ -636,7 +636,7 @@ test('exclusive multi-select answers are sanitised conservatively', () => {
   assert.deepEqual(cleaned.SP, [0]);
 });
 
-test('all-strong reveals do not manufacture a weak-point claim', () => {
+test('all-strong reveals keep calibrated shape copy and the plain constraint beat', () => {
   const cleaned = sanitiseAnswers({
     Q1: 1,
     CC: [0],
@@ -668,12 +668,13 @@ test('all-strong reveals do not manufacture a weak-point claim', () => {
   assert.equal(profile.score, 100);
   assert.match(shape.body, /not a weak profile/i);
   assert.doesNotMatch(shape.body, /thin|collapse/i);
-  assert.match(hurdle.close, /first inspection point/i);
+  assert.equal(hurdle.lede, "You have the numbers. You can't *trust* them.");
+  assert.equal(hurdle.close, 'YOUR FIRST CONSTRAINT · VISIBILITY');
   assert.match(hurdle.tail, /real strengths/i);
   assert.match(quote.implication, /selected that as a strength/i);
 });
 
-test('balanced mid-strength reveals use inspection language instead of crisis language', () => {
+test('balanced mid-strength reveals keep calibrated shape copy and the plain constraint beat', () => {
   const cleaned = sanitiseAnswers({
     Q1: 1,
     CC: [0, 1],
@@ -704,7 +705,8 @@ test('balanced mid-strength reveals use inspection language instead of crisis la
   assert.equal(profile.score, 66);
   assert.match(shape.body, /not a dramatic gap/i);
   assert.doesNotMatch(shape.body, /thin|collapse/i);
-  assert.match(hurdle.lede, /first place to inspect/i);
+  assert.equal(hurdle.lede, "You have the numbers. You can't *trust* them.");
+  assert.equal(hurdle.close, 'YOUR FIRST CONSTRAINT · VISIBILITY');
   assert.match(hurdle.tail, /not collapsing/i);
 });
 

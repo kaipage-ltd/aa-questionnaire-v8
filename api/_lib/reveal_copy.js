@@ -1,20 +1,19 @@
 export const STATIC = {
   card1: {
-    eyebrow: 'A+A - AI Readiness Read',
-    lede: 'Before the number, one thing. This is **not a quiz result**. It is a read on how {brandName} actually operates.',
-    body: 'Every business runs on a delay between what it knows and what it does. Most have never measured theirs. **You just did.**'
+    eyebrow: 'A+A · AI READINESS',
+    lede: 'most brands run on a gap they never measure. *You just did.*',
+    body: 'The gap between what {brandName} knows and what it does. Here is yours.'
   },
   card2: {
-    label: 'Where {brandName} stands',
-    after: '**Not a grade.** A read on where the operating system leans. The next card shows you which way.'
+    label: 'WHERE {brandName} STANDS TODAY'
   },
   card5: {
-    eyebrow: 'From your own answers',
+    eyebrow: 'THE ANSWERS BEHIND IT',
     lede: 'We are not guessing. You told us this.',
     tail: 'Three answers. One pattern. The business has shown us where the drag sits.'
   },
   card6: {
-    eyebrow: 'Your words - the line we keep returning to',
+    eyebrow: 'IN YOUR OWN WORDS',
     lead: 'Of everything you told us, this is the line we keep returning to.'
   },
   card7: {
@@ -27,7 +26,7 @@ export const STATIC = {
     noneTurn: 'Your operating answers are more cautious than that.'
   },
   card9: {
-    eyebrow: 'What it is costing'
+    eyebrow: 'WHAT IT COSTS YOU NOW'
   },
   card10: {
     eyebrow: 'And it is getting more expensive'
@@ -36,12 +35,12 @@ export const STATIC = {
     eyebrow: 'What fixing it actually means'
   },
   card12: {
-    eyebrow: 'The first move - start Monday'
+    eyebrow: 'THE GOOD NEWS'
   },
   card13: {
-    eyebrow: 'The working session',
+    eyebrow: 'WHERE THIS GOES NEXT',
     button: 'Book the working session',
-    qualifier: 'A+A take on six new clients a year. Saverio is in every engagement personally. The call is a fit check - from both sides.'
+    qualifier: 'A+A takes six new clients a year. Our CEO is in every one. The call is a fit check, both ways.'
   },
   card14: {
     button: 'Book the working session'
@@ -52,101 +51,110 @@ export const PERSONA = {
   'c-vi': {
     name: 'The Dead Reckoner',
     signature: 'a business plotting the week by estimate because the instruments are not yet trusted',
+    headline: 'Stop steering {brandName} by *guess*.',
     fitLine: 'You came in as The Dead Reckoner: a business moving by feel because the numbers do not yet give leadership a clean position.',
-    closeLine: 'The Dead Reckoner only changes when the business stops steering by estimate.'
+    closeLine: 'The Dead Reckoner changes the day it stops steering by estimate.'
   },
   'c-ve': {
     name: 'The Sole Hand',
     signature: 'a business where too many real decisions still wait for the same one or two people',
+    headline: 'Get the decision *out of your hands*.',
     fitLine: 'You came in as The Sole Hand: a business that can see the move, but still waits for the same person to make it real.',
-    closeLine: 'The Sole Hand only changes when one repeat decision no longer needs the founder in the room.'
+    closeLine: 'The Sole Hand changes the day one repeat call no longer needs you in the room.'
   },
   'c-co': {
     name: 'The Patchwork Crew',
     signature: 'a crew stitching the picture together by hand before the work can begin',
+    headline: 'One picture. *Then* the work starts.',
     fitLine: 'You came in as The Patchwork Crew: capable people rebuilding the picture before they can decide what to do.',
-    closeLine: 'The Patchwork Crew only changes when one recurring question has one agreed answer.'
+    closeLine: 'The Patchwork Crew changes the day one question has one agreed answer.'
   },
   't-vi': {
     name: 'The Blind Sprinter',
     signature: 'a business with real pace, running faster than the evidence underneath it',
+    headline: 'Run fast. On numbers you *trust*.',
     fitLine: 'You came in as The Blind Sprinter: momentum is real, but the business is moving faster than its evidence.',
-    closeLine: 'The Blind Sprinter only changes when the business proves which growth deserves more speed.'
+    closeLine: 'The Blind Sprinter changes the day it can prove which growth deserves more speed.'
   },
   't-ve': {
     name: 'The Late Caller',
     signature: 'a business that reads the play correctly and acts a beat late',
+    headline: 'Make {brandName} stop *calling it late*.',
     fitLine: 'You came in as The Late Caller: a business that reads the play and arrives after the whistle.',
-    closeLine: 'The Late Caller only changes when the business stops calling things late.'
+    closeLine: 'The Late Caller wins the day it stops calling things late.'
   },
   't-co': {
     name: 'The Splitting Pack',
     signature: 'a fast-moving business whose teams are pulling in different directions',
+    headline: 'Point the whole team *one way*.',
     fitLine: 'You came in as The Splitting Pack: speed is real, but the work is starting to split by team, tool and definition.',
-    closeLine: 'The Splitting Pack only changes when the business stops letting separate teams solve the same problem twice.'
+    closeLine: 'The Splitting Pack changes the day teams stop solving the same problem twice.'
   },
   's-vi': {
     name: 'The Flagship on Faith',
     signature: 'a large operation with a clear direction and numbers that still require belief',
+    headline: 'Back the conviction with *numbers*.',
     fitLine: 'You came in as The Flagship on Faith: direction is clear, but the evidence underneath still asks for belief.',
-    closeLine: 'The Flagship on Faith only changes when conviction is backed by numbers the room can defend.'
+    closeLine: 'The Flagship on Faith changes the day conviction is backed by numbers the room can defend.'
   },
   's-ve': {
     name: 'The Lagging Tanker',
     signature: 'a large business with power and mandate, turning slower than the market allows',
-    fitLine: 'You came in as The Lagging Tanker: the direction is right, the power is real, and the turn is still too slow.',
-    closeLine: 'The Lagging Tanker only changes when strong evidence no longer waits for permission.'
+    headline: 'Turn the ship before the *market* does.',
+    fitLine: 'You came in as The Lagging Tanker: the direction is right, the power is real but the turn is still too slow.',
+    closeLine: 'The Lagging Tanker changes the day strong evidence stops waiting for permission.'
   },
   's-co': {
     name: 'The Scattered Fleet',
     signature: 'a large business where functions are powered up but sailing different charts',
+    headline: 'One chart for the *whole fleet*.',
     fitLine: 'You came in as The Scattered Fleet: each function has motion, but the business does not yet have one shared chart.',
-    closeLine: 'The Scattered Fleet only changes when the AI work connects, stops duplicating itself and starts changing shared decisions.'
+    closeLine: 'The Scattered Fleet changes the day the AI work connects instead of duplicating.'
   }
 };
 
 // Plain-language meaning for each pillar, shown on the shape card so the terms
 // (especially Coherence) are immediately legible to a time-poor CEO.
 export const PILLAR_PLAIN = {
-  Visibility: 'What the business can see.',
-  Velocity: 'How fast it turns seeing into doing.',
-  Coherence: 'Whether teams act from one shared picture.',
-  Leverage: 'How far AI reaches into real decisions.'
+  Visibility: 'What you can see.',
+  Velocity: 'How fast you act on it.',
+  Coherence: 'Whether your teams see one picture.',
+  Leverage: 'How far AI reaches into real calls.'
 };
 
-// Where advanced brands sit, per Saverio. Rendered as a ghosted benchmark behind
+// Where advanced brands sit. Rendered as a benchmark marker beside
 // each respondent bar so the gap, not the absolute score, is the message.
 export const BENCHMARK = { Visibility: 100, Velocity: 90, Coherence: 95, Leverage: 90 };
 export const BENCHMARK_LABEL = 'Advanced brands';
 
 export const PILLAR_COPY = {
   Visibility: {
-    strong: 'Visibility is real: the business can see more than most.',
-    weak: 'Visibility is thin: the business is still asking numbers to do more than they can support.'
+    strong: 'The business can see enough to move faster than most.',
+    weak: 'The numbers are present, but they still ask the room to believe too much.'
   },
   Velocity: {
-    strong: 'Velocity is real: evidence can still become action while the window is open.',
-    weak: 'Velocity is the delay: the business sees too late, decides too late, or waits too long between the two.'
+    strong: 'Evidence can still become action while the window is open.',
+    weak: 'The delay sits between seeing the signal and making the call.'
   },
   Coherence: {
-    strong: 'Coherence is real: teams are closer to one picture than most businesses manage.',
-    weak: 'Coherence is splitting: teams can be right separately and still slow the business down.'
+    strong: 'Teams are close to one picture.',
+    weak: 'Teams can be right separately and still slow the business down.'
   },
   Leverage: {
-    strong: 'Leverage is real: AI has enough ownership and reach to matter.',
-    weak: 'Leverage is still shallow: AI is present, but not yet wired into the work that decides outcomes.'
+    strong: 'AI already reaches meaningful work. Now it needs cleaner decisions underneath.',
+    weak: 'AI is present, but it still sits outside the calls that decide outcomes.'
   }
 };
 
 export const HURDLE_COPY = {
   Visibility: {
     hurdleCard: {
-      lede: 'One of these four is not like the others.',
-      body: 'It is not that Visibility is just a low number. It is that every other ambition has to stand on it. A business that cannot trust what it sees does not have four problems. It has one, and the other numbers are quietly paying for it.',
-      close: 'Your first constraint is **Visibility**: the distance between having data and having a picture leadership can act on.'
+      lede: "You have the numbers. You can't *trust* them.",
+      body: "Every other strength stands on numbers you don't quite believe. Fix the trust and the rest holds.",
+      close: 'YOUR FIRST CONSTRAINT · VISIBILITY'
     },
     reframe: {
-      lede: 'So here is what is actually happening, and it is not just a data problem.',
+      lede: 'Here is what is actually happening. It is not just a data problem.',
       body: [
         'You do not need more numbers. Your team is not short of dashboards and your tools are not the whole issue.',
         'You have a delay built into the picture itself. The business waits for numbers to be cleaned, reconciled and believed before it can move. By the time the picture is safe enough to use, the decision has already cooled.',
@@ -155,8 +163,8 @@ export const HURDLE_COPY = {
     },
     surfaceVsEmbedded: [
       'Here is what fixing it does not mean.',
-      'Not another reporting layer. Not a prettier dashboard. Not an AI assistant summarising numbers nobody fully trusts. Those are surface moves; they make a blurry business faster at producing blur.',
-      'What good looks like for you is evidence wired into the week itself: the number that matters is defined, trusted, and already tied to the decision it is allowed to change.'
+      'Not another reporting layer. Not a prettier dashboard. Not a summary of numbers nobody trusts. Those sit beside the problem. They make a blurry business produce blur faster.',
+      'What good looks like for you is evidence wired into the week itself: the number that matters is defined, trusted and already tied to the decision it is allowed to change.'
     ],
     firstMove: [
       'You do not need to clean the whole business to feel it move. You need one number.',
@@ -169,21 +177,21 @@ export const HURDLE_COPY = {
   },
   Velocity: {
     hurdleCard: {
-      lede: 'One of these four is not like the others.',
-      body: 'It is not that Velocity is your lowest score. It is that Velocity sits underneath the other three. A business that sees clearly and moves slowly does not have four problems. It has one, and the other numbers are quietly paying for it.',
-      close: 'Your first constraint is **Velocity**: the distance between knowing and doing.'
+      lede: 'You see the move. You make it *too late*.',
+      body: 'Seeing clearly is worth nothing if you act a week late. Close the gap and your other strengths finally pay off.',
+      close: 'YOUR FIRST CONSTRAINT · VELOCITY'
     },
     reframe: {
-      lede: 'So here is what is actually happening, and it is not what you think.',
+      lede: 'Here is what is actually happening. It is not what you think.',
       body: [
         'You do not have a speed problem. Your team is not lazy and your tools are not broken.',
         'You have a delay that is built in. Every report, dashboard and Monday meeting was designed to tell you what already happened. By the time a signal becomes a slide becomes a decision, the week it belonged to is gone.',
-        'You are not running the business in real time. You are running last month\'s business, this month, and calling it strategy. That delay is not a flaw in your team. It is a flaw in the wiring. Wiring is fixable.'
+        'You are not running the business in real time. You are running last month\'s business this month and calling it strategy. That delay is not a flaw in your team. It is a flaw in the wiring. Wiring is fixable.'
       ]
     },
     surfaceVsEmbedded: [
       'Here is what fixing it does not mean.',
-      'Not another dashboard. Not a faster meeting. Not a ChatGPT seat for the team rebranded as an AI strategy. Those are surface moves; they make a slow business slightly faster at being slow.',
+      'Not another dashboard. Not a faster meeting. Not another tool that writes up the same late decision. Those sit beside the problem. They make delay look more productive.',
       'What good looks like for you is intelligence wired into the week itself: the signal flags when it matters, with the decision already framed, to the person who owns it.'
     ],
     firstMove: [
@@ -197,12 +205,12 @@ export const HURDLE_COPY = {
   },
   Coherence: {
     hurdleCard: {
-      lede: 'One of these four is not like the others.',
-      body: 'It is not that Coherence is just a weak score. It is that Coherence decides whether the business can act as one system. A business with separate pictures does not have four problems. It has one, and the other numbers are quietly paying for it.',
-      close: 'Your first constraint is **Coherence**: the distance between separate team pictures and one business decision.'
+      lede: "Your teams are sharp. They don't share *one picture*.",
+      body: 'Each team can be right and the business still loses. One shared picture and the rest speeds up.',
+      close: 'YOUR FIRST CONSTRAINT · COHERENCE'
     },
     reframe: {
-      lede: 'So here is what is actually happening, and it is not just a collaboration problem.',
+      lede: 'Here is what is actually happening. It is not just a collaboration problem.',
       body: [
         'Your teams are not the problem. They may each be doing disciplined work from the picture they have.',
         'You have a delay built into the joins. Finance waits for Digital to reconcile. Operations waits for Finance to define the number. AI pilots wait for someone to say which source counts. By the time the business agrees, the moment has moved.',
@@ -211,7 +219,7 @@ export const HURDLE_COPY = {
     },
     surfaceVsEmbedded: [
       'Here is what fixing it does not mean.',
-      'Not another alignment meeting. Not another shared folder. Not more AI pilots in different teams hoping the centre will catch up. Those are surface moves; they let fragmentation dress itself as progress.',
+      'Not another alignment meeting. Not another shared folder. Not more AI pilots in different teams. Those sit beside the split. They let separate work look like progress.',
       'What good looks like for you is one decision, one source and one owner wired into the week before teams start acting from different pictures.'
     ],
     firstMove: [
@@ -236,14 +244,14 @@ export const BUCKET_COPY = {
   Traction: {
     wideningGap: [
       'And it is getting more expensive.',
-      'You are at the stage where momentum decides everything. The businesses around you are starting to pull ahead, or starting to stall. The deciding factor is not who has the best idea. It is who closes the gap between seeing and acting fastest.',
+      'You are at the stage where momentum decides everything. The businesses around you are starting to pull ahead or starting to stall. The deciding factor is not who has the best idea. It is who closes the gap between seeing and acting fastest.',
       'Every month that gap stays open, a competitor with worse instincts and a faster operating rhythm pulls in front. Not because they are sharper. Because they are sooner. This is the window where that becomes permanent.'
     ]
   },
   Scale: {
     wideningGap: [
       'And it is getting more expensive.',
-      'At your size, the gap is no longer a team inconvenience. It becomes a board-level cost: slower capital choices, slower customer decisions, slower confidence in what should scale.',
+      'Once the business is this large, the gap is no longer local. It slows capital choices, customer decisions and confidence in what should scale.',
       'Every month the gap stays open, the business pays twice. First in missed windows, then in the extra governance needed to explain why the windows were missed.'
     ]
   }
@@ -265,7 +273,7 @@ export const COST_SCENES = {
   Visibility_Scale: [
     'Picture a real quarter.',
     'The room agrees on the direction, then spends the next two meetings testing whether the numbers underneath it are solid. Six weeks pass before confidence catches up with conviction.',
-    'For a scaled business, six weeks is not a data issue. It is a quarter the board was counting on.',
+    'For a scaled business, six weeks is not a data issue. It is a quarter leadership was counting on.',
     'Run that across a planning cycle. The cost is leadership belief doing work that evidence should have done already.'
   ],
   Velocity_Clarity: [
@@ -278,7 +286,7 @@ export const COST_SCENES = {
     'Picture a real week.',
     'A channel softens on a Tuesday. Your numbers show it by Thursday. It reaches the meeting the following Wednesday. The decision lands the Monday after that. Eleven days. The signal was free. The eleven days were not.',
     'For a business with your momentum, a decision eleven days late is not late by eleven days. It is late by a whole growth cycle.',
-    'Run that across a year of weeks. That is the real cost, and it never shows up as a line item.'
+    'Run that across a year of weeks. That is the real cost. It never shows up as a line item.'
   ],
   Velocity_Scale: [
     'Picture a real quarter.',
@@ -305,6 +313,45 @@ export const COST_SCENES = {
     'Run that across the AI work. The cost is a fleet under power, sailing different charts.'
   ]
 };
+
+export const COST_HERO = {
+  Visibility: {
+    Clarity: 'Five days a week, steering by *guess*.',
+    Traction: "Good money, chasing numbers you *can't trust*.",
+    Scale: 'A whole quarter, waiting for proof to *catch up*.'
+  },
+  Velocity: {
+    Clarity: 'The same call, made twice, a *week apart*.',
+    Traction: 'Every good move, *eleven days* late.',
+    Scale: 'The market turns. You turn *six weeks* later.'
+  },
+  Coherence: {
+    Clarity: 'Every week starts by *rebuilding the picture*.',
+    Traction: 'Three teams, three answers, one *missed window*.',
+    Scale: 'A fleet under power, sailing *different charts*.'
+  }
+};
+
+export const COST_COMPOUND = {
+  Clarity: 'It looks small now. It is cheapest to fix before the business grows around it.',
+  Traction: 'It never shows as a line item. It shows up as the deal a slower rival closed first. Not smarter. Sooner.',
+  Scale: 'This is no longer a team problem. It is confidence, capital and margin moving slower than they should.'
+};
+
+export const MOVE_BODY = {
+  Visibility: 'Pick the one number that should change your week. Give it an owner and a rule. Start there.',
+  Velocity: 'Pick one decision you keep making late. Find where it waits. Close that gap. Start there.',
+  Coherence: 'Pick one call your teams keep splitting on. Agree one source, one owner. Start there.'
+};
+
+export const QUOTE_SOWHAT = {
+  Visibility: "You said that about your own numbers. If you can't trust them, every call after wobbles.",
+  Velocity: 'You said that about your own business. The work is good. It just lands too late to count.',
+  Coherence: 'You said that about your own teams. Each one is right and the business still pays for the gap.'
+};
+
+export const MONDAY_FORWARD = 'That is the first move. The session is where we make it with you.';
+export const SESSION_OFFER = 'Thirty minutes with our CEO. Not a pitch. You bring one real decision. You leave with a plan to fix it.';
 
 export const ANSWER_OPTIONS = {
   Q2: [
@@ -449,7 +496,7 @@ export const CARD6_IMPLICATIONS = {
   Q4: 'You selected that about forecasting. It means the plan and the week are not staying close enough.',
   Q5: 'You selected that about signal reaching leadership. It means insight still has to be pulled, not received.',
   Q6: 'You selected that about repeat patterns. It means the business is still paying for lessons it has already seen.',
-  Q7: 'You selected that about your own business. Read it once more. It means the work is good, and it is finished after it mattered.',
+  Q7: 'You selected that about your own business. Read it once more. It means the work is good and it is finished after it mattered.',
   Q8: 'You selected that about decisions. It means the decision is not missing because nobody cares. It is missing because the path is weak.',
   Q9: 'You selected that about the week under pressure. It means the routine works until the business needs it most.',
   Q10: 'You selected that about Finance and Digital. It means the meeting starts before the business agrees what it is looking at.',
