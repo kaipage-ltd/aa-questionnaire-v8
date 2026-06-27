@@ -611,8 +611,8 @@ function scoreInterpretation({ profile, strongest, hurdle, gap, highEvenShape, b
 export function scoreAfterLine(score) {
   if (score < 45) return 'Strong brands sit near 90. That gap is what your operating system is quietly costing you.';
   if (score < 65) return 'Enough to act on. One part of your operating system is making everything else work harder.';
-  if (score < 80) return 'Usable readiness. One thing is now doing too much of the work.';
-  return 'Strong. The question is no longer if you are ready. It is which strength to push next.';
+  if (score < 80) return 'Usable readiness. One part of your operating system is carrying too much of the work.';
+  return 'Strong. Your operating system is ready enough to push. The question is which strength moves first.';
 }
 
 function shapeRead({ hurdle, gap, highEvenShape, balancedEvenShape, leverage }) {

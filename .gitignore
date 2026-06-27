@@ -4,16 +4,17 @@
 node_modules
 npm-debug.log*
 scripts/output/
+/output/
 .vercel.preview-project
 
 # Internal working docs — kept local, not in the deploy repo
 /BREVO_*
 /DNS_*
 /REVEAL_*
+!/reveal_copy_studio.html
 /LAUNCH_CHECKLIST.md
 /CONTEXT.md
 /reveal_value_audit_*.md
 /PAST_UI_FEEDBACK_AUDIT.md
 /SAVERIO_FEEDBACK_LOG.md
 /security-audit-*.html
-

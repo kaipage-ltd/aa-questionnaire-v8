@@ -72,10 +72,10 @@ test('scoreAfterLine returns the four specified score-band lines', () => {
   assert.equal(scoreAfterLine(44), 'Strong brands sit near 90. That gap is what your operating system is quietly costing you.');
   assert.equal(scoreAfterLine(45), 'Enough to act on. One part of your operating system is making everything else work harder.');
   assert.equal(scoreAfterLine(64), 'Enough to act on. One part of your operating system is making everything else work harder.');
-  assert.equal(scoreAfterLine(65), 'Usable readiness. One thing is now doing too much of the work.');
-  assert.equal(scoreAfterLine(79), 'Usable readiness. One thing is now doing too much of the work.');
-  assert.equal(scoreAfterLine(80), 'Strong. The question is no longer if you are ready. It is which strength to push next.');
-  assert.equal(scoreAfterLine(100), 'Strong. The question is no longer if you are ready. It is which strength to push next.');
+  assert.equal(scoreAfterLine(65), 'Usable readiness. One part of your operating system is carrying too much of the work.');
+  assert.equal(scoreAfterLine(79), 'Usable readiness. One part of your operating system is carrying too much of the work.');
+  assert.equal(scoreAfterLine(80), 'Strong. Your operating system is ready enough to push. The question is which strength moves first.');
+  assert.equal(scoreAfterLine(100), 'Strong. Your operating system is ready enough to push. The question is which strength moves first.');
 });
 
 test('cost hero copy covers every hurdle and bucket combination', () => {
