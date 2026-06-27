@@ -42,6 +42,7 @@ test('pillar glyphs are embedded and rendered on required slides', () => {
 test('score line is not gated on count-up completion', () => {
   assert.match(playerHtml, /num-denom/, 'the number card must render a /100 denominator');
   assert.match(playerHtml, /setTimeout\(\(\) => afterItems\.forEach\(\(after\) => after\.classList\.add\('show'\)\), 250\)/, 'score line should show independently after 250ms');
+  assert.doesNotMatch(playerHtml, /\.card\.is-active \.num-after\.show \{[\s\S]*?animation-delay/, 'score line should not carry a second CSS delay after the 250ms timer');
   assert.doesNotMatch(playerHtml, /afterItems\.forEach\(\(after\) => after\.classList\.add\('show'\)\);\s*\n\s*\}/, 'score line should not wait for the count-up else block');
 });
 
