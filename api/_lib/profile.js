@@ -792,7 +792,7 @@ function costModel(profile) {
       },
       Scale: {
         unit: 'Governance chases work that should have been connected before it started.',
-        consequence: 'AI fragmentation grows faster than the value of the AI itself.'
+        consequence: 'Separate AI work starts costing more before it returns more.'
       }
     }
   }[profile.hurdle]?.[profile.bucket] || {
@@ -814,7 +814,7 @@ function compoundingModel(profile) {
     Clarity: {
       now: 'The habit is still small enough to see clearly.',
       next: 'If it stays open, the business grows around manual fixes and founder judgement.',
-      later: 'The cost becomes dependency: the same people, the same explanations, the same weak operating muscle.'
+      later: 'The cost becomes dependency: the same people keep stepping in to make the week move.'
     },
     Traction: {
       now: 'Momentum makes the drag more expensive because every repeated decision compounds.',
