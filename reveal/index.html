@@ -706,6 +706,9 @@
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 14px;
   }
+  .pattern-signal {
+    display: none;
+  }
   .pattern-row {
     border-top: 1px solid rgba(250, 248, 242, 0.24);
     padding-top: 14px;
@@ -1372,6 +1375,13 @@
     .pattern-proof {
       display: none;
     }
+    .pattern-signal {
+      display: block;
+      margin-top: 16px;
+      font-size: 18px;
+      line-height: 1.35;
+      color: var(--paper);
+    }
     .pattern-row {
       padding-top: 10px;
     }
@@ -1386,6 +1396,7 @@
     .card.is-firstMove .more-drawer {
       margin-bottom: 54px;
     }
+    .card.is-shape .more-drawer,
     .card.is-quote .more-drawer {
       display: none;
     }
@@ -1933,6 +1944,7 @@ function buildCard(card) {
     if (card.header) {
       inner.append(h(card.header, 'd1'));
       inner.append(p('lede anim d2', card.body || card.sowhat || card.implication));
+      if (card.signalLine) inner.append(p('pattern-signal anim d3', card.signalLine));
       if (card.proof?.length) inner.append(buildPatternProof(card.proof));
       if (card.proof?.length) inner.append(buildDrawer(card.drawerLabel || 'Exact answers', buildExactAnswers(card.proof)));
     } else {

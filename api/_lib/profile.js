@@ -308,6 +308,7 @@ export function deriveRevealInsights(answers, profile, context = {}) {
       lead: STATIC.card6.lead,
       header: patternHeader(profile.hurdle),
       body: patternBody(profile, evidence),
+      signalLine: patternSignalLine(evidence),
       quote: quote.text,
       proof: patternProofRows(evidence),
       sowhat: patternSoWhat(profile.hurdle),
@@ -725,8 +726,11 @@ function patternBody(profile, evidence) {
     Velocity: 'The weak point is not effort. It is the wait after signal: where the call stalls and who can release it.',
     Coherence: 'The weak point is not team quality. It is the shared picture: which source wins before the room starts debating.'
   }[profile.hurdle] || 'The weak point is the repeated decision path.';
-  const proof = evidence?.[0]?.read ? `Your clearest signal: ${evidence[0].read}` : '';
-  return [mechanism, stageLine, proof].filter(Boolean).join(' ');
+  return [mechanism, stageLine].filter(Boolean).join(' ');
+}
+
+function patternSignalLine(evidence) {
+  return evidence?.[0]?.read ? `Clearest signal: ${evidence[0].read}` : '';
 }
 
 function patternProofRows(evidence) {

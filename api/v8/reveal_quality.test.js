@@ -155,6 +155,10 @@ test('demo reveal matrix emits the overhauled 8-card contract', () => {
 
     assert.equal(quote.eyebrow, 'THE PATTERN IN YOUR ANSWERS');
     assert.match(quote.header, /Three answers/);
+    assert.equal(Boolean(quote.body), true);
+    assert.equal(Boolean(quote.signalLine), true);
+    assert.doesNotMatch(quote.body, /clearest signal/i);
+    assert.match(quote.signalLine, /^Clearest signal: /);
     assert.equal(Boolean(quote.quote), true);
     assert.equal(Boolean(quote.sowhat), true);
     assert.equal(quote.proof?.length, 3);

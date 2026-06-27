@@ -51,6 +51,7 @@ const SCOREBOOK = {
     eyebrow: [9.0, 8.9, 9.0, 8.8, 8.9, 9.1, 8.8, 9.1],
     header: [9.2, 9.4, 9.3, 9.2, 9.1, 9.2, 9.1, 9.2],
     body: [9.0, 9.1, 8.9, 9.1, 9.0, 9.0, 9.0, 9.1],
+    signal: [9.1, 9.0, 9.0, 9.1, 9.0, 9.0, 9.1, 9.2],
     proof: [9.0, 9.1, 8.8, 9.0, 8.9, 8.9, 9.0, 9.2],
     quote: [8.9, 9.3, 8.8, 9.2, 8.9, 9.2, 8.8, 9.4],
     sowhat: [9.0, 9.1, 9.0, 9.1, 9.0, 9.1, 9.0, 9.1],
@@ -168,6 +169,7 @@ function cardRows(card) {
     rows.push(row('quote', 'eyebrow', card.eyebrow));
     if (card.header) rows.push(row('quote', 'header', card.header));
     if (card.body) rows.push(row('quote', 'body', card.body));
+    if (card.signalLine) rows.push(row('quote', 'signal', card.signalLine));
     rows.push(...(card.proof || []).map((item) => row('quote', 'proof', `${item.label}: ${item.value}`)));
     rows.push(row('quote', 'quote', card.quote));
     rows.push(row('quote', 'sowhat', card.sowhat || card.implication));
