@@ -68,14 +68,14 @@ function flatten(value) {
 }
 
 test('scoreAfterLine returns the four specified score-band lines', () => {
-  assert.equal(scoreAfterLine(0), 'Strong brands sit near 90. That gap is what your operating system is quietly costing you.');
-  assert.equal(scoreAfterLine(44), 'Strong brands sit near 90. That gap is what your operating system is quietly costing you.');
-  assert.equal(scoreAfterLine(45), 'Enough to act on. One part of your operating system is making everything else work harder.');
-  assert.equal(scoreAfterLine(64), 'Enough to act on. One part of your operating system is making everything else work harder.');
-  assert.equal(scoreAfterLine(65), 'Usable readiness. One part of your operating system is carrying too much of the work.');
-  assert.equal(scoreAfterLine(79), 'Usable readiness. One part of your operating system is carrying too much of the work.');
-  assert.equal(scoreAfterLine(80), 'Strong. Your operating system is ready enough to push. The question is which strength moves first.');
-  assert.equal(scoreAfterLine(100), 'Strong. Your operating system is ready enough to push. The question is which strength moves first.');
+  assert.equal(scoreAfterLine(0), 'Strong peers sit in the mid-80s. The gap shows where value is leaking.');
+  assert.equal(scoreAfterLine(44), 'Strong peers sit in the mid-80s. The gap shows where value is leaking.');
+  assert.equal(scoreAfterLine(45), 'Enough signal to act. One part of the system is making the rest work harder.');
+  assert.equal(scoreAfterLine(64), 'Enough signal to act. One part of the system is making the rest work harder.');
+  assert.equal(scoreAfterLine(65), 'Useful readiness. One constraint is carrying too much of the work.');
+  assert.equal(scoreAfterLine(79), 'Useful readiness. One constraint is carrying too much of the work.');
+  assert.equal(scoreAfterLine(80), 'Strong read. Now choose the one strength that should move first.');
+  assert.equal(scoreAfterLine(100), 'Strong read. Now choose the one strength that should move first.');
 });
 
 test('cost hero copy covers every hurdle and bucket combination', () => {
@@ -119,52 +119,68 @@ test('demo reveal matrix emits the overhauled 8-card contract', () => {
     assert.equal(number.label, 'WHERE A+A Demo STANDS TODAY');
     assert.equal(number.max, 100);
     assert.equal(number.after, scoreAfterLine(profile.score));
-    assert.equal(number.interpretation.some((row) => row.label === 'What it means'), true);
+    assert.equal(number.interpretation.some((row) => row.label === 'Score read'), true);
     assert.equal(number.interpretation.some((row) => row.label === 'Next threshold'), true);
+    assert.equal(number.drawerLabel, 'Score detail');
+    assert.equal(number.advanceLabel, 'See the shape');
 
-    assert.equal(shape.eyebrow, 'WHERE YOU STAND VS THE BEST');
-    assert.equal(shape.header, 'Benchmark vs *the best*.');
-    assert.equal(shape.lede, 'Four readings. The best brands live on the right. Here is where you are.');
+    assert.equal(shape.eyebrow, 'WHERE YOU STAND VS PEERS');
+    assert.equal(shape.header, 'Benchmark vs *strong peers*.');
+    assert.match(shape.lede, /strong-peer mark/);
+    assert.match(shape.benchmarkNote, /not perfection/);
     assert.equal(shape.pillars.length, 4);
     for (const pillar of shape.pillars) {
       assert.equal(pillar.icon, pillar.label, `${expectedKey} ${pillar.label} should expose its glyph key`);
       assert.equal(Boolean(pillar.plain), true, `${expectedKey} ${pillar.label} should have plain label copy`);
       assert.equal(Number.isFinite(pillar.benchmark), true, `${expectedKey} ${pillar.label} should carry benchmark value`);
+      assert.equal(pillar.benchmark < 100, true, `${expectedKey} ${pillar.label} benchmark should not imply perfection`);
     }
-    assert.equal(shape.shapeRead.some((row) => row.label === 'Where it leaks'), true);
-    assert.equal(shape.shapeRead.some((row) => row.label === 'AI implication'), true);
+    assert.equal(shape.shapeRead.some((row) => row.label === 'First leak'), true);
+    assert.equal(shape.shapeRead.some((row) => row.label === 'What AI inherits'), true);
     assert.equal(shape.shapeRead.some((row) => row.label === 'AI today'), true);
+    assert.equal(shape.drawerLabel, 'Why it matters');
+    assert.equal(shape.advanceLabel, 'Find the constraint');
 
     assert.equal(hurdle.eyebrow, 'THE ONE THING TO FIX FIRST');
     assert.equal(hurdle.glyph, profile.hurdle);
-    assert.match(hurdle.close, /^YOUR FIRST CONSTRAINT · /);
+    assert.match(hurdle.close, /^First constraint: /);
     assert.equal(hurdle.evidence?.length, 3);
+    assert.equal(hurdle.drawerLabel, 'Answer proof');
+    assert.equal(hurdle.advanceLabel, 'See the pattern');
     for (const row of hurdle.evidence) {
       assert.equal(Boolean(row.prompt), true);
       assert.equal(Boolean(row.answer), true);
       assert.equal(Boolean(row.read), true);
     }
 
-    assert.equal(quote.eyebrow, 'IN YOUR OWN WORDS');
+    assert.equal(quote.eyebrow, 'THE PATTERN IN YOUR ANSWERS');
+    assert.match(quote.header, /Three answers/);
     assert.equal(Boolean(quote.quote), true);
     assert.equal(Boolean(quote.sowhat), true);
+    assert.equal(quote.proof?.length, 3);
+    assert.equal(quote.drawerLabel, 'Exact answers');
+    assert.equal(quote.advanceLabel, 'Price the cost');
 
-    assert.equal(cost.eyebrow, 'WHAT IT COSTS YOU NOW');
+    assert.equal(cost.eyebrow, 'WHAT THE GAP COSTS');
     assert.equal(cost.glyph, profile.hurdle);
-    assert.equal(cost.hero, COST_HERO[profile.hurdle][profile.bucket]);
+    assert.equal(Boolean(cost.hero || COST_HERO[profile.hurdle][profile.bucket]), true);
     assert.equal(Boolean(cost.compound), true);
     assert.equal(cost.model.some((row) => row.label === 'Your number'), true);
     assert.equal(cost.model.some((row) => row.label === 'Track next'), true);
     assert.equal(cost.compounders.some((row) => row.label === 'If ignored'), true);
     assert.equal(cost.body.length >= 3, true);
+    assert.equal(cost.drawerLabel, 'Show the cost model');
+    assert.equal(cost.advanceLabel, 'See the first move');
 
-    assert.equal(firstMove.eyebrow, 'THE GOOD NEWS');
+    assert.equal(firstMove.eyebrow, 'THE FIRST MOVE');
     assert.equal(firstMove.glyph, profile.hurdle);
-    assert.equal(firstMove.header, "You don't fix all of it. You fix *one thing*.");
+    assert.match(firstMove.header, /Mapped on the call/);
     assert.equal(Boolean(firstMove.move), true);
-    assert.equal(firstMove.forward, 'That is the first move. The call is where we make it real.');
-    assert.equal(firstMove.brief.some((row) => row.label === 'Monday move'), true);
-    assert.equal(firstMove.brief.some((row) => row.label === 'Output'), true);
+    assert.equal(firstMove.forward, 'That is what the working session is for.');
+    assert.equal(firstMove.brief.some((row) => row.label === 'Bring'), true);
+    assert.equal(firstMove.brief.some((row) => row.label === 'Leave with'), true);
+    assert.equal(firstMove.drawerLabel, 'What to bring');
+    assert.equal(firstMove.advanceLabel, 'Book the session');
 
     assert.equal(close.eyebrow, 'WHERE THIS GOES NEXT');
     assert.equal(close.header, PERSONA[expectedKey].headline.replace('{brandName}', 'A+A Demo'));

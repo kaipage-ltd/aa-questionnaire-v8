@@ -232,8 +232,8 @@ function coverPage(ctx, meta, profile) {
 function shapePage(ctx, meta, profile) {
   return `<section class="sheet">
   ${header('The operating shape')}
-  <div class="eyebrow mono">Benchmark vs the best</div>
-  <h1 class="title">Four readings. The best brands sit on the right.</h1>
+  <div class="eyebrow mono">Benchmark vs strong peers</div>
+  <h1 class="title">Four readings against the strong-peer mark.</h1>
   <p class="lede">${esc(ctx.shapeBody)}</p>
 
   <div style="margin-top:9mm; border-top:1px solid var(--rule);">
@@ -265,10 +265,10 @@ function shapePage(ctx, meta, profile) {
 function evidencePage(ctx, meta, profile) {
   const evidence = (ctx.evidence.length ? ctx.evidence : ctx.receipts.map((text) => ({ read: text }))).slice(0, 3);
   return `<section class="sheet">
-  ${header('Evidence')}
-  <div class="eyebrow mono">Evidence behind the read</div>
-  <h1 class="title">We are not guessing. You told us this.</h1>
-  <p class="lede">${esc(ctx.receiptTail)}</p>
+  ${header('Pattern')}
+  <div class="eyebrow mono">The pattern in your answers</div>
+  <h1 class="title">${esc(ctx.patternHeader || 'Three answers. One pattern.')}</h1>
+  <p class="lede">${esc(ctx.patternBody || ctx.receiptTail)}</p>
 
   <div style="margin-top:8mm; border-top:1px solid var(--rule);">
     ${evidence.map((receipt, index) => `
@@ -283,9 +283,9 @@ function evidencePage(ctx, meta, profile) {
   </div>
 
   <div class="dark-band" style="margin-top:auto; margin-bottom:10mm; padding:11mm 10mm;">
-    <div class="mono" style="font-size:7.4px;">The line we keep returning to</div>
+    <div class="mono" style="font-size:7.4px;">The clearest line</div>
     <div style="font-size:28px; line-height:1.28; font-style:italic; margin-top:4.5mm;">&ldquo;${esc(ctx.quoteText)}&rdquo;</div>
-    ${ctx.quoteImplication ? `<div style="font-size:12.5px; line-height:1.5; color:#d8d0be; margin-top:5mm; max-width:155mm;">${esc(ctx.quoteImplication)}</div>` : ''}
+    ${ctx.patternSoWhat ? `<div style="font-size:12.5px; line-height:1.5; color:#d8d0be; margin-top:5mm; max-width:155mm;">${esc(ctx.patternSoWhat)}</div>` : ''}
   </div>
   ${footer(meta, profile, 3)}
 </section>`;
@@ -295,7 +295,7 @@ function costPage(ctx, meta, profile) {
   const [lead, ...scene] = ctx.costLines;
   return `<section class="sheet">
   ${header('The cost')}
-  <div class="eyebrow mono">What it is costing</div>
+  <div class="eyebrow mono">What the gap costs</div>
   <h1 class="title">${esc(lead || 'Picture the cost inside one real operating cycle.')}</h1>
   <div style="margin-top:7mm; max-width:160mm;">
     ${scene.map((line, index) => `<p style="font-size:${index === 0 ? '16.5px' : '14px'}; line-height:1.52; color:${index === 0 ? 'var(--ink)' : 'var(--ink-soft)'}; margin-top:${index === 0 ? '0' : '4mm'};">${esc(line)}</p>`).join('')}
@@ -318,9 +318,9 @@ function firstMovePage(ctx, meta, profile) {
   const steps = firstMoveSteps(ctx);
   return `<section class="sheet">
   ${header('First move')}
-  <div class="eyebrow mono">Start Monday</div>
-  <h1 class="title">The first move is not to fix everything.</h1>
-  <p class="lede">It is to find the one decision path where the constraint is already costing time, confidence or margin.</p>
+  <div class="eyebrow mono">The working session</div>
+  <h1 class="title">${esc(ctx.firstMoveHeader || 'One live decision. Mapped on the call.')}</h1>
+  <p class="lede">${esc(ctx.firstMoveLine || 'Bring the live decision where the pattern shows up. The call turns it into the first operating rule.')}</p>
 
   <div style="margin-top:8mm; border-top:1px solid var(--rule);">
     ${steps.map((step, index) => `
@@ -353,9 +353,9 @@ function row(label, value) {
 function firstMoveSteps(ctx) {
   if (ctx.actionPlan?.artefactName) {
     return [
-      { title: 'Name the artefact.', body: `${ctx.actionPlan.artefactName}: ${ctx.actionPlan.whyThisFirst}` },
-      { title: 'Map Monday.', body: ctx.actionPlan.mondayMove },
-      { title: 'Avoid drift.', body: ctx.actionPlan.avoidForNow }
+      { title: 'Bring it.', body: ctx.actionPlan.whatToBringToCall },
+      { title: 'Map it.', body: ctx.actionPlan.mondayMove },
+      { title: 'Leave with the rule.', body: `${ctx.actionPlan.artefactName}: ${ctx.actionPlan.whyThisFirst}` }
     ];
   }
   const lines = ctx.firstMoveLines.filter(Boolean);
@@ -394,7 +394,8 @@ export function profileContext(profile, insights) {
   const widening = cost;
   const move = cards.find((card) => card.type === 'firstMove');
   const firstMoveLines = arrayText(move?.body);
-  const costLines = arrayText(cost?.body);
+  const costSceneLines = arrayText(cost?.body);
+  const costLines = [cost?.hero, cost?.compound, ...costSceneLines].map((line) => String(line || '').trim()).filter(Boolean);
   const receipts = arrayText(receiptsCard?.receipts).length
     ? arrayText(receiptsCard?.receipts)
     : ['The business has shown us where the drag sits.'];
@@ -413,7 +414,7 @@ export function profileContext(profile, insights) {
     hurdleValue: hurdlePillar.value,
     gap,
     shapeBody: shape?.body || 'The value is not the score on its own. It is the operating gap behind it.',
-    aiImplication: rowValue(shape?.shapeRead, 'AI implication'),
+    aiImplication: rowValue(shape?.shapeRead, 'What AI inherits'),
     aiLeverage: rowValue(shape?.shapeRead, 'AI today'),
     costModel: Array.isArray(cost?.model) ? cost.model : [],
     ignoredCost: rowValue(widening?.compounders, 'If ignored'),
@@ -421,12 +422,16 @@ export function profileContext(profile, insights) {
     receipts,
     evidence,
     receiptTail: receiptsCard?.tail || 'Three answers. One pattern. The business has shown us where the drag sits.',
+    patternHeader: quoteCard?.header || '',
+    patternBody: quoteCard?.body || '',
+    patternSoWhat: quoteCard?.sowhat || '',
     quoteText: quoteCard?.quote || summary.quote?.text || '',
     quoteImplication: quoteCard?.implication || '',
     costLines: costLines.length ? costLines : ['Picture the cost inside one real operating cycle.'],
     actionPlan,
     firstMoveLines,
-    firstMoveLine: actionPlan.mondayMove || firstMoveLines[0] || `Inspect the ${profile.hurdle.toLowerCase()} gap first.`,
+    firstMoveHeader: move?.header || '',
+    firstMoveLine: move?.move || actionPlan.mondayMove || firstMoveLines[0] || `Inspect the ${profile.hurdle.toLowerCase()} gap first.`,
     fitBody: actionPlan.artefactName
       ? `Thirty minutes with our CEO. Not a pitch. Bring one live ${profile.hurdle} problem and pressure-test the ${actionPlan.artefactName}: what to map, what to ignore and what to close first.`
       : 'Thirty minutes with our CEO. Not a pitch. Bring the weak point to the call and pressure-test the first move worth making.',

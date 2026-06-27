@@ -251,7 +251,8 @@ export function deriveRevealInsights(answers, profile, context = {}) {
       lede: fill(STATIC.card1.lede, interpolateContext),
       body: fill(STATIC.card1.body, interpolateContext),
       contextLine: turnContextLine(answers),
-      basis: diagnosticBasis(answers, profile)
+      basis: diagnosticBasis(answers, profile),
+      advanceLabel: 'Show my score'
     },
     {
       type: 'number',
@@ -260,14 +261,16 @@ export function deriveRevealInsights(answers, profile, context = {}) {
       score: profile.score,
       max: 100,
       interpretation: scoreInterpretation({ profile, strongest, hurdle: hurdlePillar, gap, highEvenShape, balancedEvenShape }),
-      after: scoreAfterLine(profile.score)
+      after: scoreAfterLine(profile.score),
+      drawerLabel: 'Score detail',
+      advanceLabel: 'See the shape'
     },
     {
       type: 'shape',
       beat: 'Problem',
-      eyebrow: 'WHERE YOU STAND VS THE BEST',
-      header: 'Benchmark vs *the best*.',
-      lede: 'Four readings. The best brands live on the right. Here is where you are.',
+      eyebrow: 'WHERE YOU STAND VS PEERS',
+      header: 'Benchmark vs *strong peers*.',
+      lede: 'Each line shows you against the strong-peer mark. Your number sits on the line. The mark is on the right.',
       pillars: pillars.map((pillar) => ({
         ...pillar,
         role: pillar.label === profile.hurdle ? 'hurdle' : pillar.label === strongest.label ? 'strong' : 'normal',
@@ -277,8 +280,11 @@ export function deriveRevealInsights(answers, profile, context = {}) {
       })),
       benchmark: BENCHMARK,
       benchmarkLabel: BENCHMARK_LABEL,
+      benchmarkNote: 'The mark is not perfection. It is where the operating system needs to hold when AI starts touching real decisions.',
       shapeRead: shapeRead({ strongest, hurdle: hurdlePillar, gap, highEvenShape, balancedEvenShape, leverage: leverageReality(answers, profile) }),
-      body: shapeBody({ strongest, hurdle: hurdlePillar, gap, highEvenShape, balancedEvenShape })
+      body: shapeBody({ strongest, hurdle: hurdlePillar, gap, highEvenShape, balancedEvenShape }),
+      drawerLabel: 'Why it matters',
+      advanceLabel: 'Find the constraint'
     },
     {
       type: 'hurdle',
@@ -289,7 +295,9 @@ export function deriveRevealInsights(answers, profile, context = {}) {
       // Folded receipts: shown only in the optional detail drawer.
       receipts: receiptImplications,
       evidence,
-      tail: receiptTailLine
+      tail: receiptTailLine,
+      drawerLabel: 'Answer proof',
+      advanceLabel: 'See the pattern'
     },
     {
       type: 'quote',
@@ -298,27 +306,34 @@ export function deriveRevealInsights(answers, profile, context = {}) {
       dark: true,
       eyebrow: STATIC.card6.eyebrow,
       lead: STATIC.card6.lead,
+      header: patternHeader(profile.hurdle),
+      body: patternBody(profile, evidence),
       quote: quote.text,
-      sowhat: QUOTE_SOWHAT[quotePillar(quote.id)] || quoteImplication(quote, highEvenShape),
-      implication: quoteImplication(quote, highEvenShape)
+      proof: patternProofRows(evidence),
+      sowhat: patternSoWhat(profile.hurdle),
+      implication: quoteImplication(quote, highEvenShape),
+      drawerLabel: 'Exact answers',
+      advanceLabel: 'Price the cost'
     },
     {
       type: 'cost',
       beat: 'Agitation',
       eyebrow: STATIC.card9.eyebrow,
-      hero: COST_HERO[profile.hurdle]?.[profile.bucket] || '',
+      hero: costHero(profile, weakAnswers) || COST_HERO[profile.hurdle]?.[profile.bucket] || '',
       compound: COST_COMPOUND[profile.bucket] || '',
       glyph: profile.hurdle,
       model: costModel(profile),
       // Folded widening: the "If ignored" escalation rides on the cost card.
       compounders: compoundingModel(profile),
-      body: costSceneBody(answers, profile, interpolateContext, quote)
+      body: costSceneBody(answers, profile, interpolateContext, quote),
+      drawerLabel: 'Show the cost model',
+      advanceLabel: 'See the first move'
     },
     {
       type: 'firstMove',
       beat: 'Promise',
       eyebrow: STATIC.card12.eyebrow,
-      header: "You don't fix all of it. You fix *one thing*.",
+      header: firstMoveHeader(profile.hurdle),
       move: MOVE_BODY[profile.hurdle] || '',
       forward: MONDAY_FORWARD,
       glyph: profile.hurdle,
@@ -326,7 +341,9 @@ export function deriveRevealInsights(answers, profile, context = {}) {
       // Folded surface: the one "what good looks like" promise frames the move.
       promise: surfaceLines.find((line) => /What good looks like/i.test(line)) || '',
       brief: firstMoveBrief({ actionPlan, hurdle: profile.hurdle, quote }),
-      body: firstMoveBody({ actionPlan, hurdle: profile.hurdle, quote })
+      body: firstMoveBody({ actionPlan, hurdle: profile.hurdle, quote }),
+      drawerLabel: 'What to bring',
+      advanceLabel: 'Book the session'
     },
     {
       type: 'close',
@@ -582,10 +599,10 @@ function blockerCalibration({ orderedPicks, hurdle, noneSelected, convergent, na
 
 function scoreInterpretation({ profile, strongest, hurdle, gap, highEvenShape, balancedEvenShape }) {
   const scoreRead =
-    profile.score >= 80 ? 'Strong enough to become *advantage*, if the first constraint does not carry forward.' :
-    profile.score >= 65 ? 'Commercially usable readiness, with *one operating constraint* doing too much work.' :
-    profile.score >= 45 ? 'Enough signal to act. Your operating system is still asking people to cover for *unclear handoffs*.' :
-    'The score is useful because it names *the first constraint* cleanly.';
+    profile.score >= 80 ? 'Strong enough to push, if the first constraint does not travel forward.' :
+    profile.score >= 65 ? 'Useful readiness, with *one constraint* carrying too much of the work.' :
+    profile.score >= 45 ? 'Enough signal to act. One part of the system is making the rest work harder.' :
+    'Low enough to matter. Clear enough to show *where to start*.';
   const strength = highEvenShape
     ? 'All four readings are high. The work is to choose which part of the system should carry more weight next.'
     : balancedEvenShape
@@ -601,18 +618,18 @@ function scoreInterpretation({ profile, strongest, hurdle, gap, highEvenShape, b
   }[hurdle.label] || 'The next threshold is one repeated decision made cleaner before more AI work is added.';
 
   return [
-    { label: 'What it means', value: scoreRead },
-    { label: 'Ready where', value: strength },
-    { label: 'Exposed where', value: exposure },
+    { label: 'Score read', value: scoreRead },
+    { label: 'Strongest signal', value: strength },
+    { label: 'First leak', value: exposure },
     { label: 'Next threshold', value: threshold }
   ];
 }
 
 export function scoreAfterLine(score) {
-  if (score < 45) return 'Strong brands sit near 90. That gap is what your operating system is quietly costing you.';
-  if (score < 65) return 'Enough to act on. One part of your operating system is making everything else work harder.';
-  if (score < 80) return 'Usable readiness. One part of your operating system is carrying too much of the work.';
-  return 'Strong. Your operating system is ready enough to push. The question is which strength moves first.';
+  if (score < 45) return 'Strong peers sit in the mid-80s. The gap shows where value is leaking.';
+  if (score < 65) return 'Enough signal to act. One part of the system is making the rest work harder.';
+  if (score < 80) return 'Useful readiness. One constraint is carrying too much of the work.';
+  return 'Strong read. Now choose the one strength that should move first.';
 }
 
 function shapeRead({ hurdle, gap, highEvenShape, balancedEvenShape, leverage }) {
@@ -621,7 +638,7 @@ function shapeRead({ hurdle, gap, highEvenShape, balancedEvenShape, leverage }) 
   // forward into what AI inherits from it.
   const constraint = highEvenShape || balancedEvenShape || gap <= 6
     ? `${hurdle.label} is the first place to sharpen before AI leans on it.`
-    : `${hurdle.label} is the reading the others are quietly waiting on. Until it lifts, the stronger readings cannot fully pay off.`;
+    : `${hurdle.label} is the score holding the others back. Until it improves, the stronger scores cannot fully turn into value.`;
   const aiImplication = {
     Visibility: 'AI inherits the same trust problem unless the number, source, owner and decision rule are explicit.',
     Velocity: 'AI inherits the same delay unless the signal, owner, permission and action path are connected.',
@@ -629,9 +646,9 @@ function shapeRead({ hurdle, gap, highEvenShape, balancedEvenShape, leverage }) 
   }[hurdle.label] || 'AI inherits the first operating constraint unless the repeated decision path is made cleaner.';
 
   return [
-    { label: 'Where it leaks', value: constraint },
-    { label: 'AI implication', value: aiImplication },
-    { label: 'AI today', value: leverage || 'AI leverage depends on the first operating constraint being made cleaner.' }
+    { label: 'First leak', value: constraint },
+    { label: 'What AI inherits', value: aiImplication },
+    { label: 'AI today', value: leverage || 'AI depends on the first operating constraint being made cleaner.' }
   ];
 }
 
@@ -682,11 +699,82 @@ function shapeBody({ strongest, hurdle, gap, highEvenShape, balancedEvenShape })
   if (strongest.label === hurdle.label || gap <= 6) {
     return `${weakLine} The scores are close, which means the profile is not about one dramatic collapse. It is about the first constraint to remove.`;
   }
-  return `${strongLine} But ${hurdle.label} is at ${hurdle.value}, a ${gap}-point gap. Hold that gap. It is the whole story.`;
+  return `${strongLine} ${hurdle.label} is at ${hurdle.value}, a ${gap}-point gap. That is the first place value leaks.`;
 }
 
 function hurdleCard(hurdle, highEvenShape, balancedEvenShape) {
   return HURDLE_COPY[hurdle].hurdleCard;
+}
+
+function patternHeader(hurdle) {
+  return {
+    Visibility: 'Three answers. *One trust leak*.',
+    Velocity: 'Three answers. *One waiting point*.',
+    Coherence: 'Three answers. *One split picture*.'
+  }[hurdle] || 'Three answers. *One pattern*.';
+}
+
+function patternBody(profile, evidence) {
+  const stageLine = {
+    Clarity: 'That pulls senior people back into calls the system should make clean.',
+    Traction: 'That burns momentum while growth is still expensive to win.',
+    Scale: 'That slows confidence, capital and margin choices.'
+  }[profile.bucket] || 'That is where the next useful move starts.';
+  const mechanism = {
+    Visibility: 'The weak point is not more data. It is trust: which number counts, who owns it and what it is allowed to change.',
+    Velocity: 'The weak point is not effort. It is the wait after signal: where the call stalls and who can release it.',
+    Coherence: 'The weak point is not team quality. It is the shared picture: which source wins before the room starts debating.'
+  }[profile.hurdle] || 'The weak point is the repeated decision path.';
+  const proof = evidence?.[0]?.read ? `Your clearest signal: ${evidence[0].read}` : '';
+  return [mechanism, stageLine, proof].filter(Boolean).join(' ');
+}
+
+function patternProofRows(evidence) {
+  return (evidence || []).slice(0, 3).map((row) => ({
+    label: row.prompt,
+    value: row.read,
+    answer: row.answer
+  }));
+}
+
+function patternSoWhat(hurdle) {
+  return QUOTE_SOWHAT[hurdle] || 'The pattern shows where the first useful move starts.';
+}
+
+function firstMoveHeader(hurdle) {
+  return {
+    Visibility: 'One trusted number. *Mapped on the call*.',
+    Velocity: 'One late decision. *Mapped on the call*.',
+    Coherence: 'One split decision. *Mapped on the call*.'
+  }[hurdle] || 'One live decision. *Mapped on the call*.';
+}
+
+function costHero(profile, weakAnswers) {
+  const answers = new Map((weakAnswers || []).map(({ id, index }) => [`${id}_${index}`, true]));
+  const has = (key) => answers.has(key);
+  if (profile.hurdle === 'Visibility') {
+    if (has('Q3_3')) return 'Growth without a *payback number*.';
+    if (has('Q3_2')) return 'Ad return is hiding the *payback truth*.';
+    if (has('Q2_3')) return 'Revenue is there. The *picture* is not.';
+    if (has('Q2_2')) return 'Top line moves. The *truth* may not.';
+    if (has('Q5_3')) return 'Signal only moves when *you ask*.';
+  }
+  if (profile.hurdle === 'Velocity') {
+    if (has('Q7_1')) return 'The signal waits *one to two weeks*.';
+    if (has('Q7_2')) return 'The window closes before *analysis* does.';
+    if (has('Q7_3')) return 'Obvious signals wait for *weeks*.';
+    if (has('Q8_2')) return 'The decision dies in *threads*.';
+    if (has('Q8_3')) return 'Drift is making the *call*.';
+    if (has('Q6_3')) return 'Every repeat feels like the *first time*.';
+  }
+  if (profile.hurdle === 'Coherence') {
+    if (has('Q10_3')) return 'Two pictures enter the *same room*.';
+    if (has('Q13_3')) return 'Everyone is right. The *P&L* pays.';
+    if (has('Q12_3')) return 'When people leave, the *system* forgets.';
+    if (has('Q11_3')) return 'Every question becomes a *project*.';
+    if (has('Q10_2')) return 'The room starts by *reconciling* facts.';
+  }
+  return '';
 }
 
 function receiptTail(hurdle, highEvenShape, balancedEvenShape) {
@@ -960,10 +1048,9 @@ function firstMoveBody({ actionPlan, hurdle, quote }) {
   const proof = firstMoveProof(hurdle);
 
   return [
-    actionPlan.headline,
-    `Use this answer as the clue, not the whole diagnosis: "${quote.text}"`,
+    actionPlan.whatToBringToCall,
     actionPlan.mondayMove,
-    `The output should tell you ${proof}.`,
+    `You leave with the operating rule behind ${proof}.`,
     `Avoid for now: ${actionPlan.avoidForNow}`
   ];
 }
@@ -972,9 +1059,9 @@ function firstMoveBrief({ actionPlan, hurdle, quote }) {
   const proof = firstMoveProof(hurdle);
   // No Artefact row: the card headline already names it.
   return [
-    { label: 'Clue from your answer', value: quote.text },
-    { label: 'Monday move', value: actionPlan.mondayMove },
-    { label: 'Output', value: `It should show ${proof}.` },
+    { label: 'Bring', value: actionPlan.whatToBringToCall },
+    { label: 'Map', value: actionPlan.mondayMove },
+    { label: 'Leave with', value: `The operating rule behind ${proof}.` },
     { label: 'Avoid', value: actionPlan.avoidForNow }
   ];
 }

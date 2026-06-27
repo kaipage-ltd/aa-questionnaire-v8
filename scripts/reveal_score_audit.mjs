@@ -49,8 +49,12 @@ const SCOREBOOK = {
   },
   quote: {
     eyebrow: [9.0, 8.9, 9.0, 8.8, 8.9, 9.1, 8.8, 9.1],
+    header: [9.2, 9.4, 9.3, 9.2, 9.1, 9.2, 9.1, 9.2],
+    body: [9.0, 9.1, 8.9, 9.1, 9.0, 9.0, 9.0, 9.1],
+    proof: [9.0, 9.1, 8.8, 9.0, 8.9, 8.9, 9.0, 9.2],
     quote: [8.9, 9.3, 8.8, 9.2, 8.9, 9.2, 8.8, 9.4],
     sowhat: [9.0, 9.1, 9.0, 9.1, 9.0, 9.1, 9.0, 9.1],
+    drawer: [8.8, 8.7, 8.7, 8.8, 8.9, 8.7, 8.9, 9.0],
     timing: [9.2, 9.1, 9.3, 8.8, 8.9, 9.0, 8.8, 9.2],
     advance: [9.3, 9.0, 9.4, 8.6, 8.8, 8.8, 8.6, 9.4]
   },
@@ -131,7 +135,7 @@ function cardRows(card) {
     rows.push(row('turn', 'nameLine', card.nameLine));
     rows.push(row('turn', 'lede', card.lede));
     rows.push(row('turn', 'body', card.body));
-    rows.push(row('turn', 'advance', 'Continue'));
+    rows.push(row('turn', 'advance', card.advanceLabel || 'Continue'));
   }
   if (card.type === 'number') {
     rows.push(row('number', 'label', card.label));
@@ -140,7 +144,7 @@ function cardRows(card) {
     rows.push(row('number', 'after', card.after));
     rows.push(...(card.interpretation || []).map((item) => row('number', 'drawer', `${item.label}: ${item.value}`)));
     rows.push(row('number', 'timing', 'After-line appears after 250ms, independent of count-up'));
-    rows.push(row('number', 'advance', 'Continue'));
+    rows.push(row('number', 'advance', card.advanceLabel || 'Continue'));
   }
   if (card.type === 'shape') {
     rows.push(row('shape', 'eyebrow', card.eyebrow));
@@ -149,7 +153,7 @@ function cardRows(card) {
     rows.push(...(card.pillars || []).map((pillar) => row('shape', 'bar', `${pillar.icon} ${pillar.label}: ${pillar.value} vs ${pillar.benchmark}. ${pillar.plain}`)));
     rows.push(row('shape', 'benchmark', 'Right-side benchmark marker with respondent value over fill'));
     rows.push(...(card.shapeRead || []).map((item) => row('shape', 'drawer', `${item.label}: ${item.value}`)));
-    rows.push(row('shape', 'advance', 'Continue'));
+    rows.push(row('shape', 'advance', card.advanceLabel || 'Continue'));
   }
   if (card.type === 'hurdle') {
     rows.push(row('hurdle', 'eyebrow', card.eyebrow));
@@ -158,14 +162,18 @@ function cardRows(card) {
     rows.push(row('hurdle', 'body', card.body));
     rows.push(row('hurdle', 'tag', card.close));
     rows.push(...(card.evidence || []).map((item) => row('hurdle', 'drawer', `${item.prompt}: ${item.answer}. ${item.read}`)));
-    rows.push(row('hurdle', 'advance', 'Continue'));
+    rows.push(row('hurdle', 'advance', card.advanceLabel || 'Continue'));
   }
   if (card.type === 'quote') {
     rows.push(row('quote', 'eyebrow', card.eyebrow));
+    if (card.header) rows.push(row('quote', 'header', card.header));
+    if (card.body) rows.push(row('quote', 'body', card.body));
+    rows.push(...(card.proof || []).map((item) => row('quote', 'proof', `${item.label}: ${item.value}`)));
     rows.push(row('quote', 'quote', card.quote));
     rows.push(row('quote', 'sowhat', card.sowhat || card.implication));
+    rows.push(...(card.proof || []).map((item) => row('quote', 'drawer', `${item.label}: ${item.answer}. ${item.value}`)));
     rows.push(row('quote', 'timing', 'Quote word stagger 300ms plus 40ms per word'));
-    rows.push(row('quote', 'advance', 'Continue'));
+    rows.push(row('quote', 'advance', card.advanceLabel || 'Continue'));
   }
   if (card.type === 'cost') {
     rows.push(row('cost', 'layout', 'Split finale layout: commercial cost on the left, one bill line on the right, receipts in the drawer'));
@@ -176,7 +184,7 @@ function cardRows(card) {
     rows.push(...(card.body || []).map((line) => row('cost', 'drawer', line)));
     rows.push(...(card.model || []).map((item) => row('cost', 'drawer', `${item.label}: ${item.value}`)));
     rows.push(...(card.compounders || []).map((item) => row('cost', 'drawer', `${item.label}: ${item.value}`)));
-    rows.push(row('cost', 'advance', 'Continue'));
+    rows.push(row('cost', 'advance', card.advanceLabel || 'Continue'));
   }
   if (card.type === 'firstMove') {
     rows.push(row('firstMove', 'layout', 'Symbol-led finale layout with one move and a three-step rail'));
@@ -187,7 +195,7 @@ function cardRows(card) {
     rows.push(row('firstMove', 'forward', card.forward));
     rows.push(row('firstMove', 'rail', `Three-step move rail for ${card.glyph}`));
     rows.push(...(card.brief || []).map((item) => row('firstMove', 'drawer', `${item.label}: ${item.value}`)));
-    rows.push(row('firstMove', 'advance', 'Continue'));
+    rows.push(row('firstMove', 'advance', card.advanceLabel || 'Continue'));
   }
   if (card.type === 'close') {
     rows.push(row('close', 'layout', 'Focused booking layout with no visible output drawer'));

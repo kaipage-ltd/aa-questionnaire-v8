@@ -55,14 +55,21 @@ test('shape card uses a benchmark tick and respondent value over the fill', () =
 });
 
 test('drawers hold detail instead of default-view dense copy', () => {
-  assert.match(playerHtml, /buildDrawer\('What this means'/, 'score interpretation should be in a drawer');
-  assert.match(playerHtml, /buildDrawer\('Read the shape'/, 'shape read should be in a drawer');
-  assert.match(playerHtml, /buildDrawer\('Show the answers behind this'/, 'hurdle evidence should be in a drawer');
-  assert.match(playerHtml, /buildDrawer\('See the week behind this'/, 'cost scene should be in a drawer');
+  assert.match(playerHtml, /card\.drawerLabel \|\| 'Score detail'/, 'score interpretation should be in a labelled drawer');
+  assert.match(playerHtml, /card\.drawerLabel \|\| 'Why it matters'/, 'shape read should be in a labelled drawer');
+  assert.match(playerHtml, /card\.drawerLabel \|\| 'Answer proof'/, 'hurdle evidence should be in a labelled drawer');
+  assert.match(playerHtml, /card\.drawerLabel \|\| 'Show the cost model'/, 'cost scene should be in a labelled drawer');
   assert.doesNotMatch(playerHtml, /cost-cascade/, 'cost receipts must not ship in the default finale view');
-  assert.match(playerHtml, /buildDrawer\('The exact first move'/, 'first move brief should be in a drawer');
+  assert.match(playerHtml, /card\.drawerLabel \|\| 'What to bring'/, 'first move brief should be in a labelled drawer');
   assert.doesNotMatch(playerHtml, /buildDrawer\('What you walk out with'/, 'close slide must not carry a visible detail drawer');
   assert.doesNotMatch(playerHtml, /From your answers/, 'default hurdle view must not ship the anxious support label');
+});
+
+test('pattern slide replaces the old quote-only beat', () => {
+  assert.match(playerHtml, /buildPatternProof/, 'pattern slide must render proof rows');
+  assert.match(playerHtml, /buildExactAnswers/, 'pattern slide must keep exact answers in a drawer');
+  assert.match(playerHtml, /pattern-proof/, 'pattern proof rail must be styled');
+  assert.match(playerHtml, /card\.header/, 'quote card branch must support the new pattern header');
 });
 
 test('finale cards use distinct climactic layouts', () => {
@@ -100,4 +107,5 @@ test('image placeholders never ship to respondents', () => {
 
 test('every non-final card carries a visible advance affordance', () => {
   assert.match(playerHtml, /card-advance/, 'cards must offer a visible Continue button, not only invisible zones');
+  assert.match(playerHtml, /card\.advanceLabel \|\| 'Continue'/, 'advance buttons should support slide-specific next actions');
 });

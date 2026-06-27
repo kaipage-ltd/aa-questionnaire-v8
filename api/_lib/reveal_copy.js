@@ -13,8 +13,8 @@ export const STATIC = {
     tail: 'Three answers. One pattern. The business has shown us where the drag sits.'
   },
   card6: {
-    eyebrow: 'IN YOUR OWN WORDS',
-    lead: 'Of everything you told us, this is the line we keep returning to.'
+    eyebrow: 'THE PATTERN IN YOUR ANSWERS',
+    lead: 'The value is not one answer. It is the pattern across them.'
   },
   card7: {
     eyebrow: 'What you said vs what you did',
@@ -26,7 +26,7 @@ export const STATIC = {
     noneTurn: 'Your operating answers are more cautious than that.'
   },
   card9: {
-    eyebrow: 'WHAT IT COSTS YOU NOW'
+    eyebrow: 'WHAT THE GAP COSTS'
   },
   card10: {
     eyebrow: 'And it is getting more expensive'
@@ -35,7 +35,7 @@ export const STATIC = {
     eyebrow: 'What fixing it actually means'
   },
   card12: {
-    eyebrow: 'THE GOOD NEWS'
+    eyebrow: 'THE FIRST MOVE'
   },
   card13: {
     eyebrow: 'WHERE THIS GOES NEXT',
@@ -122,26 +122,26 @@ export const PILLAR_PLAIN = {
   Leverage: 'How far AI reaches into real calls.'
 };
 
-// Where advanced brands sit. Rendered as a benchmark marker beside
-// each respondent bar so the gap, not the absolute score, is the message.
-export const BENCHMARK = { Visibility: 100, Velocity: 90, Coherence: 95, Leverage: 90 };
-export const BENCHMARK_LABEL = 'Advanced brands';
+// Where strong peer operators tend to sit. Rendered as a benchmark marker
+// beside each respondent bar so the gap, not the absolute score, is the message.
+export const BENCHMARK = { Visibility: 88, Velocity: 84, Coherence: 86, Leverage: 82 };
+export const BENCHMARK_LABEL = 'Strong peer mark';
 
 export const PILLAR_COPY = {
   Visibility: {
-    strong: 'The business can see enough to move faster than most.',
-    weak: 'The numbers are present, but they still ask the room to believe too much.'
+    strong: 'The business has enough signal to move.',
+    weak: 'The room still has to defend the number before it can act.'
   },
   Velocity: {
-    strong: 'Evidence can still become action while the window is open.',
-    weak: 'The delay sits between seeing the signal and making the call.'
+    strong: 'Signal can still turn into action while it matters.',
+    weak: 'The wait starts after the signal appears.'
   },
   Coherence: {
     strong: 'Teams are close to one picture.',
-    weak: 'Teams can be right separately and still slow the business down.'
+    weak: 'Teams can each be right and still create drag.'
   },
   Leverage: {
-    strong: 'AI already reaches meaningful work. Now it needs cleaner decisions underneath.',
+    strong: 'AI already reaches meaningful work. Now the decisions underneath need to hold.',
     weak: 'AI is present, but it still sits outside the calls that decide outcomes.'
   }
 };
@@ -151,7 +151,7 @@ export const HURDLE_COPY = {
     hurdleCard: {
       lede: "You have the numbers. You can't *trust* them.",
       body: "Every other strength stands on numbers you don't quite believe. Fix the trust and the rest holds.",
-      close: 'YOUR FIRST CONSTRAINT · VISIBILITY'
+      close: 'First constraint: Visibility'
     },
     reframe: {
       lede: 'Here is what is actually happening. It is not just a data problem.',
@@ -179,7 +179,7 @@ export const HURDLE_COPY = {
     hurdleCard: {
       lede: 'You see the move. You make it *too late*.',
       body: 'Seeing clearly is worth nothing if you act a week late. Close the gap and your other strengths finally pay off.',
-      close: 'YOUR FIRST CONSTRAINT · VELOCITY'
+      close: 'First constraint: Velocity'
     },
     reframe: {
       lede: 'Here is what is actually happening. It is not what you think.',
@@ -207,7 +207,7 @@ export const HURDLE_COPY = {
     hurdleCard: {
       lede: "Your teams are sharp. They don't share *one picture*.",
       body: 'Each team can be right and the business still loses. One shared picture and the rest speeds up.',
-      close: 'YOUR FIRST CONSTRAINT · COHERENCE'
+      close: 'First constraint: Coherence'
     },
     reframe: {
       lede: 'Here is what is actually happening. It is not just a collaboration problem.',
@@ -333,24 +333,24 @@ export const COST_HERO = {
 };
 
 export const COST_COMPOUND = {
-  Clarity: 'It looks small now. It is cheapest to fix before the business grows around it.',
-  Traction: 'It never shows as a line item. It shows up as the deal a slower rival closed first. Not smarter. Sooner.',
-  Scale: 'This is no longer a team problem. It is confidence, capital and margin moving slower than they should.'
+  Clarity: 'This is still cheap to fix because the habit is small.',
+  Traction: 'Momentum turns this into missed margin before anyone sees the line item.',
+  Scale: 'At this size, the cost moves through confidence, capital and margin.'
 };
 
 export const MOVE_BODY = {
-  Visibility: 'Pick the one number that should change your week. Give it an owner and a rule. Start there.',
-  Velocity: 'Pick one decision you keep making late. Find where it waits. Close that gap. Start there.',
-  Coherence: 'Pick one call your teams keep splitting on. Agree one source, one owner. Start there.'
+  Visibility: 'Bring the number people keep defending. We map its owner, source, trust rule and the decision it must change.',
+  Velocity: 'Bring the decision that keeps landing late. We map the signal, first wait, owner and release rule.',
+  Coherence: 'Bring the decision teams keep splitting on. We map the source, definition, owner and tie-break rule.'
 };
 
 export const QUOTE_SOWHAT = {
-  Visibility: "You said that about your own numbers. If you can't trust them, every call after wobbles.",
-  Velocity: 'You said that about your own business. The work is good. It just lands too late to count.',
-  Coherence: 'You said that about your own teams. Each one is right and the business still pays for the gap.'
+  Visibility: 'The pattern is not more data. It is trust: source, owner and decision.',
+  Velocity: 'The pattern is not effort. It is the wait between signal and action.',
+  Coherence: 'The pattern is not team quality. It is three teams carrying three pictures.'
 };
 
-export const MONDAY_FORWARD = 'That is the first move. The call is where we make it real.';
+export const MONDAY_FORWARD = 'That is what the working session is for.';
 export const SESSION_OFFER = 'Thirty minutes with our CEO. Not a pitch. You bring one real decision. You leave with a plan to fix it.';
 
 export const ANSWER_OPTIONS = {
@@ -512,7 +512,7 @@ export const RECEIPT_IMPLICATIONS = {
   Q2_3: 'Revenue and scattered figures are present, but not yet a picture leadership can run.',
   Q3_0: 'Payback is precise enough to use weekly.',
   Q3_1: 'Payback is still a rough estimate, so action is carrying guesswork.',
-  Q3_2: 'ROAS and CAC can hide whether the customer ever pays back.',
+  Q3_2: 'Ad return and acquisition cost can hide whether the customer ever pays back.',
   Q3_3: 'If payback is not tracked, growth decisions are being made without the number that should govern them.',
   Q4_0: 'Forecasts holding inside a tight band give the business a stable read.',
   Q4_1: 'Some forecast drift is manageable, but it still asks the team to translate reality back into the plan.',

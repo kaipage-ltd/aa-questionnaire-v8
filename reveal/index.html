@@ -700,6 +700,30 @@
     font-size: 15.6px;
     line-height: 1.38;
   }
+  .pattern-proof {
+    margin-top: 28px;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+  }
+  .pattern-row {
+    border-top: 1px solid rgba(250, 248, 242, 0.24);
+    padding-top: 14px;
+  }
+  .pattern-label {
+    font-family: var(--mono);
+    font-size: 9.5px;
+    line-height: 1.35;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--dark-faint);
+    margin-bottom: 10px;
+  }
+  .pattern-read {
+    font-size: 15.5px;
+    line-height: 1.38;
+    color: #e6decd;
+  }
   .reframe-panel {
     margin-top: 24px;
     border-color: rgba(250, 248, 242, 0.20);
@@ -1007,6 +1031,12 @@
     color: var(--ink-soft);
     margin-top: 3px;
   }
+  .dark .support {
+    border-top-color: rgba(250, 248, 242, 0.18);
+  }
+  .dark .support-label { color: var(--dark-faint); }
+  .dark .support-answer { color: var(--paper); }
+  .dark .support-read { color: var(--dark-soft); }
 
   /* ── Per-card advance affordance (R3): a real button, not a hint ─ */
   .card-advance {
@@ -1339,6 +1369,26 @@
       font-size: 13.3px;
       line-height: 1.25;
     }
+    .pattern-proof {
+      display: none;
+    }
+    .pattern-row {
+      padding-top: 10px;
+    }
+    .pattern-label {
+      font-size: 8.4px;
+      margin-bottom: 6px;
+    }
+    .pattern-read {
+      font-size: 13.8px;
+      line-height: 1.28;
+    }
+    .card.is-firstMove .more-drawer {
+      margin-bottom: 54px;
+    }
+    .card.is-quote .more-drawer {
+      display: none;
+    }
     .reframe-panel {
       margin-top: 16px;
     }
@@ -1627,35 +1677,62 @@ function buildEvidenceSupport(rows) {
   return support;
 }
 
+function buildPatternProof(rows) {
+  const proof = el('div', 'pattern-proof anim d3');
+  (rows || []).slice(0, 3).forEach((item) => {
+    const row = el('div', 'pattern-row');
+    row.append(el('div', 'pattern-label', item.label || 'Signal'));
+    const read = el('div', 'pattern-read');
+    read.innerHTML = formatCopy(item.value || '');
+    row.append(read);
+    proof.append(row);
+  });
+  return proof;
+}
+
+function buildExactAnswers(rows) {
+  const support = el('div', 'support');
+  (rows || []).slice(0, 3).forEach((item) => {
+    const row = el('div', 'support-row');
+    row.append(el('div', 'support-label', item.label || 'Answer'));
+    row.append(el('div', 'support-answer', item.answer || ''));
+    const read = el('div', 'support-read');
+    read.innerHTML = formatCopy(item.value || '');
+    row.append(read);
+    support.append(row);
+  });
+  return support;
+}
+
 function costImpactLine(hurdle) {
   return {
-    Visibility: 'Belief is doing the work evidence should do.',
-    Velocity: 'The window closes before the call moves.',
-    Coherence: 'Separate progress is costing one business.'
+    Visibility: 'Money follows a number nobody can defend.',
+    Velocity: 'The market moves while the decision waits.',
+    Coherence: 'The business pays for the same answer twice.'
   }[hurdle] || 'The business is paying for the gap.';
 }
 
 function moveStepsFor(hurdle) {
   return {
     Visibility: [
-      ['Pick', 'The number that should change this week.'],
-      ['Own', 'One source, one owner, one trust rule.'],
-      ['Move', 'One decision that changes when the number moves.']
+      ['Bring', 'The number challenged in the room.'],
+      ['Set', 'Source, owner and trust rule.'],
+      ['Use', 'The decision it changes this week.']
     ],
     Velocity: [
-      ['Pick', 'The decision that keeps landing late.'],
-      ['Find', 'The first place the signal waits.'],
-      ['Close', 'One handoff before the window shuts.']
+      ['Bring', 'The decision that lands late.'],
+      ['Find', 'The first wait after signal.'],
+      ['Set', 'Owner, deadline and release rule.']
     ],
     Coherence: [
-      ['Pick', 'The call your teams keep splitting on.'],
-      ['Name', 'The source, definition and owner.'],
-      ['Align', 'One rule before the meeting starts.']
+      ['Bring', 'The decision teams split on.'],
+      ['Name', 'Source, definition and owner.'],
+      ['Set', 'The rule for disagreement.']
     ]
   }[hurdle] || [
-    ['Pick', 'One repeated decision.'],
+    ['Bring', 'One repeated decision.'],
     ['Map', 'The signal, owner and rule.'],
-    ['Close', 'One delay before it spreads.']
+    ['Set', 'One rule before it spreads.']
   ];
 }
 
@@ -1815,7 +1892,7 @@ function buildCard(card) {
     inner.append(numWrap);
     inner.append(p('num-after', card.after));
     if (card.interpretation?.length) {
-      inner.append(buildDrawer('What this means', buildBriefPanel(card.interpretation, 'score-brief')));
+      inner.append(buildDrawer(card.drawerLabel || 'Score detail', buildBriefPanel(card.interpretation, 'score-brief')));
     }
   } else if (card.type === 'shape') {
     inner.append(el('div', 'eyebrow anim', card.eyebrow));
@@ -1840,9 +1917,9 @@ function buildCard(card) {
       bars.append(row);
     });
     inner.append(bars);
-    inner.append(el('div', 'bench-key anim d3', 'The mark on the right is where advanced brands sit.'));
+    inner.append(el('div', 'bench-key anim d3', card.benchmarkNote || 'The mark on the right is the strong-peer threshold.'));
     if (card.shapeRead?.length) {
-      inner.append(buildDrawer('Read the shape', buildBriefPanel(card.shapeRead, 'shape-read-panel')));
+      inner.append(buildDrawer(card.drawerLabel || 'Why it matters', buildBriefPanel(card.shapeRead, 'shape-read-panel')));
     }
   } else if (card.type === 'hurdle') {
     inner.append(el('div', 'eyebrow anim', card.eyebrow));
@@ -1850,17 +1927,24 @@ function buildCard(card) {
     inner.append(h(card.lede, 'd1'));
     inner.append(p('lede anim d2', card.body));
     inner.append(el('div', 'constraint-tag anim d3', card.close));
-    if (card.evidence?.length) inner.append(buildDrawer('Show the answers behind this', buildEvidenceSupport(card.evidence)));
+    if (card.evidence?.length) inner.append(buildDrawer(card.drawerLabel || 'Answer proof', buildEvidenceSupport(card.evidence)));
   } else if (card.type === 'quote') {
     inner.append(el('div', 'eyebrow anim', card.eyebrow));
-    const quote = el('div', 'quote');
-    quote.dataset.quote = card.quote;
-    quote.setAttribute('aria-label', card.quote);
-    quote.append(el('span', 'quote-mark', '"'));
-    quote.append(el('span', 'quote-words'));
-    quote.append(el('span', 'quote-mark', '"'));
-    inner.append(quote);
-    inner.append(p('quote-after', card.sowhat || card.implication));
+    if (card.header) {
+      inner.append(h(card.header, 'd1'));
+      inner.append(p('lede anim d2', card.body || card.sowhat || card.implication));
+      if (card.proof?.length) inner.append(buildPatternProof(card.proof));
+      if (card.proof?.length) inner.append(buildDrawer(card.drawerLabel || 'Exact answers', buildExactAnswers(card.proof)));
+    } else {
+      const quote = el('div', 'quote');
+      quote.dataset.quote = card.quote;
+      quote.setAttribute('aria-label', card.quote);
+      quote.append(el('span', 'quote-mark', '"'));
+      quote.append(el('span', 'quote-words'));
+      quote.append(el('span', 'quote-mark', '"'));
+      inner.append(quote);
+      inner.append(p('quote-after', card.sowhat || card.implication));
+    }
   } else if (card.type === 'cost') {
     const grid = el('div', 'finale-grid');
     const main = el('div', 'finale-main');
@@ -1876,7 +1960,7 @@ function buildCard(card) {
     const modelRows = (card.model || []).filter((row) => ['Your number', 'Track next'].includes(row.label));
     const rows = [...modelRows, ...(card.compounders || [])];
     if (rows.length) detail.append(buildBriefPanel(rows, 'cost-model-panel'));
-    main.append(buildDrawer('See the week behind this', detail));
+    main.append(buildDrawer(card.drawerLabel || 'Show the cost model', detail));
     grid.append(main, impact);
     inner.append(grid);
   } else if (card.type === 'firstMove') {
@@ -1892,7 +1976,7 @@ function buildCard(card) {
     copy.append(p('lede anim d2', card.move));
     copy.append(p('body forward anim d3', card.forward));
     copy.append(buildMoveRail(card.glyph));
-    if (card.brief?.length) copy.append(buildDrawer('The exact first move', buildBriefPanel(card.brief)));
+    if (card.brief?.length) copy.append(buildDrawer(card.drawerLabel || 'What to bring', buildBriefPanel(card.brief)));
     stage.append(symbol, copy);
     inner.append(stage);
   } else if (card.type === 'close') {
@@ -1920,7 +2004,7 @@ function buildCard(card) {
   // Visible "see more" affordance on every non-final card (R3): a real button,
   // not just an invisible tap zone.
   if (card.type !== 'close') {
-    const advance = el('button', `card-advance${card.dark ? ' on-dark' : ''}`, 'Continue');
+    const advance = el('button', `card-advance${card.dark ? ' on-dark' : ''}`, card.advanceLabel || 'Continue');
     advance.type = 'button';
     advance.addEventListener('click', () => go(i + 1));
     section.append(advance);

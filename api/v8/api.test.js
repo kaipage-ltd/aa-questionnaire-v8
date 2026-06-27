@@ -669,7 +669,7 @@ test('all-strong reveals keep calibrated shape copy and the plain constraint bea
   assert.match(shape.body, /not a weak profile/i);
   assert.doesNotMatch(shape.body, /thin|collapse/i);
   assert.equal(hurdle.lede, "You have the numbers. You can't *trust* them.");
-  assert.equal(hurdle.close, 'YOUR FIRST CONSTRAINT · VISIBILITY');
+  assert.equal(hurdle.close, 'First constraint: Visibility');
   assert.match(hurdle.tail, /real strengths/i);
   assert.match(quote.implication, /selected that as a strength/i);
 });
@@ -706,7 +706,7 @@ test('balanced mid-strength reveals keep calibrated shape copy and the plain con
   assert.match(shape.body, /not a dramatic gap/i);
   assert.doesNotMatch(shape.body, /thin|collapse/i);
   assert.equal(hurdle.lede, "You have the numbers. You can't *trust* them.");
-  assert.equal(hurdle.close, 'YOUR FIRST CONSTRAINT · VISIBILITY');
+  assert.equal(hurdle.close, 'First constraint: Visibility');
   assert.match(hurdle.tail, /not collapsing/i);
 });
 
