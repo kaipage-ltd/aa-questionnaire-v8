@@ -162,7 +162,7 @@ test('demo reveal matrix emits the overhauled 8-card contract', () => {
     assert.equal(firstMove.glyph, profile.hurdle);
     assert.equal(firstMove.header, "You don't fix all of it. You fix *one thing*.");
     assert.equal(Boolean(firstMove.move), true);
-    assert.equal(firstMove.forward, 'That is the first move. The session is where we make it with you.');
+    assert.equal(firstMove.forward, 'That is the first move. The call is where we make it real.');
     assert.equal(firstMove.brief.some((row) => row.label === 'Monday move'), true);
     assert.equal(firstMove.brief.some((row) => row.label === 'Output'), true);
 

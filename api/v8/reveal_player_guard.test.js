@@ -58,9 +58,21 @@ test('drawers hold detail instead of default-view dense copy', () => {
   assert.match(playerHtml, /buildDrawer\('Read the shape'/, 'shape read should be in a drawer');
   assert.match(playerHtml, /buildDrawer\('Show the answers behind this'/, 'hurdle evidence should be in a drawer');
   assert.match(playerHtml, /buildDrawer\('See the week behind this'/, 'cost scene should be in a drawer');
+  assert.doesNotMatch(playerHtml, /cost-cascade/, 'cost receipts must not ship in the default finale view');
   assert.match(playerHtml, /buildDrawer\('The exact first move'/, 'first move brief should be in a drawer');
-  assert.match(playerHtml, /buildDrawer\('What you walk out with'/, 'session outputs should be in a drawer');
+  assert.doesNotMatch(playerHtml, /buildDrawer\('What you walk out with'/, 'close slide must not carry a visible detail drawer');
   assert.doesNotMatch(playerHtml, /From your answers/, 'default hurdle view must not ship the anxious support label');
+});
+
+test('finale cards use distinct climactic layouts', () => {
+  assert.match(playerHtml, /finale-grid/, 'cost slide must use a split finale layout');
+  assert.match(playerHtml, /cost-impact/, 'cost slide must render a dedicated impact panel');
+  assert.match(playerHtml, /costImpactLine/, 'cost slide must use a sharper impact line than the body copy');
+  assert.match(playerHtml, /move-stage/, 'first move slide must use a distinct move layout');
+  assert.match(playerHtml, /move-symbol/, 'first move slide must render a large constraint symbol');
+  assert.match(playerHtml, /move-rail/, 'first move slide must render the three-step move rail');
+  assert.match(playerHtml, /close-stage/, 'close slide must use a focused booking layout');
+  assert.match(playerHtml, /close-action/, 'close slide must group the CTA as the final action');
 });
 
 test('quote reveal timing is the fast stagger', () => {
@@ -76,6 +88,7 @@ test('every reveal card type has a distinct photographic background', () => {
   const assets = [...block.matchAll(/name: '([^']+)'/g)].map((match) => match[1]);
   assert.equal(assets.length, 8, 'the eight-card reveal needs eight background entries');
   assert.equal(new Set(assets).size, assets.length, 'each card background asset must be different');
+  assert.match(block, /close: \{ name: 'earth'/, 'close slide must use the sharper earth image, not the blurred city image');
   assert.match(playerHtml, /function backgroundForCard/, 'the player must resolve media by card type');
   assert.match(playerHtml, /section\.dataset\.media/, 'cards should expose the selected asset for browser checks');
 });

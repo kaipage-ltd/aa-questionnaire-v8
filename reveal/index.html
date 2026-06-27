@@ -176,6 +176,7 @@
     margin: auto 0;
   }
   .card-inner.is-wide { width: min(100%, 760px); }
+  .card-inner.finale-inner { width: min(100%, 1080px); }
 
   /* Cinematic media behind every reveal card. Each beat gets its own image, but
      the overlay keeps the whole journey inside the same dark A+A world. */
@@ -194,6 +195,15 @@
     background:
       linear-gradient(to bottom, rgba(10,9,7,0.58) 0%, rgba(10,9,7,0.62) 44%, rgba(10,9,7,0.82) 100%),
       linear-gradient(to right, rgba(10,9,7,0.42) 0%, rgba(10,9,7,0.08) 60%, rgba(10,9,7,0) 95%);
+  }
+  .card.is-close .card-media {
+    background-size: cover;
+    background-position: center;
+  }
+  .card.is-close .card-media::after {
+    background:
+      linear-gradient(90deg, rgba(7,6,5,0.82) 0%, rgba(7,6,5,0.74) 44%, rgba(7,6,5,0.30) 100%),
+      radial-gradient(78% 86% at 28% 44%, rgba(0,0,0,0.34) 0%, rgba(0,0,0,0.72) 100%);
   }
   .card.is-active .card-media { animation: mediaSettle 7s cubic-bezier(0.22, 0.61, 0.36, 1) both; }
   @keyframes mediaSettle { from { transform: scale(1.06); } to { transform: scale(1); } }
@@ -776,6 +786,158 @@
   }
   .calendar-panel.is-open { display: block; }
 
+  /* ── Finale layouts: cost, first move, booking ───────────────── */
+  .finale-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.04fr) minmax(280px, 0.7fr);
+    gap: clamp(34px, 6vw, 92px);
+    align-items: center;
+  }
+  .finale-main {
+    max-width: 720px;
+  }
+  .finale-main .reveal-h {
+    font-size: clamp(48px, 7vw, 86px);
+    line-height: 0.98;
+    margin-bottom: 22px;
+  }
+  .finale-main .lede {
+    max-width: 560px;
+    font-size: clamp(21px, 2.2vw, 28px);
+    line-height: 1.34;
+  }
+  .cost-impact {
+    min-height: 380px;
+    border-left: 1px solid rgba(243, 234, 217, 0.28);
+    padding-left: clamp(24px, 4vw, 46px);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  .impact-kicker,
+  .move-kicker {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin-bottom: 18px;
+  }
+  .impact-line {
+    font-family: var(--serif);
+    font-size: clamp(32px, 4vw, 54px);
+    line-height: 1.04;
+    color: var(--ink);
+    max-width: 360px;
+  }
+  .cost-impact .impact-glyph {
+    margin-bottom: 24px;
+  }
+  .cost-impact .impact-glyph svg {
+    width: 58px;
+    height: 58px;
+    color: var(--ink-soft);
+  }
+  .impact-line em { font-style: italic; }
+  .move-stage {
+    display: grid;
+    grid-template-columns: minmax(220px, 0.52fr) minmax(0, 1fr);
+    gap: clamp(34px, 6vw, 82px);
+    align-items: center;
+  }
+  .move-symbol {
+    min-height: 420px;
+    border: 1px solid rgba(243, 234, 217, 0.20);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: clamp(24px, 3vw, 38px);
+    background: rgba(5,4,3,0.20);
+  }
+  .move-symbol .pglyph svg {
+    width: clamp(92px, 12vw, 142px);
+    height: clamp(92px, 12vw, 142px);
+    color: var(--ink);
+    opacity: 0.88;
+  }
+  .move-symbol-word {
+    font-family: var(--serif);
+    font-size: clamp(48px, 7vw, 92px);
+    line-height: 0.9;
+    color: var(--ink);
+  }
+  .move-copy .reveal-h {
+    font-size: clamp(46px, 6.6vw, 82px);
+    line-height: 0.98;
+  }
+  .move-rail {
+    margin-top: 34px;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+  }
+  .move-step {
+    border-top: 1px solid rgba(243, 234, 217, 0.26);
+    padding-top: 14px;
+  }
+  .move-step-index {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    color: var(--ink-faint);
+    margin-bottom: 11px;
+  }
+  .move-step-title {
+    font-family: var(--serif);
+    font-size: 25px;
+    line-height: 1;
+    color: var(--ink);
+    margin-bottom: 9px;
+  }
+  .move-step-body {
+    font-size: 14.5px;
+    line-height: 1.35;
+    color: var(--ink-soft);
+  }
+  .card-inner.close-inner {
+    width: min(100%, 860px);
+    margin: auto auto auto 0;
+  }
+  .close-stage {
+    max-width: 760px;
+  }
+  .close-stage .glyph-row {
+    justify-content: flex-start;
+    margin-bottom: 34px;
+  }
+  .close-stage .reveal-h {
+    font-size: clamp(52px, 8vw, 96px);
+    line-height: 0.94;
+    margin-bottom: 24px;
+  }
+  .close-stage .lede {
+    max-width: 620px;
+    font-size: clamp(21px, 2.2vw, 29px);
+    line-height: 1.34;
+  }
+  .close-action {
+    display: flex;
+    align-items: center;
+    gap: 22px;
+    flex-wrap: wrap;
+    margin-top: 34px;
+  }
+  .close-action .cta {
+    margin-top: 0;
+    padding: 18px 38px;
+    font-size: 15px;
+  }
+  .close-action .qualifier {
+    max-width: 320px;
+    margin-top: 0;
+    color: rgba(247, 243, 237, 0.54);
+  }
+
   /* ── Reveal opening wordmark (R9) ─────────────────────────────── */
   .reveal-wordmark {
     width: clamp(168px, 22vw, 220px);
@@ -997,8 +1159,8 @@
     .card { padding: calc(72px + env(safe-area-inset-top, 0px)) 26px calc(96px + env(safe-area-inset-bottom, 0px)); }
     .card.is-close { padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px)); }
     .card-inner { padding-bottom: 14px; }
-    /* Pin most advance buttons to the visible bottom. The cost card has a taller
-       calculation table, so its button flows after the content below. */
+    /* Pin the advance button to the visible bottom. The finale cost card keeps
+       its receipts in the drawer on phones, so the main beat stays short. */
     .card-advance {
       position: sticky;
       left: auto;
@@ -1007,17 +1169,99 @@
       margin: 14px auto 0;
       flex: 0 0 auto;
     }
-    .card.is-cost .card-advance {
-      position: relative;
-      bottom: auto;
-      margin-top: 22px;
-    }
+    .card.is-cost .card-advance { margin-top: 14px; }
     .card-advance:hover { transform: none; }
     /* On phones the image slots are hidden and the card returns to full-width copy. */
     .visual { display: none; }
     .card.has-visual { align-items: center; }
     .card.has-visual .card-inner,
     .card.has-visual .card-inner.is-wide { width: 100%; }
+    .card-inner.finale-inner,
+    .card-inner.close-inner {
+      width: 100%;
+      margin: auto 0;
+    }
+    .finale-grid,
+    .move-stage {
+      grid-template-columns: 1fr;
+      gap: 24px;
+    }
+    .finale-main .reveal-h,
+    .move-copy .reveal-h,
+    .close-stage .reveal-h {
+      font-size: clamp(38px, 10.8vw, 58px);
+      line-height: 1;
+    }
+    .finale-main .lede,
+    .close-stage .lede {
+      font-size: 18px;
+      line-height: 1.36;
+    }
+    .cost-impact {
+      min-height: 0;
+      border-left: 0;
+      border-top: 1px solid rgba(243, 234, 217, 0.24);
+      padding-left: 0;
+      padding-top: 20px;
+    }
+    .impact-kicker,
+    .move-kicker {
+      font-size: 8.8px;
+      margin-bottom: 10px;
+    }
+    .impact-line {
+      font-size: 28px;
+      max-width: none;
+    }
+    .move-symbol {
+      min-height: 160px;
+      padding: 18px;
+      flex-direction: row;
+      align-items: flex-end;
+    }
+    .move-symbol .pglyph svg {
+      width: 72px;
+      height: 72px;
+    }
+    .move-symbol-word {
+      font-size: 54px;
+    }
+    .move-rail { display: none; }
+    .move-step {
+      display: grid;
+      grid-template-columns: 44px minmax(0, 1fr);
+      column-gap: 12px;
+      padding-top: 10px;
+    }
+    .move-step-index {
+      grid-row: span 2;
+      margin-bottom: 0;
+      padding-top: 3px;
+    }
+    .move-step-title {
+      font-size: 23px;
+      margin-bottom: 5px;
+    }
+    .move-step-body {
+      font-size: 13.5px;
+    }
+    .close-stage .glyph-row {
+      justify-content: flex-start;
+      margin-bottom: 24px;
+    }
+    .close-action {
+      display: block;
+      margin-top: 24px;
+    }
+    .close-action .cta {
+      width: auto;
+      padding: 15px 22px;
+      font-size: 11px;
+    }
+    .close-action .qualifier {
+      margin-top: 14px;
+      max-width: 270px;
+    }
     .turn-name { font-size: 50px; }
     .num { font-size: 132px; }
     .num-after {
@@ -1198,8 +1442,7 @@
       padding: 14px 18px;
       font-size: 10px;
     }
-    /* The close card carries lede + outputs + character line + CTA; tighten it
-       so the final beat never scrolls on a phone. */
+    /* The close card is now one action: headline, offer, CTA. */
     .is-close .lede { font-size: 18px; line-height: 1.42; }
     .is-close .output-item {
       padding: 8px 0;
@@ -1212,7 +1455,7 @@
       line-height: 1.42;
       margin-top: 14px;
     }
-    .is-close .cta { margin-top: 14px; }
+    .is-close .cta { margin-top: 0; }
     .qualifier {
       margin-top: 12px;
       font-size: 9.5px;
@@ -1327,7 +1570,7 @@ const CARD_BACKGROUNDS = {
   quote: { name: 'marble-sphere', position: 'center 45%' },
   cost: { name: 'quiet-after-storm', position: 'center 48%' },
   firstMove: { name: 'sunny-sea', position: 'center 48%' },
-  close: { name: 'city-london', position: 'center 46%' }
+  close: { name: 'earth', position: 'center 50%' }
 };
 
 function backgroundForCard(card) {
@@ -1383,6 +1626,50 @@ function buildEvidenceSupport(rows) {
     support.append(row);
   });
   return support;
+}
+
+function costImpactLine(hurdle) {
+  return {
+    Visibility: 'Belief is doing the work evidence should do.',
+    Velocity: 'The window closes before the call moves.',
+    Coherence: 'Separate progress is costing one business.'
+  }[hurdle] || 'The business is paying for the gap.';
+}
+
+function moveStepsFor(hurdle) {
+  return {
+    Visibility: [
+      ['Pick', 'The number that should change this week.'],
+      ['Own', 'One source, one owner, one trust rule.'],
+      ['Move', 'One decision that changes when the number moves.']
+    ],
+    Velocity: [
+      ['Pick', 'The decision that keeps landing late.'],
+      ['Find', 'The first place the signal waits.'],
+      ['Close', 'One handoff before the window shuts.']
+    ],
+    Coherence: [
+      ['Pick', 'The call your teams keep splitting on.'],
+      ['Name', 'The source, definition and owner.'],
+      ['Align', 'One rule before the meeting starts.']
+    ]
+  }[hurdle] || [
+    ['Pick', 'One repeated decision.'],
+    ['Map', 'The signal, owner and rule.'],
+    ['Close', 'One delay before it spreads.']
+  ];
+}
+
+function buildMoveRail(hurdle) {
+  const rail = el('div', 'move-rail anim d3');
+  moveStepsFor(hurdle).forEach(([title, body], index) => {
+    const step = el('div', 'move-step');
+    step.append(el('div', 'move-step-index', `0${index + 1}`));
+    step.append(el('div', 'move-step-title', title));
+    step.append(el('div', 'move-step-body', body));
+    rail.append(step);
+  });
+  return rail;
 }
 
 // Interim authored line art for the two image slots, drawn in the reveal's own
@@ -1503,6 +1790,8 @@ function buildCard(card) {
   // (ART + visualTypeFor stay defined for the guard test and future use.)
   const inner = el('div', 'card-inner');
   if (['turn', 'number', 'shape', 'hurdle', 'quote', 'cost', 'firstMove', 'close'].includes(card.type)) inner.classList.add('is-wide');
+  if (['cost', 'firstMove'].includes(card.type)) inner.classList.add('finale-inner');
+  if (card.type === 'close') inner.classList.add('close-inner');
   section.appendChild(inner);
 
   if (card.type === 'turn') {
@@ -1574,44 +1863,59 @@ function buildCard(card) {
     inner.append(quote);
     inner.append(p('quote-after', card.sowhat || card.implication));
   } else if (card.type === 'cost') {
-    inner.append(el('div', 'eyebrow anim', card.eyebrow));
-    inner.append(h(card.hero, 'd1'));
-    inner.append(p('lede anim d2', card.compound));
+    const grid = el('div', 'finale-grid');
+    const main = el('div', 'finale-main');
+    main.append(el('div', 'eyebrow anim', card.eyebrow));
+    main.append(h(card.hero, 'd1'));
+    main.append(p('lede anim d2', card.compound));
+    const impact = el('div', 'cost-impact anim d2');
+    impact.append(el('div', 'impact-kicker', 'THE BILL'));
+    impact.append(pillarIcon(card.glyph, 'impact-glyph'));
+    impact.append(el('div', 'impact-line', costImpactLine(card.glyph)));
     const detail = el('div', 'drawer-content');
     appendProse(detail, card.body?.length ? card.body : ['Picture the cost inside one real operating cycle.']);
     const modelRows = (card.model || []).filter((row) => ['Your number', 'Track next'].includes(row.label));
-    const ignored = (card.compounders || []).filter((row) => row.label === 'If ignored');
-    const rows = [...modelRows, ...ignored];
+    const rows = [...modelRows, ...(card.compounders || [])];
     if (rows.length) detail.append(buildBriefPanel(rows, 'cost-model-panel'));
-    inner.append(buildDrawer('See the week behind this', detail));
+    main.append(buildDrawer('See the week behind this', detail));
+    grid.append(main, impact);
+    inner.append(grid);
   } else if (card.type === 'firstMove') {
+    const stage = el('div', 'move-stage');
+    const symbol = el('div', 'move-symbol anim d1');
+    symbol.append(pillarIcon(card.glyph, ''));
+    symbol.append(el('div', 'move-symbol-word', 'One'));
+    const copy = el('div', 'move-copy');
     const eyebrow = el('div', 'eyebrow anim');
     eyebrow.append(pillarIcon(card.glyph, 'eyebrow-glyph'), document.createTextNode(card.eyebrow));
-    inner.append(eyebrow);
-    inner.append(h(card.header, 'd1'));
-    inner.append(p('lede anim d2', card.move));
-    inner.append(p('body forward anim d3', card.forward));
-    if (card.brief?.length) inner.append(buildDrawer('The exact first move', buildBriefPanel(card.brief)));
+    copy.append(eyebrow);
+    copy.append(h(card.header, 'd1'));
+    copy.append(p('lede anim d2', card.move));
+    copy.append(p('body forward anim d3', card.forward));
+    copy.append(buildMoveRail(card.glyph));
+    if (card.brief?.length) copy.append(buildDrawer('The exact first move', buildBriefPanel(card.brief)));
+    stage.append(symbol, copy);
+    inner.append(stage);
   } else if (card.type === 'close') {
-    inner.append(el('div', 'eyebrow anim', card.eyebrow));
+    const closeStage = el('div', 'close-stage');
+    closeStage.append(el('div', 'eyebrow anim', card.eyebrow));
     const motif = el('div', 'glyph-row anim d1');
     ['Visibility', 'Velocity', 'Coherence', 'Leverage'].forEach((label) => {
       motif.append(pillarIcon(label, label === card.glyph ? 'on' : 'off'));
     });
-    inner.append(motif);
-    inner.append(h(card.header, 'd1'));
-    inner.append(p('lede anim d2', card.offer || card.fitBody));
-    const ctaWrap = el('div', 'anim d3');
+    closeStage.append(motif);
+    closeStage.append(h(card.header, 'd1'));
+    closeStage.append(p('lede anim d2', card.offer || card.fitBody));
+    const ctaWrap = el('div', 'close-action anim d3');
     const cta = el('button', 'cta', `${card.button} →`);
     cta.type = 'button';
     cta.addEventListener('click', () => openCalendar(ctaWrap, card.calendarUrl));
     ctaWrap.append(cta);
+    if (card.qualifier) ctaWrap.append(p('qualifier', card.qualifier));
     const panel = el('div', 'calendar-panel', 'Booking opens here once the scheduling link is connected.');
     ctaWrap.append(panel);
-    inner.append(ctaWrap);
-    if (card.qualifier) inner.append(p('qualifier anim d3', card.qualifier));
-    if (card.closeLine) inner.append(p('close-line anim d3', card.closeLine));
-    if (card.outputs?.length) inner.append(buildDrawer('What you walk out with', buildOutputList(card.outputs)));
+    closeStage.append(ctaWrap);
+    inner.append(closeStage);
   }
 
   // Visible "see more" affordance on every non-final card (R3): a real button,

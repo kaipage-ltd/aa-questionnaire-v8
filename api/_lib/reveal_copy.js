@@ -40,7 +40,7 @@ export const STATIC = {
   card13: {
     eyebrow: 'WHERE THIS GOES NEXT',
     button: 'Book the working session',
-    qualifier: 'A+A takes six new clients a year. Our CEO is in every one. The call is a fit check, both ways.'
+    qualifier: 'Six new clients a year. Our CEO is in every one. Fit check, both ways.'
   },
   card14: {
     button: 'Book the working session'
@@ -350,7 +350,7 @@ export const QUOTE_SOWHAT = {
   Coherence: 'You said that about your own teams. Each one is right and the business still pays for the gap.'
 };
 
-export const MONDAY_FORWARD = 'That is the first move. The session is where we make it with you.';
+export const MONDAY_FORWARD = 'That is the first move. The call is where we make it real.';
 export const SESSION_OFFER = 'Thirty minutes with our CEO. Not a pitch. You bring one real decision. You leave with a plan to fix it.';
 
 export const ANSWER_OPTIONS = {

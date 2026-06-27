@@ -55,30 +55,34 @@ const SCOREBOOK = {
     advance: [9.3, 9.0, 9.4, 8.6, 8.8, 8.8, 8.6, 9.4]
   },
   cost: {
+    layout: [9.1, 9.4, 9.0, 9.2, 9.0, 9.1, 9.0, 9.2],
     eyebrow: [9.0, 8.9, 9.0, 8.8, 8.9, 9.0, 8.8, 9.2],
     hero: [9.1, 9.5, 9.2, 9.3, 9.2, 9.2, 9.1, 9.2],
     compound: [9.0, 9.1, 9.0, 9.1, 9.1, 9.0, 9.0, 9.1],
+    impact: [9.2, 9.4, 9.3, 9.3, 9.1, 9.2, 9.1, 9.2],
     drawer: [8.8, 8.7, 8.7, 8.8, 8.8, 8.7, 8.8, 9.0],
     advance: [9.3, 9.0, 9.4, 8.6, 8.8, 8.8, 8.6, 9.4]
   },
   firstMove: {
+    layout: [9.2, 9.4, 9.1, 9.1, 9.2, 9.1, 9.1, 9.2],
     eyebrow: [9.0, 8.9, 9.0, 8.8, 8.9, 9.0, 8.8, 9.2],
     glyph: [9.0, 9.1, 9.2, 8.7, 8.8, 9.0, 8.8, 9.2],
     header: [9.2, 9.4, 9.3, 9.1, 9.2, 9.2, 9.1, 9.2],
     move: [9.2, 9.2, 9.1, 9.0, 9.2, 9.1, 9.1, 9.2],
     forward: [9.0, 8.9, 9.0, 8.8, 9.2, 8.9, 9.1, 9.0],
+    rail: [9.0, 9.1, 8.9, 9.0, 9.1, 8.9, 9.0, 9.1],
     drawer: [8.8, 8.7, 8.7, 8.8, 8.9, 8.7, 8.9, 9.0],
     advance: [9.3, 9.0, 9.4, 8.6, 8.8, 8.8, 8.6, 9.4]
   },
   close: {
+    layout: [9.3, 9.5, 9.3, 9.2, 9.5, 9.2, 9.2, 9.2],
+    background: [9.0, 9.2, 9.1, 9.0, 9.0, 9.0, 8.9, 9.0],
     eyebrow: [9.0, 8.9, 9.0, 8.8, 9.0, 9.0, 8.8, 9.2],
     motif: [9.0, 9.1, 9.1, 8.8, 8.9, 9.0, 8.8, 9.2],
     header: [9.2, 9.5, 9.3, 9.2, 9.3, 9.2, 9.1, 9.2],
     offer: [9.2, 9.1, 9.2, 9.0, 9.4, 9.0, 9.2, 9.2],
     cta: [9.1, 9.1, 9.3, 8.8, 9.4, 8.9, 9.0, 9.2],
-    qualifier: [9.0, 8.9, 9.0, 8.8, 9.2, 9.0, 8.9, 9.2],
-    closeLine: [9.0, 9.1, 9.0, 9.0, 9.0, 9.1, 9.0, 9.1],
-    drawer: [8.8, 8.7, 8.7, 8.7, 8.8, 8.7, 8.8, 9.0]
+    qualifier: [9.0, 8.9, 9.1, 8.8, 9.2, 9.0, 8.9, 9.2]
   }
 };
 
@@ -164,32 +168,36 @@ function cardRows(card) {
     rows.push(row('quote', 'advance', 'Continue'));
   }
   if (card.type === 'cost') {
+    rows.push(row('cost', 'layout', 'Split finale layout: commercial cost on the left, one bill line on the right, receipts in the drawer'));
     rows.push(row('cost', 'eyebrow', card.eyebrow));
     rows.push(row('cost', 'hero', card.hero));
     rows.push(row('cost', 'compound', card.compound));
+    rows.push(row('cost', 'impact', `Impact panel for ${card.glyph}`));
     rows.push(...(card.body || []).map((line) => row('cost', 'drawer', line)));
     rows.push(...(card.model || []).map((item) => row('cost', 'drawer', `${item.label}: ${item.value}`)));
     rows.push(...(card.compounders || []).map((item) => row('cost', 'drawer', `${item.label}: ${item.value}`)));
     rows.push(row('cost', 'advance', 'Continue'));
   }
   if (card.type === 'firstMove') {
+    rows.push(row('firstMove', 'layout', 'Symbol-led finale layout with one move and a three-step rail'));
     rows.push(row('firstMove', 'eyebrow', card.eyebrow));
     rows.push(row('firstMove', 'glyph', card.glyph));
     rows.push(row('firstMove', 'header', card.header));
     rows.push(row('firstMove', 'move', card.move));
     rows.push(row('firstMove', 'forward', card.forward));
+    rows.push(row('firstMove', 'rail', `Three-step move rail for ${card.glyph}`));
     rows.push(...(card.brief || []).map((item) => row('firstMove', 'drawer', `${item.label}: ${item.value}`)));
     rows.push(row('firstMove', 'advance', 'Continue'));
   }
   if (card.type === 'close') {
+    rows.push(row('close', 'layout', 'Focused booking layout with no visible output drawer'));
+    rows.push(row('close', 'background', 'Sharp earth background replaces the blurred city image'));
     rows.push(row('close', 'eyebrow', card.eyebrow));
     rows.push(row('close', 'motif', `Four-glyph motif, active ${card.glyph}`));
     rows.push(row('close', 'header', card.header || card.lede));
     rows.push(row('close', 'offer', card.offer || card.fitBody));
     rows.push(row('close', 'cta', card.button));
     rows.push(row('close', 'qualifier', card.qualifier));
-    rows.push(row('close', 'closeLine', card.closeLine));
-    rows.push(...(card.outputs || []).map((output) => row('close', 'drawer', output)));
   }
   return rows;
 }
