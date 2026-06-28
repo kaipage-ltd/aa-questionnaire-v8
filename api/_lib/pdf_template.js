@@ -197,7 +197,7 @@ function coverPage(ctx, meta, profile) {
     <div>
       <div class="mono" style="font-size:7.4px;">Profile</div>
       <div style="font-size:16.5px; margin-top:2.5mm;">${esc(ctx.bucket)}</div>
-      <div class="mono" style="font-size:7.4px; margin-top:5mm;">First constraint</div>
+      <div class="mono" style="font-size:7.4px; margin-top:5mm;">First leak</div>
       <div style="font-size:16.5px; margin-top:2.5mm;">${esc(ctx.hurdleLabel)}</div>
     </div>
     <div>
@@ -210,7 +210,7 @@ function coverPage(ctx, meta, profile) {
     ${ctx.pillars.map((pillar) => {
       const isHurdle = pillar.label === ctx.hurdleLabel;
       const isStrong = pillar.label === ctx.strongest.label && !isHurdle;
-      const note = isHurdle ? 'First constraint' : isStrong ? 'Strongest signal' : '&nbsp;';
+      const note = isHurdle ? 'First leak' : isStrong ? 'Strongest signal' : '&nbsp;';
       return `<div style="border-top:2px solid ${isHurdle || isStrong ? 'var(--ink)' : 'var(--rule)'}; padding-top:4mm;">
         <div class="mono" style="font-size:7.2px; color:${isHurdle || isStrong ? 'var(--ink-soft)' : 'var(--ink-faint)'};">${esc(pillar.label)}</div>
         <div style="font-size:36px; font-weight:480; font-variant-numeric:tabular-nums; margin-top:2mm; color:${isHurdle || isStrong ? 'var(--ink)' : 'var(--ink-soft)'};">${esc(String(pillar.value))}</div>
@@ -243,7 +243,7 @@ function shapePage(ctx, meta, profile) {
       const cls = isHurdle ? 'is-hurdle' : isStrong ? '' : 'is-muted';
       return `<div class="bar-row ${cls}">
         <div class="bar-head">
-          <span class="bar-name">${esc(pillar.label)}${isHurdle ? ' &nbsp;-&nbsp; first constraint' : isStrong ? ' &nbsp;-&nbsp; strongest signal' : ''}</span>
+          <span class="bar-name">${esc(pillar.label)}${isHurdle ? ' &nbsp;-&nbsp; first leak' : isStrong ? ' &nbsp;-&nbsp; strongest signal' : ''}</span>
           <span class="bar-val">${esc(String(pillar.value))}</span>
         </div>
         <div class="bar-track"><div class="bar-fill" style="width:${Math.max(2, Math.min(100, pillar.value))}%;"></div></div>
@@ -319,7 +319,7 @@ function firstMovePage(ctx, meta, profile) {
   return `<section class="sheet">
   ${header('First move')}
   <div class="eyebrow mono">The working session</div>
-  <h1 class="title">${esc(ctx.firstMoveHeader || 'One live decision. Mapped on the call.')}</h1>
+  <h1 class="title">${esc(ctx.firstMoveHeader || 'One live decision. One rule.')}</h1>
   <p class="lede">${esc(ctx.firstMoveLine || 'Bring the live decision where the pattern shows up. The call turns it into the first operating rule.')}</p>
 
   <div style="margin-top:8mm; border-top:1px solid var(--rule);">
@@ -418,7 +418,7 @@ export function profileContext(profile, insights) {
     aiLeverage: rowValue(shape?.shapeRead, 'AI today'),
     costModel: Array.isArray(cost?.model) ? cost.model : [],
     ignoredCost: rowValue(widening?.compounders, 'If ignored'),
-    hurdleClose: hurdle?.close || `Your first constraint is ${profile.hurdle}: the first place to inspect before stronger AI work depends on it.`,
+    hurdleClose: hurdle?.close || `Your first leak is ${profile.hurdle}: the first place to inspect before stronger AI work depends on it.`,
     receipts,
     evidence,
     receiptTail: receiptsCard?.tail || 'Three answers. One pattern. The business has shown us where the drag sits.',

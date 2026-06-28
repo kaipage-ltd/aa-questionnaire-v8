@@ -65,6 +65,8 @@ const SCOREBOOK = {
     hero: [9.1, 9.5, 9.2, 9.3, 9.2, 9.2, 9.1, 9.2],
     compound: [9.0, 9.1, 9.0, 9.1, 9.1, 9.0, 9.0, 9.1],
     impact: [9.2, 9.4, 9.3, 9.3, 9.1, 9.2, 9.1, 9.2],
+    billMetric: [9.3, 9.4, 9.3, 9.3, 9.1, 9.1, 9.1, 9.2],
+    billLine: [9.0, 9.0, 9.1, 9.1, 9.0, 9.0, 9.0, 9.1],
     drawer: [8.8, 8.7, 8.7, 8.8, 8.8, 8.7, 8.8, 9.0],
     advance: [9.3, 9.0, 9.4, 8.6, 8.8, 8.8, 8.6, 9.4]
   },
@@ -183,6 +185,8 @@ function cardRows(card) {
     rows.push(row('cost', 'hero', card.hero));
     rows.push(row('cost', 'compound', card.compound));
     rows.push(row('cost', 'impact', `Impact panel for ${card.glyph}`));
+    if (card.bill?.metric) rows.push(row('cost', 'billMetric', card.bill.metric));
+    if (card.bill?.line) rows.push(row('cost', 'billLine', card.bill.line));
     rows.push(...(card.body || []).map((line) => row('cost', 'drawer', line)));
     rows.push(...(card.model || []).map((item) => row('cost', 'drawer', `${item.label}: ${item.value}`)));
     rows.push(...(card.compounders || []).map((item) => row('cost', 'drawer', `${item.label}: ${item.value}`)));

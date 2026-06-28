@@ -4,6 +4,7 @@ import {
   BENCHMARK_LABEL,
   BUCKET_COPY,
   CARD6_IMPLICATIONS,
+  COST_BILL,
   COST_COMPOUND,
   COST_HERO,
   COST_SCENES,
@@ -193,11 +194,11 @@ export function deriveActionPlan(profile) {
       avoidForNow: 'Do not scale more AI pilots until one shared decision has one source, one definition and one owner.'
     }
   }[hurdle] || {
-    artefactName: 'First Constraint Map',
+    artefactName: 'First Leak Map',
     why: 'The next useful move is to make one repeated decision cleaner.',
     mondayMove: 'Choose *one recurring decision* and write the signal, owner, source, delay and first fix.',
     whatToBringToCall: 'Bring one live decision the business is already struggling to make cleanly.',
-    avoidForNow: 'Do not broaden the work before the first constraint is visible.'
+    avoidForNow: 'Do not broaden the work before the first leak is visible.'
   };
 
   return {
@@ -263,7 +264,7 @@ export function deriveRevealInsights(answers, profile, context = {}) {
       interpretation: scoreInterpretation({ profile, strongest, hurdle: hurdlePillar, gap, highEvenShape, balancedEvenShape }),
       after: scoreAfterLine(profile.score),
       drawerLabel: 'Score detail',
-      advanceLabel: 'See the shape'
+      advanceLabel: 'Find the leak'
     },
     {
       type: 'shape',
@@ -284,7 +285,7 @@ export function deriveRevealInsights(answers, profile, context = {}) {
       shapeRead: shapeRead({ strongest, hurdle: hurdlePillar, gap, highEvenShape, balancedEvenShape, leverage: leverageReality(answers, profile) }),
       body: shapeBody({ strongest, hurdle: hurdlePillar, gap, highEvenShape, balancedEvenShape }),
       drawerLabel: 'Why it matters',
-      advanceLabel: 'Find the constraint'
+      advanceLabel: 'Find the first leak'
     },
     {
       type: 'hurdle',
@@ -322,6 +323,7 @@ export function deriveRevealInsights(answers, profile, context = {}) {
       eyebrow: STATIC.card9.eyebrow,
       hero: costHero(profile, weakAnswers) || COST_HERO[profile.hurdle]?.[profile.bucket] || '',
       compound: COST_COMPOUND[profile.bucket] || '',
+      bill: COST_BILL[`${profile.hurdle}_${profile.bucket}`] || null,
       glyph: profile.hurdle,
       model: costModel(profile),
       // Folded widening: the "If ignored" escalation rides on the cost card.
@@ -442,7 +444,7 @@ function diagnosticBasis(answers, profile) {
   const channelLine = channelPicks.length === 0
     ? 'No channel footprint named, so we keep the read on the repeated decision path.'
     : channelPicks.length === 1
-    ? `One route named: ${channelPicks[0]}. We can read the constraint without assuming cross-channel complexity.`
+    ? `One route named: ${channelPicks[0]}. We can read the leak without assuming cross-channel complexity.`
     : `${channelPicks.length} routes named: ${channelPicks.slice(0, 2).join(' / ')}${channelPicks.length > 2 ? ` + ${channelPicks.length - 2} more` : ''}. That makes joins, handoffs and reconciliation part of the diagnosis.`;
   const readLine = {
     Visibility: `${profile.bucket} / Visibility: we are testing whether evidence can carry the decisions this footprint now asks of it.`,
@@ -572,7 +574,7 @@ function blockerCalibration({ orderedPicks, hurdle, noneSelected, convergent, na
     return [
       { label: 'You named', value: 'No blocker selected.' },
       { label: 'Measured signal', value: measured },
-      { label: 'Calibration', value: `Not feeling blocked is useful data. It means the first constraint is embedded in the operating rhythm, not visible as a named initiative problem.` },
+      { label: 'Calibration', value: `Not feeling blocked is useful data. It means the first leak is embedded in the operating rhythm, not visible as a named initiative problem.` },
       { label: 'Inspect first', value: inspect }
     ];
   }
@@ -600,8 +602,8 @@ function blockerCalibration({ orderedPicks, hurdle, noneSelected, convergent, na
 
 function scoreInterpretation({ profile, strongest, hurdle, gap, highEvenShape, balancedEvenShape }) {
   const scoreRead =
-    profile.score >= 80 ? 'Strong enough to push, if the first constraint does not travel forward.' :
-    profile.score >= 65 ? 'Useful readiness, with *one constraint* carrying too much of the work.' :
+    profile.score >= 80 ? 'Strong enough to push, if the first leak does not travel forward.' :
+    profile.score >= 65 ? 'Useful readiness, with *one leak* carrying too much of the work.' :
     profile.score >= 45 ? 'Enough signal to act. One part of the system is making the rest work harder.' :
     'Low enough to matter. Clear enough to show *where to start*.';
   const strength = highEvenShape
@@ -627,10 +629,10 @@ function scoreInterpretation({ profile, strongest, hurdle, gap, highEvenShape, b
 }
 
 export function scoreAfterLine(score) {
-  if (score < 45) return 'Strong peers sit in the mid-80s. The gap shows where value is leaking.';
-  if (score < 65) return 'Enough signal to act. One part of the system is making the rest work harder.';
-  if (score < 80) return 'Useful readiness. One constraint is carrying too much of the work.';
-  return 'Strong read. Now choose the one strength that should move first.';
+  if (score < 45) return 'Strong peers sit in the mid-80s. The first job is to stop the leak, not fix everything.';
+  if (score < 65) return 'Enough signal to act. One operating leak is making the rest pay.';
+  if (score < 80) return 'Good base. One leak is carrying too much operating risk.';
+  return 'Strong base. The next gain comes from one rule, not another tool.';
 }
 
 function shapeRead({ hurdle, gap, highEvenShape, balancedEvenShape, leverage }) {
@@ -644,12 +646,12 @@ function shapeRead({ hurdle, gap, highEvenShape, balancedEvenShape, leverage }) 
     Visibility: 'AI inherits the same trust problem unless the number, source, owner and decision rule are explicit.',
     Velocity: 'AI inherits the same delay unless the signal, owner, permission and action path are connected.',
     Coherence: 'AI inherits the same split unless the source, definition, owner and escalation rule are shared.'
-  }[hurdle.label] || 'AI inherits the first operating constraint unless the repeated decision path is made cleaner.';
+  }[hurdle.label] || 'AI inherits the first operating leak unless the repeated decision path is made cleaner.';
 
   return [
     { label: 'First leak', value: constraint },
     { label: 'What AI inherits', value: aiImplication },
-    { label: 'AI today', value: leverage || 'AI depends on the first operating constraint being made cleaner.' }
+    { label: 'AI today', value: leverage || 'AI depends on the first operating leak being made cleaner.' }
   ];
 }
 
@@ -664,7 +666,7 @@ function leverageReality(answers, profile) {
     Visibility: 'uncertainty in the numbers',
     Velocity: 'delay in the decision path',
     Coherence: 'fragmented team pictures'
-  }[profile.hurdle] || 'the first operating constraint';
+  }[profile.hurdle] || 'the first operating leak';
   const reach =
     picks.includes(0) || aiUse === 0 ? 'AI is not yet materially in the work' :
     aiUse >= 7 ? 'AI is already touching decision routing' :
@@ -674,7 +676,7 @@ function leverageReality(answers, profile) {
     'AI is mostly personal-tool usage';
 
   if (picks.includes(0) || aiUse === 0) {
-    return `${reach}. That is useful: the first ${profile.hurdle} constraint can be fixed before AI inherits ${inherited}.`;
+    return `${reach}. That is useful: the first ${profile.hurdle} leak can be fixed before AI inherits ${inherited}.`;
   }
   if (ownership >= 2 && aiUse >= 2) {
     return `${reach}, but mandate is still loose. AI activity is ahead of ownership, so the first risk is multiplying ${inherited}.`;
@@ -696,9 +698,9 @@ function shapeBody({ strongest, hurdle, gap, highEvenShape, balancedEvenShape })
     return `The readings are close. This is not a dramatic gap. It is not a weak profile. It is a business with a first place to sharpen. For you, that starts with ${hurdle.label}.`;
   }
   const strongLine = PILLAR_COPY[strongest.label]?.strong || `${strongest.label} is the strongest reading.`;
-  const weakLine = PILLAR_COPY[hurdle.label]?.weak || `${hurdle.label} is the constraint.`;
+  const weakLine = PILLAR_COPY[hurdle.label]?.weak || `${hurdle.label} is the leak.`;
   if (strongest.label === hurdle.label || gap <= 6) {
-    return `${weakLine} The scores are close, which means the profile is not about one dramatic collapse. It is about the first constraint to remove.`;
+    return `${weakLine} The scores are close, which means the profile is not about one dramatic collapse. It is about the first leak to close.`;
   }
   return `${strongLine} ${hurdle.label} is at ${hurdle.value}, a ${gap}-point gap. That is the first place value leaks.`;
 }
@@ -747,10 +749,10 @@ function patternSoWhat(hurdle) {
 
 function firstMoveHeader(hurdle) {
   return {
-    Visibility: 'One trusted number. *Mapped on the call*.',
-    Velocity: 'One late decision. *Mapped on the call*.',
-    Coherence: 'One split decision. *Mapped on the call*.'
-  }[hurdle] || 'One live decision. *Mapped on the call*.';
+    Visibility: 'One number. One owner. One *rule*.',
+    Velocity: 'One late call. One *release rule*.',
+    Coherence: 'One split call. One *tie-break rule*.'
+  }[hurdle] || 'One live decision. One *rule*.';
 }
 
 function costHero(profile, weakAnswers) {
@@ -927,7 +929,7 @@ function compoundingModel(profile) {
     Visibility: 'Because the picture is not decision-grade, stronger AI work inherits uncertainty.',
     Velocity: 'Because the path from signal to action is slow, stronger AI work only makes the delay visible faster.',
     Coherence: 'Because the picture splits before action, stronger AI work can amplify separate work instead of compounding shared value.'
-  }[profile.hurdle] || 'Because the first constraint is unresolved, stronger AI work inherits the operating drag.';
+  }[profile.hurdle] || 'Because the first leak is unresolved, stronger AI work inherits the operating drag.';
 
   return [
     { label: 'Now', value: stage.now },

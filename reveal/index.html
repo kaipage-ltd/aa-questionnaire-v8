@@ -850,11 +850,17 @@
     margin-bottom: 18px;
   }
   .impact-line {
-    font-family: var(--serif);
-    font-size: clamp(32px, 4vw, 54px);
-    line-height: 1.04;
+    font-size: clamp(20px, 2.3vw, 27px);
+    line-height: 1.22;
     color: var(--ink);
     max-width: 360px;
+  }
+  .impact-metric {
+    font-family: var(--serif);
+    font-size: clamp(48px, 6vw, 82px);
+    line-height: 0.9;
+    color: var(--ink);
+    margin-bottom: 14px;
   }
   .cost-impact .impact-glyph {
     margin-bottom: 24px;
@@ -896,6 +902,17 @@
     font-size: clamp(46px, 6.6vw, 82px);
     line-height: 0.98;
   }
+  .move-copy .lede {
+    color: var(--ink);
+    max-width: 700px;
+  }
+  .move-copy .body.forward {
+    color: rgba(243, 234, 217, 0.94);
+    font-size: clamp(18px, 1.75vw, 23px);
+    line-height: 1.35;
+    max-width: 620px;
+    margin-top: 20px;
+  }
   .move-rail {
     margin-top: 34px;
     display: grid;
@@ -910,7 +927,7 @@
     font-family: var(--mono);
     font-size: 10px;
     letter-spacing: 0.14em;
-    color: var(--ink-faint);
+    color: rgba(243, 234, 217, 0.58);
     margin-bottom: 11px;
   }
   .move-step-title {
@@ -923,7 +940,7 @@
   .move-step-body {
     font-size: 14.5px;
     line-height: 1.35;
-    color: var(--ink-soft);
+    color: rgba(243, 234, 217, 0.72);
   }
   .card-inner.close-inner {
     width: min(100%, 860px);
@@ -1242,8 +1259,12 @@
       margin-bottom: 10px;
     }
     .impact-line {
-      font-size: 28px;
+      font-size: 20px;
       max-width: none;
+    }
+    .impact-metric {
+      font-size: 44px;
+      margin-bottom: 8px;
     }
     .move-symbol {
       min-height: 160px;
@@ -1966,7 +1987,8 @@ function buildCard(card) {
     const impact = el('div', 'cost-impact anim d2');
     impact.append(el('div', 'impact-kicker', 'THE BILL'));
     impact.append(pillarIcon(card.glyph, 'impact-glyph'));
-    impact.append(el('div', 'impact-line', costImpactLine(card.glyph)));
+    impact.append(el('div', 'impact-metric', card.bill?.metric || 'One leak'));
+    impact.append(el('div', 'impact-line', card.bill?.line || costImpactLine(card.glyph)));
     const detail = el('div', 'drawer-content');
     appendProse(detail, card.body?.length ? card.body : ['Picture the cost inside one real operating cycle.']);
     const modelRows = (card.model || []).filter((row) => ['Your number', 'Track next'].includes(row.label));

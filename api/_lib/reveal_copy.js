@@ -1,8 +1,8 @@
 export const STATIC = {
   card1: {
     eyebrow: 'A+A · AI READINESS',
-    lede: 'most brands run on a gap they never measure. *You just did.*',
-    body: 'The gap between what {brandName} knows and what it does. Here is yours.'
+    lede: 'AI does not fail in the tool. It leaks in the *decision*.',
+    body: 'Your answers show the gap between what {brandName} sees and what it does. That is the one to map first.'
   },
   card2: {
     label: 'WHERE {brandName} STANDS TODAY'
@@ -150,8 +150,8 @@ export const HURDLE_COPY = {
   Visibility: {
     hurdleCard: {
       lede: "You have the numbers. You can't *trust* them.",
-      body: "Every other strength stands on numbers you don't quite believe. Fix the trust and the rest holds.",
-      close: 'First constraint: Visibility'
+      body: 'Every growth call stands on a number. Yours still has to be defended before it can move the week.',
+      close: 'First leak: Visibility'
     },
     reframe: {
       lede: 'Here is what is actually happening. It is not just a data problem.',
@@ -178,8 +178,8 @@ export const HURDLE_COPY = {
   Velocity: {
     hurdleCard: {
       lede: 'You see the move. You make it *too late*.',
-      body: 'Seeing clearly is worth nothing if you act a week late. Close the gap and your other strengths finally pay off.',
-      close: 'First constraint: Velocity'
+      body: 'The value is not in seeing it. The value is in moving while the window is still open.',
+      close: 'First leak: Velocity'
     },
     reframe: {
       lede: 'Here is what is actually happening. It is not what you think.',
@@ -206,8 +206,8 @@ export const HURDLE_COPY = {
   Coherence: {
     hurdleCard: {
       lede: "Your teams are sharp. They don't share *one picture*.",
-      body: 'Each team can be right and the business still loses. One shared picture and the rest speeds up.',
-      close: 'First constraint: Coherence'
+      body: 'Each team can be right. The business still pays for the split before the work starts.',
+      close: 'First leak: Coherence'
     },
     reframe: {
       lede: 'Here is what is actually happening. It is not just a collaboration problem.',
@@ -333,15 +333,54 @@ export const COST_HERO = {
 };
 
 export const COST_COMPOUND = {
-  Clarity: 'This is still cheap to fix because the habit is small.',
-  Traction: 'Momentum turns this into missed margin before anyone sees the line item.',
+  Clarity: 'The habit is still small enough to change before the business grows around it.',
+  Traction: 'Momentum turns the leak into missed margin before it shows as a line item.',
   Scale: 'At this size, the cost moves through confidence, capital and margin.'
 };
 
+export const COST_BILL = {
+  Visibility_Clarity: {
+    metric: 'Five days',
+    line: 'before the number can be trusted.'
+  },
+  Visibility_Traction: {
+    metric: 'Three weeks',
+    line: 'before payback catches spend.'
+  },
+  Visibility_Scale: {
+    metric: 'Six weeks',
+    line: 'before proof catches conviction.'
+  },
+  Velocity_Clarity: {
+    metric: 'Seven days',
+    line: 'between signal and action.'
+  },
+  Velocity_Traction: {
+    metric: 'Eleven days',
+    line: 'between signal and action.'
+  },
+  Velocity_Scale: {
+    metric: 'Six weeks',
+    line: 'between evidence and decision.'
+  },
+  Coherence_Clarity: {
+    metric: 'One meeting',
+    line: 'spent rebuilding the picture.'
+  },
+  Coherence_Traction: {
+    metric: 'Four weeks',
+    line: 'before overlap appears.'
+  },
+  Coherence_Scale: {
+    metric: 'Eight weeks',
+    line: 'before the centre sees the split.'
+  }
+};
+
 export const MOVE_BODY = {
-  Visibility: 'Bring the number people keep defending. We map its owner, source, trust rule and the decision it must change.',
-  Velocity: 'Bring the decision that keeps landing late. We map the signal, first wait, owner and release rule.',
-  Coherence: 'Bring the decision teams keep splitting on. We map the source, definition, owner and tie-break rule.'
+  Visibility: 'Bring the number the room still has to defend. Our CEO maps its source, owner, trust rule and the decision it can change this week.',
+  Velocity: 'Bring the late decision. Our CEO maps the signal, first wait, owner, deadline and the rule that releases it before the window closes.',
+  Coherence: 'Bring the decision teams split around. Our CEO maps the source, definition, owner and the tie-break rule before the next meeting starts.'
 };
 
 export const QUOTE_SOWHAT = {
@@ -350,8 +389,8 @@ export const QUOTE_SOWHAT = {
   Coherence: 'The pattern is not team quality. It is three teams carrying three pictures.'
 };
 
-export const MONDAY_FORWARD = 'That is what the working session is for.';
-export const SESSION_OFFER = 'Thirty minutes with our CEO. Not a pitch. You bring one real decision. You leave with a plan to fix it.';
+export const MONDAY_FORWARD = 'That is the session: one decision path, written before another week leaks.';
+export const SESSION_OFFER = 'Thirty minutes with our CEO. Not a pitch. Bring the decision this reveal found. Leave with the first rule to fix it.';
 
 export const ANSWER_OPTIONS = {
   Q2: [
