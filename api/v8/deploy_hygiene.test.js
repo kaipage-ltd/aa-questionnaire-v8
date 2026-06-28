@@ -15,6 +15,7 @@ test('internal working artifacts are excluded from Vercel deployments', () => {
     '/BREVO_*.html',
     '/REVEAL_*.md',
     '/HANDOFF_*.md',
+    '/AGENT_FEEDBACK_LEDGER.md',
     '/reveal_copy_studio.html',
     '/.claude/',
     '/.agents/',
