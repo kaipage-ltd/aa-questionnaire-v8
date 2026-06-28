@@ -111,7 +111,7 @@ export async function POST(req) {
   return json({
     ok: true,
     emailSent: Boolean(emailResult.sent),
-    emailResult,
+    emailResult: publicEmailResult(emailResult),
     revealUrl,
     pdfUrl,
     profile,
@@ -151,4 +151,20 @@ function normaliseText(value, maxLength) {
     .replace(/\s+/g, ' ')
     .trim()
     .slice(0, maxLength);
+}
+
+function publicEmailResult(result = {}) {
+  const out = {
+    sent: Boolean(result.sent),
+    provider: result.provider || 'brevo'
+  };
+  if ('contactSynced' in result) out.contactSynced = Boolean(result.contactSynced);
+  if (result.skipped) out.skipped = publicSkippedReason(result.skipped);
+  if (result.error) out.error = 'email_delivery_failed';
+  return out;
+}
+
+function publicSkippedReason(reason) {
+  if (reason === 'demo_in_production') return reason;
+  return 'email_not_configured';
 }

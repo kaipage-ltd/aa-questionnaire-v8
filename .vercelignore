@@ -1,0 +1,19 @@
+# Local-only planning, audit and critique artifacts.
+/security-audit-*.html
+/SECURITY_AUDIT_*.md
+/DNS_*.html
+/BREVO_*.html
+/REVEAL_*.md
+/HANDOFF_*.md
+/reveal_copy_studio.html
+
+# Agent/tooling state and generated output.
+/.claude/
+/.agents/
+/scripts/output/
+/output/
+
+# Local environment files.
+/.env
+/.env.local
+/.vercel/

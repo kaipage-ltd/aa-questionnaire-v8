@@ -95,7 +95,7 @@ test('submit issues a reveal token and printable profile URL', async () => {
   assert.equal(body.ok, true);
   assert.equal(body.emailSent, false);
   assert.equal(body.emailResult.provider, 'brevo');
-  assert.equal(body.emailResult.skipped, 'BREVO_API_KEY not configured');
+  assert.equal(body.emailResult.skipped, 'email_not_configured');
   assert.match(body.revealUrl, /^https:\/\/v8\.example\.test\/reveal\/\?token=/);
   assert.match(body.pdfUrl, /^https:\/\/v8\.example\.test\/api\/v8\/pdf\?token=/);
   const token = new URL(body.revealUrl).searchParams.get('token');
@@ -414,7 +414,10 @@ test('submit does not expose provider error details to the browser', async () =>
   process.env.BREVO_SENDER_EMAIL = 'profile@send.atelierandavenue.com';
 
   const realFetch = globalThis.fetch;
+  const realConsoleError = console.error;
+  const logged = [];
   globalThis.fetch = async () => new Response('brevo-secret-detail', { status: 500 });
+  console.error = (...args) => logged.push(args.map((arg) => String(arg)).join(' '));
   try {
     const response = await submit(postJson('https://v8.example.test/api/v8/submit', {
       name: 'Kai Page',
@@ -432,8 +435,10 @@ test('submit does not expose provider error details to the browser', async () =>
       error: 'email_delivery_failed'
     });
     assert.equal(JSON.stringify(body).includes('brevo-secret-detail'), false);
+    assert.equal(logged.some((line) => line.includes('brevo-secret-detail')), false);
   } finally {
     globalThis.fetch = realFetch;
+    console.error = realConsoleError;
     clearBrevoEnv();
   }
 });
@@ -477,12 +482,11 @@ test('submit syncs a Brevo contact and sends the transactional template when con
 
     const body = await response.json();
     assert.equal(body.emailSent, true);
-    assert.equal(body.emailResult.provider, 'brevo');
-    assert.equal(body.emailResult.mode, 'transactional_template');
-    assert.equal(body.emailResult.templateId, 7);
-    assert.equal(body.emailResult.contactId, 123);
-    assert.equal(body.emailResult.listId, 42);
-    assert.equal(body.emailResult.messageId, '<message-id@example.test>');
+    assert.deepEqual(body.emailResult, {
+      sent: true,
+      provider: 'brevo',
+      contactSynced: true
+    });
 
     assert.equal(calls.length, 2);
     assert.equal(calls[0].url, 'https://api.brevo.com/v3/contacts');
@@ -587,6 +591,7 @@ test('reveal demo path returns cards without a token or submit (no Turnstile/ema
   assert.equal(body.ok, true);
   assert.equal(body.reveal.demo, true);
   assert.equal(body.reveal.characterName, 'The Late Caller');
+  assert.equal(body.reveal.email, '');
   assert.equal(body.reveal.cards.length, 8);
   assert.equal(body.reveal.cards[0].type, 'turn');
   assert.equal('answers' in body.reveal, false);

@@ -56,7 +56,6 @@ async function main() {
     assert(Boolean(submitBody.pdfUrl), 'missing pdfUrl');
     assert(submitBody.emailResult?.provider === 'brevo', 'email provider was not brevo');
     assert(submitBody.emailResult?.contactSynced === true, 'Brevo contact was not synced');
-    assert(submitBody.emailResult?.listId === 3, `unexpected listId=${submitBody.emailResult?.listId}`);
     assert(submitBody.emailSent === expectEmailSent, `emailSent=${submitBody.emailSent}, expected ${expectEmailSent}`);
     assert(Boolean(submitBody.actionPlan?.artefactName), 'missing action-plan artefact');
     assert(submitBody.privacy?.version === '2026-06-25', `privacy_version=${submitBody.privacy?.version}`);
@@ -75,7 +74,6 @@ async function main() {
     console.log(`submit_status=${submitRes.status()}`);
     console.log(`emailSent=${submitBody.emailSent}`);
     console.log(`contactSynced=${submitBody.emailResult.contactSynced}`);
-    console.log(`listId=${submitBody.emailResult.listId}`);
     console.log(`profile=${submitBody.profile.characterName} / ${submitBody.profile.score}`);
     console.log(`actionPlan=${submitBody.actionPlan.artefactName}`);
     console.log(`privacyVersion=${submitBody.privacy.version}`);

@@ -109,3 +109,11 @@ test('every non-final card carries a visible advance affordance', () => {
   assert.match(playerHtml, /card-advance/, 'cards must offer a visible Continue button, not only invisible zones');
   assert.match(playerHtml, /card\.advanceLabel \|\| 'Continue'/, 'advance buttons should support slide-specific next actions');
 });
+
+test('booking link preserves invitee prefill while suppressing referrer data', () => {
+  assert.match(playerHtml, /window\.open\(withInvitee\(url\), '_blank', 'noopener,noreferrer'\)/, 'calendar links should keep invitee prefill and suppress referrer data');
+  assert.match(playerHtml, /function withInvitee/, 'calendar URL prefill must remain wired');
+  assert.match(playerHtml, /searchParams\.set\('email'/, 'email prefill must remain wired for the scheduler');
+  assert.match(playerHtml, /searchParams\.set\('name'/, 'name prefill must remain wired for the scheduler');
+  assert.match(playerHtml, /body\.reveal\.email/, 'the reveal player should receive respondent email for scheduler prefill');
+});

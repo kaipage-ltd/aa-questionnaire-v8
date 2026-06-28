@@ -1,4 +1,5 @@
 const BREVO_API_BASE = 'https://api.brevo.com/v3';
+const BREVO_TIMEOUT_MS = 8000;
 
 export async function sendRevealEmail({ to, name, revealUrl, pdfUrl, profile, actionPlan = {}, submittedAt }) {
   const apiKey = process.env.BREVO_API_KEY;
@@ -102,23 +103,41 @@ function sendTransactionalEmail(apiKey, { templateId, sender, to, replyTo, param
 }
 
 async function brevoRequest(apiKey, path, options = {}) {
-  const res = await fetch(`${BREVO_API_BASE}${path}`, {
-    method: options.method || 'GET',
-    headers: {
-      accept: 'application/json',
-      'content-type': 'application/json',
-      'api-key': apiKey
-    },
-    body: options.body ? JSON.stringify(removeUndefined(options.body)) : undefined
-  });
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), BREVO_TIMEOUT_MS);
+  let res;
+
+  try {
+    res = await fetch(`${BREVO_API_BASE}${path}`, {
+      method: options.method || 'GET',
+      headers: {
+        accept: 'application/json',
+        'content-type': 'application/json',
+        'api-key': apiKey
+      },
+      body: options.body ? JSON.stringify(removeUndefined(options.body)) : undefined,
+      signal: controller.signal
+    });
+  } catch (err) {
+    throw brevoFailure(err?.name === 'AbortError' ? 'timeout' : 'network_error');
+  } finally {
+    clearTimeout(timeout);
+  }
 
   if (!res.ok) {
-    const detail = await res.text().catch(() => '');
-    throw new Error(`Brevo API failed: ${res.status} ${detail}`);
+    throw brevoFailure(`status_${res.status}`, res.status);
   }
 
   if (res.status === 204) return {};
   return res.json().catch(() => ({}));
+}
+
+function brevoFailure(reason, status) {
+  const err = new Error(status ? `Brevo API failed: ${status}` : `Brevo API failed: ${reason}`);
+  err.provider = 'brevo';
+  err.reason = reason;
+  if (status) err.status = status;
+  return err;
 }
 
 function optionalPositiveInt(value, name) {

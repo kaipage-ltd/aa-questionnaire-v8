@@ -2047,10 +2047,10 @@ function buildCard(card) {
 }
 
 function openCalendar(wrap, url) {
-  // A real scheduling URL opens in a new tab (prefilled) so the reveal stays open behind it.
+  // A real scheduling URL opens in a new tab so the reveal stays open behind it.
   // Until one is wired, the in-flow panel explains the booking step rather than dead-ending.
   if (url && /^https?:\/\//i.test(url)) {
-    window.open(withInvitee(url), '_blank', 'noopener');
+    window.open(withInvitee(url), '_blank', 'noopener,noreferrer');
     return;
   }
   wrap.querySelector('.calendar-panel').classList.add('is-open');
