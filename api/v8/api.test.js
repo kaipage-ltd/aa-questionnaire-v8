@@ -666,11 +666,11 @@ test('all-strong reveals keep calibrated shape copy and the plain constraint bea
   const quote = insights.cards.find((card) => card.type === 'quote');
 
   assert.equal(profile.score, 100);
-  assert.match(shape.body, /not a weak profile/i);
+  assert.match(shape.body, /choose the first rule/i);
   assert.doesNotMatch(shape.body, /thin|collapse/i);
   assert.equal(hurdle.lede, "You have the numbers. You can't *trust* them.");
   assert.equal(hurdle.close, 'First leak: Visibility');
-  assert.match(hurdle.tail, /real strengths/i);
+  assert.match(hurdle.tail, /profile is strong/i);
   assert.match(quote.implication, /selected that as a strength/i);
 });
 
@@ -703,11 +703,11 @@ test('balanced mid-strength reveals keep calibrated shape copy and the plain con
   const hurdle = insights.cards.find((card) => card.type === 'hurdle');
 
   assert.equal(profile.score, 66);
-  assert.match(shape.body, /not a dramatic gap/i);
+  assert.match(shape.body, /sharpening job/i);
   assert.doesNotMatch(shape.body, /thin|collapse/i);
   assert.equal(hurdle.lede, "You have the numbers. You can't *trust* them.");
   assert.equal(hurdle.close, 'First leak: Visibility');
-  assert.match(hurdle.tail, /not collapsing/i);
+  assert.match(hurdle.tail, /first move is a small rule/i);
 });
 
 test('reveal route returns a generic error for invalid tokens', async () => {

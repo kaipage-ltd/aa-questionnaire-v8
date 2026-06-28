@@ -221,7 +221,7 @@ function coverPage(ctx, meta, profile) {
 
   <div style="margin-top:auto; padding-bottom:10mm; display:flex; justify-content:space-between; align-items:center; gap:10mm;">
     <p style="font-size:12px; line-height:1.5; color:var(--ink-soft); max-width:115mm;">
-      This profile was read from your own answers: where the operating system is ready, where it leaks first and the one move that starts on a Monday.
+      This profile was read from your own answers: where the operating system is ready, where it leaks first and the first rule to test next week.
     </p>
     <a class="btn solid" href="${escAttr(meta.revealUrl)}">Open the full reveal</a>
   </div>
@@ -233,7 +233,7 @@ function shapePage(ctx, meta, profile) {
   return `<section class="sheet">
   ${header('The operating shape')}
   <div class="eyebrow mono">Benchmark vs strong peers</div>
-  <h1 class="title">Four readings against the strong-peer mark.</h1>
+  <h1 class="title">Benchmark vs peers. One line drags.</h1>
   <p class="lede">${esc(ctx.shapeBody)}</p>
 
   <div style="margin-top:9mm; border-top:1px solid var(--rule);">
@@ -266,7 +266,7 @@ function evidencePage(ctx, meta, profile) {
   const evidence = (ctx.evidence.length ? ctx.evidence : ctx.receipts.map((text) => ({ read: text }))).slice(0, 3);
   return `<section class="sheet">
   ${header('Pattern')}
-  <div class="eyebrow mono">The pattern in your answers</div>
+  <div class="eyebrow mono">The receipt</div>
   <h1 class="title">${esc(ctx.patternHeader || 'Three answers. One pattern.')}</h1>
   <p class="lede">${esc(ctx.patternBody || ctx.receiptTail)}</p>
 
@@ -318,7 +318,7 @@ function firstMovePage(ctx, meta, profile) {
   const steps = firstMoveSteps(ctx);
   return `<section class="sheet">
   ${header('First move')}
-  <div class="eyebrow mono">The working session</div>
+  <div class="eyebrow mono">Book the session</div>
   <h1 class="title">${esc(ctx.firstMoveHeader || 'One live decision. One rule.')}</h1>
   <p class="lede">${esc(ctx.firstMoveLine || 'Bring the live decision where the pattern shows up. The call turns it into the first operating rule.')}</p>
 

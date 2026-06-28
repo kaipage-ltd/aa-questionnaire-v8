@@ -68,14 +68,14 @@ function flatten(value) {
 }
 
 test('scoreAfterLine returns the four specified score-band lines', () => {
-  assert.equal(scoreAfterLine(0), 'Strong peers sit in the mid-80s. The first job is to stop the leak, not fix everything.');
-  assert.equal(scoreAfterLine(44), 'Strong peers sit in the mid-80s. The first job is to stop the leak, not fix everything.');
-  assert.equal(scoreAfterLine(45), 'Enough signal to act. One operating leak is making the rest pay.');
-  assert.equal(scoreAfterLine(64), 'Enough signal to act. One operating leak is making the rest pay.');
-  assert.equal(scoreAfterLine(65), 'Good base. One leak is carrying too much operating risk.');
-  assert.equal(scoreAfterLine(79), 'Good base. One leak is carrying too much operating risk.');
-  assert.equal(scoreAfterLine(80), 'Strong base. The next gain comes from one rule, not another tool.');
-  assert.equal(scoreAfterLine(100), 'Strong base. The next gain comes from one rule, not another tool.');
+  assert.equal(scoreAfterLine(0), 'Clear enough to act. Low enough to show the first fix.');
+  assert.equal(scoreAfterLine(44), 'Clear enough to act. Low enough to show the first fix.');
+  assert.equal(scoreAfterLine(45), 'Enough signal to act. Too uneven to scale cleanly.');
+  assert.equal(scoreAfterLine(64), 'Enough signal to act. Too uneven to scale cleanly.');
+  assert.equal(scoreAfterLine(65), 'Strong base. One leak is carrying too much risk.');
+  assert.equal(scoreAfterLine(79), 'Strong base. One leak is carrying too much risk.');
+  assert.equal(scoreAfterLine(80), 'Strong base. Fix the rule before adding another tool.');
+  assert.equal(scoreAfterLine(100), 'Strong base. Fix the rule before adding another tool.');
 });
 
 test('cost hero copy covers every hurdle and bucket combination', () => {
@@ -113,10 +113,10 @@ test('demo reveal matrix emits the overhauled 8-card contract', () => {
     const [turn, number, shape, hurdle, quote, cost, firstMove, close] = insights.cards;
 
     assert.equal(turn.eyebrow, 'A+A · AI READINESS');
-    assert.match(turn.lede, /leaks in the \*decision\*/);
-    assert.match(turn.body, /one to map first/);
+    assert.equal(turn.lede, 'We found the *decision leak*.');
+    assert.match(turn.body, /from score to proof to the first rule/);
 
-    assert.equal(number.label, 'WHERE A+A Demo STANDS TODAY');
+    assert.equal(number.label, 'WHERE YOUR BUSINESS STANDS TODAY');
     assert.equal(number.max, 100);
     assert.equal(number.after, scoreAfterLine(profile.score));
     assert.equal(number.interpretation.some((row) => row.label === 'Score read'), true);
@@ -125,9 +125,9 @@ test('demo reveal matrix emits the overhauled 8-card contract', () => {
     assert.equal(number.advanceLabel, 'Find the leak');
 
     assert.equal(shape.eyebrow, 'WHERE YOU STAND VS PEERS');
-    assert.equal(shape.header, 'Benchmark vs *strong peers*.');
-    assert.match(shape.lede, /strong-peer mark/);
-    assert.match(shape.benchmarkNote, /not perfection/);
+    assert.equal(shape.header, 'Benchmark vs peers. One line *drags*.');
+    assert.match(shape.lede, /strong operators/);
+    assert.match(shape.benchmarkNote, /Peer mark/);
     assert.equal(shape.pillars.length, 4);
     for (const pillar of shape.pillars) {
       assert.equal(pillar.icon, pillar.label, `${expectedKey} ${pillar.label} should expose its glyph key`);
@@ -153,12 +153,12 @@ test('demo reveal matrix emits the overhauled 8-card contract', () => {
       assert.equal(Boolean(row.read), true);
     }
 
-    assert.equal(quote.eyebrow, 'THE PATTERN IN YOUR ANSWERS');
-    assert.match(quote.header, /Three answers/);
+    assert.equal(quote.eyebrow, 'THE RECEIPT');
+    assert.match(quote.header, /Your answers show/);
     assert.equal(Boolean(quote.body), true);
     assert.equal(Boolean(quote.signalLine), true);
     assert.doesNotMatch(quote.body, /clearest signal/i);
-    assert.match(quote.signalLine, /^Clearest signal: /);
+    assert.match(quote.signalLine, /^Best proof: /);
     assert.equal(Boolean(quote.quote), true);
     assert.equal(Boolean(quote.sowhat), true);
     assert.equal(quote.proof?.length, 3);
@@ -182,7 +182,7 @@ test('demo reveal matrix emits the overhauled 8-card contract', () => {
     assert.equal(firstMove.glyph, profile.hurdle);
     assert.match(firstMove.header, /\*.*rule\*/);
     assert.match(firstMove.move, /Our CEO/);
-    assert.equal(firstMove.forward, 'That is the session: one decision path, written before another week leaks.');
+    assert.equal(firstMove.forward, 'That is the session: one decision path you can test next week.');
     assert.equal(firstMove.brief.some((row) => row.label === 'Bring'), true);
     assert.equal(firstMove.brief.some((row) => row.label === 'Leave with'), true);
     assert.equal(firstMove.drawerLabel, 'What to bring');

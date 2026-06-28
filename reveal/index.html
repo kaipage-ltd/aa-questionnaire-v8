@@ -1754,12 +1754,12 @@ function moveStepsFor(hurdle) {
     Velocity: [
       ['Bring', 'The decision that lands late.'],
       ['Find', 'The first wait after signal.'],
-      ['Set', 'Owner, deadline and release rule.']
+      ['Set', 'Owner, deadline and rule.']
     ],
     Coherence: [
       ['Bring', 'The decision teams split on.'],
       ['Name', 'Source, definition and owner.'],
-      ['Set', 'The rule for disagreement.']
+      ['Set', 'The tie-breaker.']
     ]
   }[hurdle] || [
     ['Bring', 'One repeated decision.'],
@@ -1949,7 +1949,7 @@ function buildCard(card) {
       bars.append(row);
     });
     inner.append(bars);
-    inner.append(el('div', 'bench-key anim d3', card.benchmarkNote || 'The mark on the right is the strong-peer threshold.'));
+    inner.append(el('div', 'bench-key anim d3', card.benchmarkNote || 'The mark on the right is the strong peer threshold.'));
     if (card.shapeRead?.length) {
       inner.append(buildDrawer(card.drawerLabel || 'Why it matters', buildBriefPanel(card.shapeRead, 'shape-read-panel')));
     }

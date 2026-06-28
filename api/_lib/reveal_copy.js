@@ -1,11 +1,11 @@
 export const STATIC = {
   card1: {
     eyebrow: 'A+A · AI READINESS',
-    lede: 'AI does not fail in the tool. It leaks in the *decision*.',
-    body: 'Your answers show the gap between what {brandName} sees and what it does. That is the one to map first.'
+    lede: 'We found the *decision leak*.',
+    body: 'Your answers point to one place where value leaks before a decision lands. We follow it from score to proof to the first rule.'
   },
   card2: {
-    label: 'WHERE {brandName} STANDS TODAY'
+    label: 'WHERE YOUR BUSINESS STANDS TODAY'
   },
   card5: {
     eyebrow: 'THE ANSWERS BEHIND IT',
@@ -13,8 +13,8 @@ export const STATIC = {
     tail: 'Three answers. One pattern. The business has shown us where the drag sits.'
   },
   card6: {
-    eyebrow: 'THE PATTERN IN YOUR ANSWERS',
-    lead: 'The value is not one answer. It is the pattern across them.'
+    eyebrow: 'THE RECEIPT',
+    lead: 'The value is the pattern hiding across your answers.'
   },
   card7: {
     eyebrow: 'What you said vs what you did',
@@ -51,7 +51,7 @@ export const PERSONA = {
   'c-vi': {
     name: 'The Dead Reckoner',
     signature: 'a business plotting the week by estimate because the instruments are not yet trusted',
-    headline: 'Stop steering {brandName} by *guess*.',
+    headline: 'Stop steering by *guess*.',
     fitLine: 'You came in as The Dead Reckoner: a business moving by feel because the numbers do not yet give leadership a clean position.',
     closeLine: 'The Dead Reckoner changes the day it stops steering by estimate.'
   },
@@ -79,7 +79,7 @@ export const PERSONA = {
   't-ve': {
     name: 'The Late Caller',
     signature: 'a business that reads the play correctly and acts a beat late',
-    headline: 'Make {brandName} stop *calling it late*.',
+    headline: 'Stop *calling it late*.',
     fitLine: 'You came in as The Late Caller: a business that reads the play and arrives after the whistle.',
     closeLine: 'The Late Caller wins the day it stops calling things late.'
   },
@@ -150,7 +150,7 @@ export const HURDLE_COPY = {
   Visibility: {
     hurdleCard: {
       lede: "You have the numbers. You can't *trust* them.",
-      body: 'Every growth call stands on a number. Yours still has to be defended before it can move the week.',
+      body: 'The number exists. The decision still waits while the room checks whether it can trust it.',
       close: 'First leak: Visibility'
     },
     reframe: {
@@ -178,7 +178,7 @@ export const HURDLE_COPY = {
   Velocity: {
     hurdleCard: {
       lede: 'You see the move. You make it *too late*.',
-      body: 'The value is not in seeing it. The value is in moving while the window is still open.',
+      body: 'The value leaks in the wait after signal: owner, permission, proof and the call that moves it.',
       close: 'First leak: Velocity'
     },
     reframe: {
@@ -206,7 +206,7 @@ export const HURDLE_COPY = {
   Coherence: {
     hurdleCard: {
       lede: "Your teams are sharp. They don't share *one picture*.",
-      body: 'Each team can be right. The business still pays for the split before the work starts.',
+      body: 'Each team can be right. The decision still waits while the room agrees which picture counts.',
       close: 'First leak: Coherence'
     },
     reframe: {
@@ -316,26 +316,26 @@ export const COST_SCENES = {
 
 export const COST_HERO = {
   Visibility: {
-    Clarity: 'Five days a week, steering by *guess*.',
-    Traction: "Good money, chasing numbers you *can't trust*.",
-    Scale: 'A whole quarter, waiting for proof to *catch up*.'
+    Clarity: 'Five days to trust the *number*.',
+    Traction: 'Three weeks before spend knows *payback*.',
+    Scale: 'Six weeks before proof catches *conviction*.'
   },
   Velocity: {
-    Clarity: 'The same call, made twice, a *week apart*.',
-    Traction: 'Every good move, *eleven days* late.',
-    Scale: 'The market turns. You turn *six weeks* later.'
+    Clarity: 'Seven days is the *bill*.',
+    Traction: 'Eleven days is the *bill*.',
+    Scale: 'Six weeks is the *bill*.'
   },
   Coherence: {
-    Clarity: 'Every week starts by *rebuilding the picture*.',
-    Traction: 'Three teams, three answers, one *missed window*.',
-    Scale: 'A fleet under power, sailing *different charts*.'
+    Clarity: 'One meeting spent rebuilding the *picture*.',
+    Traction: 'Four weeks before overlap *shows*.',
+    Scale: 'Eight weeks before the split *shows*.'
   }
 };
 
 export const COST_COMPOUND = {
-  Clarity: 'The habit is still small enough to change before the business grows around it.',
-  Traction: 'Momentum turns the leak into missed margin before it shows as a line item.',
-  Scale: 'At this size, the cost moves through confidence, capital and margin.'
+  Clarity: 'Small teams feel this as senior attention spent twice.',
+  Traction: 'Growth makes this expensive because every late call repeats.',
+  Scale: 'At this size, delay travels through margin, stock, capital and confidence.'
 };
 
 export const COST_BILL = {
@@ -378,19 +378,19 @@ export const COST_BILL = {
 };
 
 export const MOVE_BODY = {
-  Visibility: 'Bring the number the room still has to defend. Our CEO maps its source, owner, trust rule and the decision it can change this week.',
-  Velocity: 'Bring the late decision. Our CEO maps the signal, first wait, owner, deadline and the rule that releases it before the window closes.',
-  Coherence: 'Bring the decision teams split around. Our CEO maps the source, definition, owner and the tie-break rule before the next meeting starts.'
+  Visibility: 'Bring the number the room still debates. Our CEO maps its source, owner, trust test and the decision it changes next.',
+  Velocity: 'Bring the late decision. Our CEO maps the signal, wait, owner and the rule that moves it before the window closes.',
+  Coherence: 'Bring the decision teams split around. Our CEO maps the source, definition, owner and tie-breaker before the next call.'
 };
 
 export const QUOTE_SOWHAT = {
-  Visibility: 'The pattern is not more data. It is trust: source, owner and decision.',
-  Velocity: 'The pattern is not effort. It is the wait between signal and action.',
-  Coherence: 'The pattern is not team quality. It is three teams carrying three pictures.'
+  Visibility: 'The pattern is trust: source, owner and the decision the number changes.',
+  Velocity: 'The pattern is waiting: signal, owner and the first place the call stalls.',
+  Coherence: 'The pattern is split: source, definition and who breaks the tie.'
 };
 
-export const MONDAY_FORWARD = 'That is the session: one decision path, written before another week leaks.';
-export const SESSION_OFFER = 'Thirty minutes with our CEO. Not a pitch. Bring the decision this reveal found. Leave with the first rule to fix it.';
+export const MONDAY_FORWARD = 'That is the session: one decision path you can test next week.';
+export const SESSION_OFFER = 'Thirty minutes with our CEO. Not a pitch. Bring the decision behind this leak. Leave with one rule you can test next week.';
 
 export const ANSWER_OPTIONS = {
   Q2: [

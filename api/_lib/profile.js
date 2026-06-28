@@ -270,8 +270,8 @@ export function deriveRevealInsights(answers, profile, context = {}) {
       type: 'shape',
       beat: 'Problem',
       eyebrow: 'WHERE YOU STAND VS PEERS',
-      header: 'Benchmark vs *strong peers*.',
-      lede: 'Each line shows you against the strong-peer mark. Your number sits on the line. The mark is on the right.',
+      header: 'Benchmark vs peers. One line *drags*.',
+      lede: 'Your number sits on each line. The mark on the right is where strong operators tend to hold.',
       pillars: pillars.map((pillar) => ({
         ...pillar,
         role: pillar.label === profile.hurdle ? 'hurdle' : pillar.label === strongest.label ? 'strong' : 'normal',
@@ -281,7 +281,7 @@ export function deriveRevealInsights(answers, profile, context = {}) {
       })),
       benchmark: BENCHMARK,
       benchmarkLabel: BENCHMARK_LABEL,
-      benchmarkNote: 'The mark is not perfection. It is where the operating system needs to hold when AI starts touching real decisions.',
+      benchmarkNote: 'Peer mark: where the operating system should hold before AI carries more decisions.',
       shapeRead: shapeRead({ strongest, hurdle: hurdlePillar, gap, highEvenShape, balancedEvenShape, leverage: leverageReality(answers, profile) }),
       body: shapeBody({ strongest, hurdle: hurdlePillar, gap, highEvenShape, balancedEvenShape }),
       drawerLabel: 'Why it matters',
@@ -321,7 +321,7 @@ export function deriveRevealInsights(answers, profile, context = {}) {
       type: 'cost',
       beat: 'Agitation',
       eyebrow: STATIC.card9.eyebrow,
-      hero: costHero(profile, weakAnswers) || COST_HERO[profile.hurdle]?.[profile.bucket] || '',
+      hero: COST_HERO[profile.hurdle]?.[profile.bucket] || costHero(profile, weakAnswers) || '',
       compound: COST_COMPOUND[profile.bucket] || '',
       bill: COST_BILL[`${profile.hurdle}_${profile.bucket}`] || null,
       glyph: profile.hurdle,
@@ -603,8 +603,8 @@ function blockerCalibration({ orderedPicks, hurdle, noneSelected, convergent, na
 function scoreInterpretation({ profile, strongest, hurdle, gap, highEvenShape, balancedEvenShape }) {
   const scoreRead =
     profile.score >= 80 ? 'Strong enough to push, if the first leak does not travel forward.' :
-    profile.score >= 65 ? 'Useful readiness, with *one leak* carrying too much of the work.' :
-    profile.score >= 45 ? 'Enough signal to act. One part of the system is making the rest work harder.' :
+    profile.score >= 65 ? 'Useful readiness, with *one leak* carrying too much risk.' :
+    profile.score >= 45 ? 'Enough signal to act, but too uneven to scale cleanly.' :
     'Low enough to matter. Clear enough to show *where to start*.';
   const strength = highEvenShape
     ? 'All four readings are high. The work is to choose which part of the system should carry more weight next.'
@@ -629,10 +629,10 @@ function scoreInterpretation({ profile, strongest, hurdle, gap, highEvenShape, b
 }
 
 export function scoreAfterLine(score) {
-  if (score < 45) return 'Strong peers sit in the mid-80s. The first job is to stop the leak, not fix everything.';
-  if (score < 65) return 'Enough signal to act. One operating leak is making the rest pay.';
-  if (score < 80) return 'Good base. One leak is carrying too much operating risk.';
-  return 'Strong base. The next gain comes from one rule, not another tool.';
+  if (score < 45) return 'Clear enough to act. Low enough to show the first fix.';
+  if (score < 65) return 'Enough signal to act. Too uneven to scale cleanly.';
+  if (score < 80) return 'Strong base. One leak is carrying too much risk.';
+  return 'Strong base. Fix the rule before adding another tool.';
 }
 
 function shapeRead({ hurdle, gap, highEvenShape, balancedEvenShape, leverage }) {
@@ -692,17 +692,17 @@ function leverageReality(answers, profile) {
 
 function shapeBody({ strongest, hurdle, gap, highEvenShape, balancedEvenShape }) {
   if (highEvenShape) {
-    return `The readings are high and close. This is not a weak profile. It is a business with enough readiness that the next gain comes from choosing where to make the system sharper first. For you, that starts with ${hurdle.label}.`;
+    return `The readings are high and close. The work is to choose the first rule before the system carries more AI. Start with ${hurdle.label}.`;
   }
   if (balancedEvenShape) {
-    return `The readings are close. This is not a dramatic gap. It is not a weak profile. It is a business with a first place to sharpen. For you, that starts with ${hurdle.label}.`;
+    return `The readings are close. This is a sharpening job, not a crisis. Start with ${hurdle.label}.`;
   }
   const strongLine = PILLAR_COPY[strongest.label]?.strong || `${strongest.label} is the strongest reading.`;
   const weakLine = PILLAR_COPY[hurdle.label]?.weak || `${hurdle.label} is the leak.`;
   if (strongest.label === hurdle.label || gap <= 6) {
-    return `${weakLine} The scores are close, which means the profile is not about one dramatic collapse. It is about the first leak to close.`;
+    return `${weakLine} The scores are close, so the job is to close the first leak before it spreads.`;
   }
-  return `${strongLine} ${hurdle.label} is at ${hurdle.value}, a ${gap}-point gap. That is the first place value leaks.`;
+  return `${strongLine} ${hurdle.label} is at ${hurdle.value}, a ${gap}-point drag. That is why the stronger scores do not pay off yet.`;
 }
 
 function hurdleCard(hurdle, highEvenShape, balancedEvenShape) {
@@ -711,28 +711,28 @@ function hurdleCard(hurdle, highEvenShape, balancedEvenShape) {
 
 function patternHeader(hurdle) {
   return {
-    Visibility: 'Three answers. *One trust leak*.',
-    Velocity: 'Three answers. *One waiting point*.',
-    Coherence: 'Three answers. *One split picture*.'
-  }[hurdle] || 'Three answers. *One pattern*.';
+    Visibility: 'Your answers show the *trust break*.',
+    Velocity: 'Your answers show the *wait*.',
+    Coherence: 'Your answers show the *split*.'
+  }[hurdle] || 'Your answers show the *pattern*.';
 }
 
 function patternBody(profile, evidence) {
   const stageLine = {
-    Clarity: 'That pulls senior people back into calls the system should make clean.',
-    Traction: 'That burns momentum while growth is still expensive to win.',
-    Scale: 'That slows confidence, capital and margin choices.'
+    Clarity: 'That is why senior people get pulled back into calls the system should handle.',
+    Traction: 'That is where momentum leaks before growth has paid back.',
+    Scale: 'That is where confidence, capital and margin decisions slow down.'
   }[profile.bucket] || 'That is where the next useful move starts.';
   const mechanism = {
-    Visibility: 'The weak point is not more data. It is trust: which number counts, who owns it and what it is allowed to change.',
-    Velocity: 'The weak point is not effort. It is the wait after signal: where the call stalls and who can release it.',
-    Coherence: 'The weak point is not team quality. It is the shared picture: which source wins before the room starts debating.'
+    Visibility: 'You did not describe missing data. You described a number that still needs defending.',
+    Velocity: 'You did not describe a slow team. You described a decision path that waits after signal.',
+    Coherence: 'You did not describe weak teams. You described different pictures entering the same call.'
   }[profile.hurdle] || 'The weak point is the repeated decision path.';
   return [mechanism, stageLine].filter(Boolean).join(' ');
 }
 
 function patternSignalLine(evidence) {
-  return evidence?.[0]?.read ? `Clearest signal: ${evidence[0].read}` : '';
+  return evidence?.[0]?.read ? `Best proof: ${evidence[0].read}` : '';
 }
 
 function patternProofRows(evidence) {
@@ -749,9 +749,9 @@ function patternSoWhat(hurdle) {
 
 function firstMoveHeader(hurdle) {
   return {
-    Visibility: 'One number. One owner. One *rule*.',
-    Velocity: 'One late call. One *release rule*.',
-    Coherence: 'One split call. One *tie-break rule*.'
+    Visibility: 'Bring one number. Leave with *one rule*.',
+    Velocity: 'Bring one late call. Leave with *one rule*.',
+    Coherence: 'Bring one split call. Leave with *one rule*.'
   }[hurdle] || 'One live decision. One *rule*.';
 }
 
@@ -785,10 +785,10 @@ function costHero(profile, weakAnswers) {
 
 function receiptTail(hurdle, highEvenShape, balancedEvenShape) {
   if (highEvenShape) {
-    return 'Three answers. One pattern. The business has real strengths. The question is where those strengths need to hold up under the next layer of AI work.';
+    return 'Three answers. One pattern. The profile is strong, so the work is choosing which rule carries more AI first.';
   }
   if (balancedEvenShape) {
-    return 'Three answers. One pattern. The business is not collapsing here. But this is where a small amount of tightening would make the rest of the system easier to trust.';
+    return 'Three answers. One pattern. The readings are close, so the first move is a small rule that makes the rest easier to trust.';
   }
   return {
     Visibility: 'Three answers. One pattern. The business has data, but the picture is still asking for trust it has not earned.',
@@ -1044,10 +1044,10 @@ function embeddedImplementation(hurdle) {
 
 function firstMoveProof(hurdle) {
   return {
-    Visibility: 'which number is allowed to change the week, who owns it and what would make the room stop trusting it',
-    Velocity: 'where the signal first waits, who can move it and how many days one cleaner handoff would return',
-    Coherence: 'which source counts, which definition wins and who resolves the split before teams start acting'
-  }[hurdle] || 'where the repeated decision is weak, who owns it and what would make the next call cleaner';
+    Visibility: 'the number, owner, trust test and next decision',
+    Velocity: 'the signal, first wait, owner and next deadline',
+    Coherence: 'the source, definition, owner and tie-breaker'
+  }[hurdle] || 'the signal, owner, rule and next decision';
 }
 
 function firstMoveBody({ actionPlan, hurdle, quote }) {
@@ -1056,7 +1056,7 @@ function firstMoveBody({ actionPlan, hurdle, quote }) {
   return [
     actionPlan.whatToBringToCall,
     actionPlan.mondayMove,
-    `You leave with the operating rule behind ${proof}.`,
+    `You leave with one rule for ${proof}.`,
     `Avoid for now: ${actionPlan.avoidForNow}`
   ];
 }
@@ -1067,7 +1067,7 @@ function firstMoveBrief({ actionPlan, hurdle, quote }) {
   return [
     { label: 'Bring', value: actionPlan.whatToBringToCall },
     { label: 'Map', value: actionPlan.mondayMove },
-    { label: 'Leave with', value: `The operating rule behind ${proof}.` },
+    { label: 'Leave with', value: `One rule for ${proof}.` },
     { label: 'Avoid', value: actionPlan.avoidForNow }
   ];
 }
@@ -1086,7 +1086,7 @@ function sessionOutputs(profile, actionPlan) {
     },
     Velocity: {
       decision: 'One decision path chosen: signal, owner, first waiting point, permission and deadline.',
-      rule: 'A release rule for the handoff: who can move the signal before the opportunity window closes.',
+      rule: 'A handoff rule: who can move the signal before the opportunity window closes.',
       proof: 'A next-week proof measure: days from first signal to first irreversible action.'
     },
     Coherence: {
