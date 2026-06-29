@@ -193,7 +193,8 @@ test('demo reveal matrix emits the overhauled 8-card contract', () => {
 
     assert.equal(firstMove.eyebrow, 'THE FIRST MOVE');
     assert.equal(firstMove.glyph, profile.hurdle);
-    assert.match(firstMove.header, /Leave with the rule/);
+    assert.match(firstMove.header, /Bring/);
+    assert.equal((firstMove.header.match(/\*/g) || []).length, 2);
     assert.match(firstMove.move, /Our CEO/);
     assert.equal(firstMove.forward, 'You leave with one rule you can run next week.');
     assert.equal(firstMove.brief.some((row) => row.label === 'Bring'), true);
@@ -208,7 +209,7 @@ test('demo reveal matrix emits the overhauled 8-card contract', () => {
     assert.equal(close.glyph, profile.hurdle);
     assert.equal(close.closeLine, PERSONA[expectedKey].closeLine);
     assert.equal(close.outputs?.length >= 3, true);
-    assert.equal(close.qualifier, 'We take six new clients a year and our CEO runs every one. The session is how we both check the fit.');
+    assert.equal(close.qualifier, 'We take six new clients a year. Our CEO leads each one. The session checks the fit both ways.');
     assert.doesNotMatch(close.qualifier, /Saverio/);
 
     assert.equal(Boolean(insights.summary.actionPlan?.artefactName), true);

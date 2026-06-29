@@ -177,20 +177,22 @@
   }
   .moment .domain-map {
     max-width: 620px;
-    margin: 34px 0 0;
+    margin: 0 0 34px;
   }
   .moment .domain-card {
-    color: rgba(243, 234, 217, 0.46);
-    background: rgba(243, 234, 217, 0.04);
-    border-color: rgba(243, 234, 217, 0.10);
+    color: rgba(243, 234, 217, 0.58);
+    background: rgba(243, 234, 217, 0.07);
+    border-color: rgba(243, 234, 217, 0.18);
   }
   .moment .domain-card.is-complete {
-    color: rgba(243, 234, 217, 0.78);
-    background: rgba(243, 234, 217, 0.07);
+    color: rgba(243, 234, 217, 0.88);
+    background: rgba(243, 234, 217, 0.10);
+    border-color: rgba(243, 234, 217, 0.28);
   }
   .moment .domain-card.is-current {
     color: var(--ink);
-    background: rgba(205, 168, 111, 0.12);
+    background: rgba(205, 168, 111, 0.18);
+    border-color: rgba(205, 168, 111, 0.70);
   }
   .moment.is-in .m-eyebrow,
   .moment.is-in .m-line,
@@ -3575,15 +3577,15 @@ function showMoment({ eyebrow, line, emphasis, sub, dwell, domains }) {
       e.innerHTML = `<span class="m-tick">+</span>${escapeHtml(eyebrow)}`;
       inner.appendChild(e);
     }
-    const lineEl = el('div', 'm-line');
-    lineEl.innerHTML = emphasizeLine(line, emphasis);
-    inner.appendChild(lineEl);
-    if (sub) inner.appendChild(el('div', 'm-sub', sub));
     if (domains) {
       const map = renderDomainMap({ current: domains.current, compact: true });
       map.classList.add('is-in');
       inner.appendChild(map);
     }
+    const lineEl = el('div', 'm-line');
+    lineEl.innerHTML = emphasizeLine(line, emphasis);
+    inner.appendChild(lineEl);
+    if (sub) inner.appendChild(el('div', 'm-sub', sub));
     m.appendChild(inner);
     document.body.appendChild(m);
     requestAnimationFrame(() => requestAnimationFrame(() => m.classList.add('is-in')));
@@ -4009,9 +4011,9 @@ async function renderReflection() {
   await hold('Holding', reduceMotion ? 150 : 720);
   await showMoment({
     eyebrow: 'Halfway',
-    line: "You've mapped what you can see, and how fast you act.",
-    emphasis: 'act.',
-    sub: 'Next: whether it all connects.',
+    line: 'Two parts are done. Now the handoff matters.',
+    emphasis: 'handoff',
+    sub: 'Next: whether the work connects, or splits by team.',
     domains: { current: 'Coherence' },
     dwell: 4200
   });
@@ -4311,8 +4313,8 @@ async function renderGate(scenario) {
   gate.noValidate = true;
   gate.innerHTML = `
     <div class="gate-eyebrow">THE READ IS READY</div>
-    <h2 class="gate-title">Your profile is <em>ready</em>.</h2>
-    <p class="gate-line">Your score, the one leak to fix first and the move that closes it. Tell us where to send it.</p>
+    <h2 class="gate-title">Your read is <em>ready</em>.</h2>
+    <p class="gate-line">Your score is only the start. The profile shows the leak, the proof and the first move to bring into the session.</p>
     <div class="gate-includes" aria-label="What the profile includes">
       <div class="gate-includes-row">
         <svg class="gate-lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="10" width="14" height="10" rx="1.8"></rect><path d="M8 10V7a4 4 0 0 1 8 0v3"></path></svg>
@@ -4377,7 +4379,7 @@ async function renderGate(scenario) {
     <div class="gate-footer">PRIVATE · CONFIDENTIAL · NEVER SHARED</div>
     <div class="gate-result" id="gateResult">
       <div class="q-id">Profile sent</div>
-      <p class="gate-result-copy is-primary" id="gateResultCopy">Check your inbox.</p>
+      <p class="gate-result-copy is-primary" id="gateResultCopy">Open the email now.</p>
       <p class="gate-result-copy" id="gateResultLine"><em>It usually lands within a minute.</em></p>
       <a class="inbox-cta confirm-btn" id="inboxCta" href="#" target="_blank" rel="noopener" hidden>Open your inbox →</a>
       <div class="profile-dispatch" aria-hidden="true">
@@ -4476,7 +4478,7 @@ async function renderGate(scenario) {
     };
 
     gate.querySelector('#gateResultCopy').textContent = result.emailSent
-      ? 'Check your inbox.'
+      ? 'Open the email now.'
       : 'Profile ready.';
     gate.querySelector('#gateResultLine').innerHTML = result.emailSent
       ? '<em>It usually lands within a minute.</em>'

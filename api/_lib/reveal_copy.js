@@ -1,7 +1,7 @@
 export const STATIC = {
   card1: {
     eyebrow: 'A+A · AI READINESS',
-    body: 'That is the pattern your answers point to. We follow it from your score to the proof to the first rule to fix.'
+    body: 'That is the pattern your answers point to. We follow it from your score to the proof to the first rule the room can use.'
   },
   card2: {
     label: 'WHERE YOUR BUSINESS STANDS TODAY'
@@ -39,7 +39,7 @@ export const STATIC = {
   card13: {
     eyebrow: 'WHERE THIS GOES NEXT',
     button: 'Book the working session',
-    qualifier: 'We take six new clients a year and our CEO runs every one. The session is how we both check the fit.'
+    qualifier: 'We take six new clients a year. Our CEO leads each one. The session checks the fit both ways.'
   },
   card14: {
     button: 'Book the working session'
@@ -322,12 +322,12 @@ export const COST_HERO = {
   Velocity: {
     Clarity: 'You see the call early and *make it late*.',
     Traction: 'The window closes before the *call lands*.',
-    Scale: 'The market moves while the decision *climbs the deck*.'
+    Scale: 'The market moves while the decision waits for *permission*.'
   },
   Coherence: {
     Clarity: 'The meeting starts by *rebuilding the picture*.',
     Traction: 'Three teams, three versions of the *same win*.',
-    Scale: 'Each function sails its *own chart*.'
+    Scale: 'Each function works from a *different chart*.'
   }
 };
 
@@ -378,8 +378,8 @@ export const COST_BILL = {
 
 export const MOVE_BODY = {
   Visibility: 'Bring the number the room still debates. Our CEO maps its source, owner, trust test and the decision it changes next.',
-  Velocity: 'Bring the late decision. Our CEO maps the signal, wait, owner and the rule that moves it before the window closes.',
-  Coherence: 'Bring the decision teams split around. Our CEO maps the source, definition, owner and tie-breaker before the next call.'
+  Velocity: 'Bring the late decision. Our CEO maps the signal, where it waited, the owner and the rule that moves it before the window closes.',
+  Coherence: 'Bring the decision teams keep splitting on. Our CEO maps the source, definition, owner and tie-breaker before the next call.'
 };
 
 export const QUOTE_SOWHAT = {
@@ -389,7 +389,7 @@ export const QUOTE_SOWHAT = {
 };
 
 export const MONDAY_FORWARD = 'You leave with one rule you can run next week.';
-export const SESSION_OFFER = 'Thirty minutes with our CEO. Not a pitch. Bring the decision behind this leak. Leave with one rule you can test next week.';
+export const SESSION_OFFER = 'Thirty minutes with our CEO. Not a pitch. Bring the decision this read points to. Leave with one rule you can test next week.';
 
 export const ANSWER_OPTIONS = {
   Q2: [

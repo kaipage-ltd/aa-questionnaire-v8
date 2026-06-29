@@ -185,10 +185,10 @@ async function verifyJourney(browser, baseUrl, key, viewport) {
       assert(active.text.includes('THE BILL'), `${key}/${viewport.name}: cost bill missing`);
     }
     if (slide === 7) {
-      assert(active.text.includes('Leave with the rule'), `${key}/${viewport.name}: first move rule missing`);
+      assert(active.text.includes('You leave with one rule'), `${key}/${viewport.name}: first move rule missing`);
     }
     if (slide === 8) {
-      assert(active.text.includes('our CEO runs every one'), `${key}/${viewport.name}: close qualifier missing`);
+      assert(active.text.includes('Our CEO leads each one'), `${key}/${viewport.name}: close qualifier missing`);
       assert(active.text.includes('Book the working session'), `${key}/${viewport.name}: booking CTA missing`);
     }
 

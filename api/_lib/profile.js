@@ -722,7 +722,7 @@ function shapeBody({ bShape }) {
     return 'The readings are high and close. This is a sharpening job, not a crisis.';
   }
   if (bShape.clustered) {
-    return 'Your readings cluster below best practice. The job is not one line. It is the first leak to close and that is next.';
+    return 'Your readings cluster below best practice. No single bar explains it. The work starts with the first leak.';
   }
   return `${bShape.lowest.label} sits ${bShape.spread} points below your strongest line. That gap is where readiness leaks first.`;
 }
@@ -771,10 +771,10 @@ function patternSoWhat(hurdle) {
 
 function firstMoveHeader(hurdle) {
   return {
-    Visibility: 'Bring the number you *argue about*. Leave with the rule that *ends it*.',
-    Velocity: 'Bring the call you made *too late*. Leave with the rule that *speeds it up*.',
-    Coherence: 'Bring the call your teams *split on*. Leave with the rule that *settles it*.'
-  }[hurdle] || 'Bring one live decision. Leave with *one rule*.';
+    Visibility: 'Bring the number the room *still debates*.',
+    Velocity: 'Bring the decision that landed *late*.',
+    Coherence: 'Bring the decision teams *split on*.'
+  }[hurdle] || 'Bring one live *decision*.';
 }
 
 function costHero(profile, weakAnswers) {
