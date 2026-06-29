@@ -11,7 +11,6 @@ scripts/output/
 /BREVO_*
 /DNS_*
 /REVEAL_*
-!/reveal_copy_studio.html
 /LAUNCH_CHECKLIST.md
 /CONTEXT.md
 /reveal_value_audit_*.md
@@ -19,3 +18,7 @@ scripts/output/
 /SAVERIO_FEEDBACK_LOG.md
 /security-audit-*.html
 /SECURITY_AUDIT_*.md
+/AGENT_FEEDBACK_LEDGER.md
+/HANDOFF_*.md
+/combinations_review.html
+/reveal_copy_studio.html

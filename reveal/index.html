@@ -1113,7 +1113,7 @@
     bottom: calc(28px + env(safe-area-inset-bottom, 0px));
     left: 50%;
     transform: translateX(-50%);
-    z-index: 36;
+    z-index: 45;
     display: inline-flex;
     align-items: center;
     gap: 10px;
@@ -1138,9 +1138,12 @@
   .card-advance.on-dark { background: rgba(250, 248, 242, 0.08); border-color: var(--paper); color: var(--paper); }
   .card-advance.on-dark:hover { background: rgba(250, 248, 242, 0.14); color: var(--paper); }
   .card:has(.more-drawer[open]) .card-advance {
-    opacity: 0;
-    pointer-events: none;
-    visibility: hidden;
+    opacity: 1;
+    pointer-events: auto;
+    visibility: visible;
+  }
+  .card:has(.more-drawer[open]) .card-inner {
+    padding-bottom: clamp(84px, 10vh, 118px);
   }
 
   /* Touch: hover states latch after a tap on iOS, so reset them; and keep the
@@ -1262,6 +1265,9 @@
     .card { padding: calc(72px + env(safe-area-inset-top, 0px)) 26px calc(96px + env(safe-area-inset-bottom, 0px)); }
     .card.is-close { padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px)); }
     .card-inner { padding-bottom: 14px; }
+    .card:has(.more-drawer[open]) .card-inner {
+      padding-bottom: 22px;
+    }
     /* Pin the advance button to the visible bottom. The finale cost card keeps
        its receipts in the drawer on phones, so the main beat stays short. */
     .card-advance {
@@ -2279,6 +2285,31 @@ function showNeutral() {
 
 document.getElementById('next').addEventListener('click', () => go(i + 1));
 document.getElementById('prev').addEventListener('click', () => go(i - 1));
+document.getElementById('stage').addEventListener('click', (event) => {
+  const interactive = event.target.closest?.([
+    '.card-inner',
+    '.card-advance',
+    '.close-action',
+    '.cta',
+    'button',
+    'a',
+    'summary',
+    'details',
+    'input',
+    'textarea',
+    'select',
+    '.progress',
+    '.demo-launch',
+    '.demo-harness'
+  ].join(','));
+  if (interactive) return;
+  const leftEdge = window.innerWidth * 0.24;
+  if (event.clientX <= leftEdge) {
+    go(i - 1);
+  } else if (!document.body.classList.contains('is-close-card')) {
+    go(i + 1);
+  }
+});
 document.addEventListener('keydown', (event) => {
   if (event.key === 'ArrowRight' || event.key === ' ') {
     event.preventDefault();

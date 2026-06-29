@@ -110,6 +110,17 @@ test('every non-final card carries a visible advance affordance', () => {
   assert.match(playerHtml, /card\.advanceLabel \|\| 'Continue'/, 'advance buttons should support slide-specific next actions');
 });
 
+test('reveal tap zones and drawer-open CTAs stay interactive', () => {
+  assert.match(playerHtml, /document\.getElementById\('stage'\)\.addEventListener\('click'/, 'blank stage clicks must drive reveal navigation');
+  assert.match(playerHtml, /\.card-inner/, 'stage navigation must ignore card content clicks');
+  assert.match(playerHtml, /\.card-advance/, 'stage navigation must ignore advance CTA clicks');
+  assert.match(playerHtml, /'summary'/, 'stage navigation must ignore drawer summary clicks');
+  assert.match(playerHtml, /event\.clientX <= leftEdge[\s\S]*?go\(i - 1\)/, 'blank left-side clicks must go back');
+  assert.match(playerHtml, /go\(i \+ 1\)/, 'blank right-side clicks must advance');
+  assert.doesNotMatch(playerHtml, /\.card:has\(\.more-drawer\[open\]\)\s+\.card-advance\s*\{[\s\S]*?opacity:\s*0/, 'opening a drawer must not hide the advance CTA');
+  assert.match(playerHtml, /\.card:has\(\.more-drawer\[open\]\)\s+\.card-inner\s*\{[\s\S]*?padding-bottom:/, 'open drawers need bottom clearance for the visible CTA');
+});
+
 test('booking link preserves invitee prefill while suppressing referrer data', () => {
   assert.match(playerHtml, /window\.open\(withInvitee\(url\), '_blank', 'noopener,noreferrer'\)/, 'calendar links should keep invitee prefill and suppress referrer data');
   assert.match(playerHtml, /function withInvitee/, 'calendar URL prefill must remain wired');

@@ -1,15 +1,16 @@
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { test } from 'node:test';
 
-const studioHtml = readFileSync(
-  join(dirname(fileURLToPath(import.meta.url)), '..', '..', 'reveal_copy_studio.html'),
-  'utf8'
-);
+const studioPath = join(dirname(fileURLToPath(import.meta.url)), '..', '..', 'reveal_copy_studio.html');
+const hasStudio = existsSync(studioPath);
+const studioHtml = hasStudio ? readFileSync(studioPath, 'utf8') : '';
 
-test('reveal copy studio is wired to the real demo reveal payload', () => {
+test('reveal copy studio is wired to the real demo reveal payload', {
+  skip: hasStudio ? false : 'reveal_copy_studio.html is a local-only ignored artifact'
+}, () => {
   assert.match(studioHtml, /Reveal Copy Studio/);
   assert.match(studioHtml, /\/api\/v8\/reveal\?demo=/);
   assert.match(studioHtml, /textarea/);
@@ -23,7 +24,9 @@ test('reveal copy studio is wired to the real demo reveal payload', () => {
   }
 });
 
-test('reveal copy studio exposes the full aa-content-score dimensions', () => {
+test('reveal copy studio exposes the full aa-content-score dimensions', {
+  skip: hasStudio ? false : 'reveal_copy_studio.html is a local-only ignored artifact'
+}, () => {
   for (const dimension of ['clarity', 'hierarchy', 'compression', 'tension', 'conversion', 'voice', 'wst', 'truth']) {
     assert.match(studioHtml, new RegExp(`'${dimension}'`), `${dimension} score must be editable`);
   }
