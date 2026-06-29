@@ -22,3 +22,4 @@ scripts/output/
 /HANDOFF_*.md
 /combinations_review.html
 /reveal_copy_studio.html
+/scripts/render_reveal_reference.mjs
