@@ -20,6 +20,8 @@ test('internal working artifacts are excluded from Vercel deployments', () => {
     '/combinations_review.html',
     '/.claude/',
     '/.agents/',
+    '/api/**/*.test.js',
+    '/scripts/',
     '/output/'
   ]) {
     assert.ok(vercelIgnore.includes(pattern), `${pattern} must stay out of production deploys`);

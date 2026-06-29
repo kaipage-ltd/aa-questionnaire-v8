@@ -12,6 +12,8 @@
 # Agent/tooling state and generated output.
 /.claude/
 /.agents/
+/api/**/*.test.js
+/scripts/
 /scripts/output/
 /output/
 
