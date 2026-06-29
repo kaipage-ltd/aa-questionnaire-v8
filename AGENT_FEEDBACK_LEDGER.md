@@ -223,6 +223,22 @@ If a security recommendation reduces conversion, breaks Brevo/Calendly automatio
 - Internal docs are excluded from Vercel via `.vercelignore`.
 - The booking/email data contract is intentionally preserved after Kai flagged that removing it could break core functionality.
 
+## 2026-06-29 live reveal regression feedback
+
+Kai reviewed the live production reveal after the polish deploy and flagged that the work is starting to regress. Treat this as a hard correction before any further reveal work.
+
+1. Slide 1 CTA hover is broken: the "Show my score" pill goes white and the text becomes unreadable.
+2. Slide 1 over-promotes the persona name. Showing "Kai." then a huge "The Sole Hand" feels abstract and awful. The first slide should not make the persona label the hero. It should create appetite for the read in plain language. The persona can be introduced later or more quietly only if it helps the read.
+3. Benchmark slide copy needs sharpening. "Your number sits on each line. The mark on the right is where best-practice operators tend to hold" is too explanatory and can be much stronger.
+4. Open drawers currently feel like self-justification. "Why it matters", "Answer proof" and "Exact answers" should not read as if A+A is defending the result. If proof is shown, call out the useful pattern, not the raw exact answers.
+5. Slide 4 "The one thing to fix first" needs a stronger visible beat. Proof details must not weaken the main point.
+6. Slide 5 does not need "Exact answers" as a drawer. Raw replay of answers is poor use of space unless reframed into the useful pattern.
+7. Slide 6 cost model is not strong enough. Condensing is not enough: copy must sharpen the cost and build the climax.
+8. Slide 7 first move is too abstract. The "One" motif is unclear. The slide must teach what happens in the session in concrete plain speak and keep the climax alive.
+9. Slide 8 qualifier "We take six new clients a year. Our CEO leads each one. The session checks the fit both ways." is probably unnecessary. Remove or replace it with stronger conversion copy only if it earns its place.
+10. Every reveal change must be checked on desktop and mobile before going live. Mobile has not been checked enough and likely has issues.
+11. Objective: fix and publish live today because traffic is starting today. Do not treat this as optional polish.
+
 ## 2026-06-28 feedback round (local pre-deploy build)
 
 Reviewed on local HEAD (`bd73758`, on top of `0fe0cf7 Harden reveal data handling`), not production. Full build spec written for Codex at `~/.claude/plans/i-need-you-to-abundant-minsky.md`.

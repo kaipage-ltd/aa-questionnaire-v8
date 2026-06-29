@@ -1,7 +1,7 @@
 export const STATIC = {
   card1: {
     eyebrow: 'A+A · AI READINESS',
-    body: 'That is the pattern your answers point to. We follow it from your score to the proof to the first rule the room can use.'
+    body: 'We turn your answers into three things: the score, the leak and the first rule to take into the session.'
   },
   card2: {
     label: 'WHERE YOUR BUSINESS STANDS TODAY'
@@ -9,10 +9,10 @@ export const STATIC = {
   card5: {
     eyebrow: 'THE ANSWERS BEHIND IT',
     lede: 'We are not guessing. You told us this.',
-    tail: 'Three answers. One pattern. The business has shown us where the drag sits.'
+    tail: 'Three answers. One pattern. The business has shown us where the leak sits.'
   },
   card6: {
-    eyebrow: 'THE RECEIPT',
+    eyebrow: 'THE PATTERN',
     lead: 'The value is the pattern hiding across your answers.'
   },
   card7: {
@@ -39,7 +39,7 @@ export const STATIC = {
   card13: {
     eyebrow: 'WHERE THIS GOES NEXT',
     button: 'Book the working session',
-    qualifier: 'We take six new clients a year. Our CEO leads each one. The session checks the fit both ways.'
+    qualifier: ''
   },
   card14: {
     button: 'Book the working session'
@@ -121,7 +121,7 @@ export const PILLAR_PLAIN = {
   Leverage: 'How far AI reaches into real calls.'
 };
 
-// Where strong peer operators tend to sit. Rendered as a benchmark marker
+// Where best-practice operators tend to sit. Rendered as a benchmark marker
 // beside each respondent bar so the gap, not the absolute score, is the message.
 export const BENCHMARK = { Visibility: 88, Velocity: 84, Coherence: 86, Leverage: 82 };
 export const BENCHMARK_LABEL = 'Best-practice mark';
@@ -137,7 +137,7 @@ export const PILLAR_COPY = {
   },
   Coherence: {
     strong: 'Teams are close to one picture.',
-    weak: 'Teams can each be right and still create drag.'
+    weak: 'Teams can each be right and still slow the decision.'
   },
   Leverage: {
     strong: 'AI already reaches meaningful work. Now the decisions underneath need to hold.',
@@ -148,8 +148,8 @@ export const PILLAR_COPY = {
 export const HURDLE_COPY = {
   Visibility: {
     hurdleCard: {
-      lede: "You have the numbers. You can't *trust* them.",
-      body: 'The number exists. The decision still waits while the room checks whether it can trust it.',
+      lede: 'You have the number. The room still has to *trust it*.',
+      body: 'If the number needs defending, the decision waits. Fix the trust rule first.',
       close: 'First leak: Visibility'
     },
     reframe: {
@@ -177,7 +177,7 @@ export const HURDLE_COPY = {
   Velocity: {
     hurdleCard: {
       lede: 'You see the move. You make it *too late*.',
-      body: 'The value leaks in the wait after signal: owner, permission, proof and the call that moves it.',
+      body: 'The leak is not effort. It is the wait after signal: owner, permission, evidence and the call that moves it.',
       close: 'First leak: Velocity'
     },
     reframe: {
@@ -204,8 +204,8 @@ export const HURDLE_COPY = {
   },
   Coherence: {
     hurdleCard: {
-      lede: "Your teams are sharp. They don't share *one picture*.",
-      body: 'Each team can be right. The decision still waits while the room agrees which picture counts.',
+      lede: 'Your teams work hard from *different pictures*.',
+      body: 'The leak is not effort. It is the time spent agreeing which picture the decision can use.',
       close: 'First leak: Coherence'
     },
     reframe: {
@@ -316,8 +316,8 @@ export const COST_SCENES = {
 export const COST_HERO = {
   Visibility: {
     Clarity: "The week runs on numbers you can't *trust yet*.",
-    Traction: 'Spend keeps moving before payback is *proven*.',
-    Scale: 'Conviction is *ahead of the proof*.'
+    Traction: 'Spend keeps moving before payback is *trusted*.',
+    Scale: 'Conviction is *ahead of the evidence*.'
   },
   Velocity: {
     Clarity: 'You see the call early and *make it late*.',
@@ -332,9 +332,9 @@ export const COST_HERO = {
 };
 
 export const COST_COMPOUND = {
-  Clarity: 'Small teams feel this as senior attention spent twice.',
-  Traction: 'Growth makes this expensive because every late call repeats.',
-  Scale: 'At this size, delay travels through margin, stock, capital and confidence.'
+  Clarity: 'The cost is senior attention spent twice.',
+  Traction: 'The cost compounds every time the late call repeats.',
+  Scale: 'The cost travels through margin, stock, capital and confidence.'
 };
 
 export const COST_BILL = {
@@ -348,7 +348,7 @@ export const COST_BILL = {
   },
   Visibility_Scale: {
     metric: 'Six weeks',
-    line: 'before proof catches conviction.'
+    line: 'before evidence catches conviction.'
   },
   Velocity_Clarity: {
     metric: 'Seven days',
@@ -377,19 +377,19 @@ export const COST_BILL = {
 };
 
 export const MOVE_BODY = {
-  Visibility: 'Bring the number the room still debates. Our CEO maps its source, owner, trust test and the decision it changes next.',
-  Velocity: 'Bring the late decision. Our CEO maps the signal, where it waited, the owner and the rule that moves it before the window closes.',
-  Coherence: 'Bring the decision teams keep splitting on. Our CEO maps the source, definition, owner and tie-breaker before the next call.'
+  Visibility: 'Bring the number the room still debates. Our CEO maps the source, owner, trust test and the decision it should change.',
+  Velocity: 'Bring the call that landed late. Our CEO maps the signal, first wait, owner and the rule that moves it.',
+  Coherence: 'Bring the decision teams split on. Our CEO maps the source, definition, owner and the tie-breaker.'
 };
 
 export const QUOTE_SOWHAT = {
-  Visibility: 'The pattern is trust: source, owner and the decision the number changes.',
-  Velocity: 'The pattern is waiting: signal, owner and the first place the call stalls.',
-  Coherence: 'The pattern is split: source, definition and who breaks the tie.'
+  Visibility: 'Trust breaks at the source, the owner or the decision the number changes.',
+  Velocity: 'The wait starts after signal: owner, permission or the first call that stalls.',
+  Coherence: 'The split sits in the source, the definition or who breaks the tie.'
 };
 
 export const MONDAY_FORWARD = 'You leave with one rule you can run next week.';
-export const SESSION_OFFER = 'Thirty minutes with our CEO. Not a pitch. Bring the decision this read points to. Leave with one rule you can test next week.';
+export const SESSION_OFFER = 'Thirty minutes with our CEO. Bring the decision this read points to. Leave with one rule you can run next week.';
 
 export const ANSWER_OPTIONS = {
   Q2: [
@@ -530,7 +530,7 @@ export const SAFE_TO_QUOTE = {
 
 export const CARD6_IMPLICATIONS = {
   Q2: 'You selected that about the numbers leadership uses. It means the business is still deciding from a picture that needs work.',
-  Q3: 'You selected that about payback. It means growth may be moving faster than the proof underneath it.',
+  Q3: 'You selected that about payback. It means growth may be moving faster than the evidence underneath it.',
   Q4: 'You selected that about forecasting. It means the plan and the week are not staying close enough.',
   Q5: 'You selected that about signal reaching leadership. It means insight still has to be pulled, not received.',
   Q6: 'You selected that about repeat patterns. It means the business is still paying for lessons it has already seen.',
@@ -623,8 +623,8 @@ export const SP_GAP_COPY = {
     Coherence: 'That blocker is real, but it is not where the earliest cost shows up. Your answers point to Coherence: teams are not yet working from one picture.'
   },
   none: {
-    Visibility: 'That does not mean the business is stuck. It means the first drag is hiding underneath the numbers leadership already uses. If those numbers are unclear, every stronger AI move inherits that uncertainty.',
-    Velocity: 'That does not mean the business is stuck. It means the first drag is hiding in the path from signal to action. If useful evidence waits too long, stronger AI only helps the business notice the delay faster.',
-    Coherence: 'That does not mean the business is stuck. It means the first drag is hiding between teams, tools and definitions. If the picture splits before the decision, stronger AI can make the split move faster.'
+    Visibility: 'That does not mean the business is stuck. It means the first leak is hiding underneath the numbers leadership already uses. If those numbers are unclear, every stronger AI move inherits that uncertainty.',
+    Velocity: 'That does not mean the business is stuck. It means the first leak is hiding in the path from signal to action. If useful evidence waits too long, stronger AI only helps the business notice the delay faster.',
+    Coherence: 'That does not mean the business is stuck. It means the first leak is hiding between teams, tools and definitions. If the picture splits before the decision, stronger AI can make the split move faster.'
   }
 };

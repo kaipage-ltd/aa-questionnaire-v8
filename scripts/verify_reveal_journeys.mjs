@@ -172,11 +172,11 @@ async function verifyJourney(browser, baseUrl, key, viewport) {
 
     if (slide === 1) {
       assert(active.text.includes('A+A · AI READINESS'), `${key}/${viewport.name}: cover eyebrow missing`);
-      assert(/The /.test(active.text), `${key}/${viewport.name}: cover persona name missing`);
+      assert(active.text.includes('the score, the leak and the first rule'), `${key}/${viewport.name}: cover diagnostic promise missing`);
     }
     if (slide === 3) {
       assert(active.text.includes('Benchmark vs the best.'), `${key}/${viewport.name}: benchmark headline missing`);
-      assert(active.text.toLowerCase().includes('best-practice mark'), `${key}/${viewport.name}: benchmark note missing`);
+      assert(active.text.toLowerCase().includes('right-hand mark'), `${key}/${viewport.name}: benchmark note missing`);
       const dragCount = await page.locator('.card.is-active .bar-row.drag').count();
       const normalCount = await page.locator('.card.is-active .bar-row.normal').count();
       assert(dragCount + normalCount === 4, `${key}/${viewport.name}: expected four benchmark rows`);
@@ -188,7 +188,8 @@ async function verifyJourney(browser, baseUrl, key, viewport) {
       assert(active.text.includes('You leave with one rule'), `${key}/${viewport.name}: first move rule missing`);
     }
     if (slide === 8) {
-      assert(active.text.includes('Our CEO leads each one'), `${key}/${viewport.name}: close qualifier missing`);
+      assert(active.text.includes('Thirty minutes with our CEO'), `${key}/${viewport.name}: close offer missing`);
+      assert(!active.text.includes('six new clients'), `${key}/${viewport.name}: retired close qualifier is still visible`);
       assert(active.text.includes('Book the working session'), `${key}/${viewport.name}: booking CTA missing`);
     }
 

@@ -53,7 +53,7 @@ const SCOREBOOK = {
     header: [9.2, 9.4, 9.3, 9.2, 9.1, 9.2, 9.1, 9.2],
     body: [9.0, 9.1, 8.9, 9.1, 9.0, 9.0, 9.0, 9.1],
     signal: [9.1, 9.0, 9.0, 9.1, 9.0, 9.0, 9.1, 9.2],
-    proof: [9.0, 9.1, 8.8, 9.0, 8.9, 8.9, 9.0, 9.2],
+    pattern: [9.0, 9.1, 8.8, 9.0, 8.9, 8.9, 9.0, 9.2],
     quote: [8.9, 9.3, 8.8, 9.2, 8.9, 9.2, 8.8, 9.4],
     sowhat: [9.0, 9.1, 9.0, 9.1, 9.0, 9.1, 9.0, 9.1],
     drawer: [8.8, 8.7, 8.7, 8.8, 8.9, 8.7, 8.9, 9.0],
@@ -174,10 +174,10 @@ function cardRows(card) {
     if (card.header) rows.push(row('quote', 'header', card.header));
     if (card.body) rows.push(row('quote', 'body', card.body));
     if (card.signalLine) rows.push(row('quote', 'signal', card.signalLine));
-    rows.push(...(card.proof || []).map((item) => row('quote', 'proof', `${item.label}: ${item.value}`)));
+    rows.push(...(card.patternRows || []).map((item) => row('quote', 'pattern', `${item.label}: ${item.value}`)));
     rows.push(row('quote', 'quote', card.quote));
     rows.push(row('quote', 'sowhat', card.sowhat || card.implication));
-    rows.push(...(card.proof || []).map((item) => row('quote', 'drawer', `${item.label}: ${item.answer}. ${item.value}`)));
+    rows.push(...(card.patternRows || []).map((item) => row('quote', 'drawer', `${item.label}: ${item.answer}. ${item.value}`)));
     rows.push(row('quote', 'timing', 'Quote word stagger 300ms plus 40ms per word'));
     rows.push(row('quote', 'advance', card.advanceLabel || 'Continue'));
   }

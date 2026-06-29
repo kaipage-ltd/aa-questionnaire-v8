@@ -500,6 +500,9 @@
   .more-drawer {
     margin-top: 22px;
   }
+  .more-drawer[open] {
+    margin-bottom: 24px;
+  }
   .more-summary {
     font-family: var(--mono);
     font-size: 11px;
@@ -521,6 +524,11 @@
   .more-drawer > :not(summary) {
     margin-top: 14px;
     animation: rise 420ms ease both;
+  }
+  .more-drawer[open] > :not(summary) {
+    max-height: min(42vh, 360px);
+    overflow: auto;
+    padding-right: 8px;
   }
   .dark .more-summary { color: var(--dark-soft); }
 
@@ -710,7 +718,7 @@
     font-size: 15.6px;
     line-height: 1.38;
   }
-  .pattern-proof {
+  .pattern-support {
     margin-top: 28px;
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -904,9 +912,10 @@
   }
   .move-symbol-word {
     font-family: var(--serif);
-    font-size: clamp(48px, 7vw, 92px);
-    line-height: 0.9;
+    font-size: clamp(34px, 5vw, 62px);
+    line-height: 0.94;
     color: var(--ink);
+    max-width: 240px;
   }
   .move-copy .reveal-h {
     font-size: clamp(46px, 6.6vw, 82px);
@@ -1002,15 +1011,15 @@
   /* ── Wrapped-style scale (each beat its own composition) ──────── */
   .turn-greeting {
     font-family: var(--serif);
-    font-size: clamp(54px, 8vw, 86px);
+    font-size: clamp(48px, 7vw, 78px);
     line-height: 0.98;
     color: var(--ink);
-    margin-bottom: 16px;
+    margin-bottom: 18px;
   }
-  .turn-persona {
+  .turn-headline {
     font-family: var(--serif);
-    font-size: clamp(76px, 12vw, 138px);
-    line-height: 0.9;
+    font-size: clamp(54px, 8.4vw, 98px);
+    line-height: 0.98;
     color: var(--ink);
     letter-spacing: 0;
     margin-bottom: 22px;
@@ -1109,7 +1118,7 @@
     align-items: center;
     gap: 10px;
     padding: 14px 32px;
-    background: var(--paper-dim);
+    background: rgba(5, 4, 3, 0.16);
     border: 1.5px solid var(--ink);
     border-radius: 999px;
     color: var(--ink);
@@ -1122,17 +1131,22 @@
   }
   .card-advance::after { content: '\2192'; }
   .card-advance:hover {
-    background: var(--ink);
-    color: var(--paper);
+    background: rgba(250, 248, 242, 0.14);
+    color: var(--ink);
     transform: translateX(-50%) translateY(-2px);
   }
   .card-advance.on-dark { background: rgba(250, 248, 242, 0.08); border-color: var(--paper); color: var(--paper); }
-  .card-advance.on-dark:hover { background: var(--paper); color: var(--dark); }
+  .card-advance.on-dark:hover { background: rgba(250, 248, 242, 0.14); color: var(--paper); }
+  .card:has(.more-drawer[open]) .card-advance {
+    opacity: 0;
+    pointer-events: none;
+    visibility: hidden;
+  }
 
   /* Touch: hover states latch after a tap on iOS, so reset them; and keep the
      densest card copy clear of the home indicator. */
   @media (hover: none) and (pointer: coarse) {
-    .card-advance:hover { background: var(--paper-dim); color: var(--ink); transform: translateX(-50%); }
+    .card-advance:hover { background: rgba(5, 4, 3, 0.16); color: var(--ink); transform: translateX(-50%); }
     .card-advance.on-dark:hover { background: rgba(250, 248, 242, 0.08); color: var(--paper); transform: translateX(-50%); }
     .cta:hover { transform: none; box-shadow: none; background: var(--paper); }
     .card { padding-bottom: calc(clamp(74px, 8vh, 108px) + env(safe-area-inset-bottom, 0px)); }
@@ -1317,7 +1331,7 @@
       height: 72px;
     }
     .move-symbol-word {
-      font-size: 54px;
+      font-size: 42px;
     }
     .move-rail { display: none; }
     .move-step {
@@ -1433,7 +1447,7 @@
       font-size: 13.3px;
       line-height: 1.25;
     }
-    .pattern-proof {
+    .pattern-support {
       display: none;
     }
     .pattern-signal {
@@ -1456,6 +1470,12 @@
     }
     .card.is-firstMove .more-drawer {
       margin-bottom: 54px;
+    }
+    .more-drawer[open] > :not(summary) {
+      max-height: min(34vh, 300px);
+    }
+    .more-drawer[open] {
+      margin-bottom: 32px;
     }
     .reframe-panel {
       margin-top: 16px;
@@ -1745,17 +1765,17 @@ function buildEvidenceSupport(rows) {
   return support;
 }
 
-function buildPatternProof(rows) {
-  const proof = el('div', 'pattern-proof anim d3');
+function buildPatternSupport(rows) {
+  const support = el('div', 'pattern-support anim d3');
   (rows || []).slice(0, 3).forEach((item) => {
     const row = el('div', 'pattern-row');
     row.append(el('div', 'pattern-label', item.label || 'Signal'));
     const read = el('div', 'pattern-read');
     read.innerHTML = formatCopy(item.value || '');
     row.append(read);
-    proof.append(row);
+    support.append(row);
   });
-  return proof;
+  return support;
 }
 
 function buildExactAnswers(rows) {
@@ -1944,8 +1964,7 @@ function buildCard(card) {
     inner.append(mark);
     inner.append(el('div', 'eyebrow anim d1', card.eyebrow));
     inner.append(el('div', 'turn-greeting anim d1', card.nameLine));
-    inner.append(el('div', 'turn-persona anim d2', card.personaName || ''));
-    inner.append(p('turn-signature anim d2', card.signature || ''));
+    inner.append(el('div', 'turn-headline anim d2', card.headline || 'Your answers show the first leak.'));
     inner.append(p('turn-body anim d3', card.body));
     // The seat/footprint "context line" was cut from the card: it read as jargon
     // ("joins and handoffs are part of this read"). It stays in the payload for
@@ -1988,7 +2007,7 @@ function buildCard(card) {
     inner.append(bars);
     inner.append(el('div', 'bench-key anim d3', card.benchmarkNote || 'The mark on the right is the strong peer threshold.'));
     if (card.shapeRead?.length) {
-      inner.append(buildDrawer(card.drawerLabel || 'Why it matters', buildBriefPanel(card.shapeRead, 'shape-read-panel')));
+      inner.append(buildDrawer(card.drawerLabel || 'What the gap means', buildBriefPanel(card.shapeRead, 'shape-read-panel')));
     }
   } else if (card.type === 'hurdle') {
     inner.append(el('div', 'eyebrow anim', card.eyebrow));
@@ -1996,15 +2015,14 @@ function buildCard(card) {
     inner.append(h(card.lede, 'd1'));
     inner.append(p('lede anim d2', card.body));
     inner.append(el('div', 'constraint-tag anim d3', card.close));
-    if (card.evidence?.length) inner.append(buildDrawer(card.drawerLabel || 'Answer proof', buildEvidenceSupport(card.evidence)));
+    if (card.evidence?.length) inner.append(buildDrawer(card.drawerLabel || 'The pattern', buildEvidenceSupport(card.evidence)));
   } else if (card.type === 'quote') {
     inner.append(el('div', 'eyebrow anim', card.eyebrow));
     if (card.header) {
       inner.append(h(card.header, 'd1'));
       inner.append(p('lede anim d2', card.body || card.sowhat || card.implication));
       if (card.signalLine) inner.append(p('pattern-signal anim d3', card.signalLine));
-      if (card.proof?.length) inner.append(buildPatternProof(card.proof));
-      if (card.proof?.length) inner.append(buildDrawer(card.drawerLabel || 'Exact answers', buildExactAnswers(card.proof)));
+      if (card.patternRows?.length) inner.append(buildPatternSupport(card.patternRows));
     } else {
       const quote = el('div', 'quote');
       quote.dataset.quote = card.quote;
@@ -2027,18 +2045,17 @@ function buildCard(card) {
     impact.append(el('div', 'impact-metric', card.bill?.metric || 'One leak'));
     impact.append(el('div', 'impact-line', card.bill?.line || costImpactLine(card.glyph)));
     const detail = el('div', 'drawer-content');
-    appendProse(detail, card.body?.length ? card.body : ['Picture the cost inside one real operating cycle.']);
-    const modelRows = (card.model || []).filter((row) => ['Your number', 'Track next'].includes(row.label));
-    const rows = [...modelRows, ...(card.compounders || [])];
+    appendProse(detail, (card.body || []).slice(0, 1).length ? (card.body || []).slice(0, 1) : ['One repeated decision shows where the cost hides.']);
+    const rows = (card.model || []).filter((row) => ['Where it hides', 'Your number', 'Track next'].includes(row.label));
     if (rows.length) detail.append(buildBriefPanel(rows, 'cost-model-panel'));
-    main.append(buildDrawer(card.drawerLabel || 'Show the cost model', detail));
+    main.append(buildDrawer(card.drawerLabel || 'Where the cost hides', detail));
     grid.append(main, impact);
     inner.append(grid);
   } else if (card.type === 'firstMove') {
     const stage = el('div', 'move-stage');
     const symbol = el('div', 'move-symbol anim d1');
     symbol.append(pillarIcon(card.glyph, ''));
-    symbol.append(el('div', 'move-symbol-word', 'One'));
+    symbol.append(el('div', 'move-symbol-word', 'One decision'));
     const copy = el('div', 'move-copy');
     const eyebrow = el('div', 'eyebrow anim');
     eyebrow.append(pillarIcon(card.glyph, 'eyebrow-glyph'), document.createTextNode(card.eyebrow));
@@ -2047,7 +2064,7 @@ function buildCard(card) {
     copy.append(p('lede anim d2', card.move));
     copy.append(p('body forward anim d3', card.forward));
     copy.append(buildMoveRail(card.glyph));
-    if (card.brief?.length) copy.append(buildDrawer(card.drawerLabel || 'What to bring', buildBriefPanel(card.brief)));
+    if (card.brief?.length) copy.append(buildDrawer(card.drawerLabel || 'Session map', buildBriefPanel(card.brief)));
     stage.append(symbol, copy);
     inner.append(stage);
   } else if (card.type === 'close') {
@@ -2205,6 +2222,9 @@ function go(index) {
   if (next === i) return;
   i = next;
   render();
+  requestAnimationFrame(() => {
+    document.querySelector('.card.is-active')?.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+  });
 }
 
 async function loadToken(token) {

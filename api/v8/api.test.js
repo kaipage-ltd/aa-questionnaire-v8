@@ -576,7 +576,7 @@ test('reveal route resolves a submitted token', async () => {
   assert.equal(quotePeak.peak, 1);
   assert.ok(body.reveal.cards.find((card) => card.type === 'hurdle').receipts.some((receipt) => receipt.includes('opportunity stays open')));
   assert.equal(body.reveal.cards.find((card) => card.type === 'quote').quote, 'Analysis takes longer than the opportunity window allows.');
-  assert.match(body.reveal.cards.find((card) => card.type === 'shape').body, /Velocity|gap|delay/);
+  assert.match(body.reveal.cards.find((card) => card.type === 'shape').body, /gap|first leak/i);
   assert.equal(body.reveal.summary.persona, 'The Lagging Tanker');
   assert.equal(body.reveal.summary.actionPlan.artefactName, body.reveal.actionPlan.artefactName);
   assert.equal(body.reveal.privacy.version, '2026-06-25');
@@ -672,9 +672,9 @@ test('all-strong reveals keep calibrated shape copy and the plain constraint bea
 
   assert.equal(profile.score, 100);
   assert.match(shape.body, /high and close/i);
-  assert.match(shape.header, /One line to \*sharpen\*/i);
+  assert.equal(shape.header, 'Benchmark vs the best. The gap is the work.');
   assert.doesNotMatch(shape.body, /thin|collapse/i);
-  assert.equal(hurdle.lede, "You have the numbers. You can't *trust* them.");
+  assert.equal(hurdle.lede, 'You have the number. The room still has to *trust it*.');
   assert.equal(hurdle.close, 'First leak: Visibility');
   assert.match(hurdle.tail, /profile is strong/i);
   assert.match(quote.implication, /selected that as a strength/i);
@@ -710,9 +710,9 @@ test('balanced mid-strength reveals keep calibrated shape copy and the plain con
 
   assert.equal(profile.score, 66);
   assert.match(shape.body, /cluster below best practice/i);
-  assert.match(shape.header, /Every line sits \*short\*/i);
+  assert.equal(shape.header, 'Benchmark vs the best. The gap is the work.');
   assert.doesNotMatch(shape.body, /thin|collapse/i);
-  assert.equal(hurdle.lede, "You have the numbers. You can't *trust* them.");
+  assert.equal(hurdle.lede, 'You have the number. The room still has to *trust it*.');
   assert.equal(hurdle.close, 'First leak: Visibility');
   assert.match(hurdle.tail, /first move is a small rule/i);
 });

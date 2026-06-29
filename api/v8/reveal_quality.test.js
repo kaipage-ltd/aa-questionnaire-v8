@@ -115,7 +115,8 @@ test('demo reveal matrix emits the overhauled 8-card contract', () => {
     assert.equal(turn.eyebrow, 'A+A · AI READINESS');
     assert.equal(turn.personaName, profile.characterName);
     assert.equal(Boolean(turn.signature), true);
-    assert.match(turn.body, /from your score to the proof to the first rule/);
+    assert.match(turn.headline, /(number|signal|work|pattern)/i);
+    assert.match(turn.body, /score, the leak and the first rule/);
 
     assert.equal(number.label, 'WHERE YOUR BUSINESS STANDS TODAY');
     assert.equal(number.max, 100);
@@ -127,21 +128,12 @@ test('demo reveal matrix emits the overhauled 8-card contract', () => {
 
     assert.equal(shape.eyebrow, 'WHERE YOU STAND VS BEST PRACTICE');
     assert.match(shape.header, /^Benchmark vs the best\. /);
-    assert.match(shape.lede, /best-practice operators/);
-    assert.match(shape.benchmarkNote, /Best-practice mark/);
+    assert.match(shape.lede, /light line/);
+    assert.match(shape.benchmarkNote, /Right-hand mark/);
     assert.equal(shape.pillars.length, 4);
-    const values = shape.pillars.map((pillar) => pillar.value);
-    const spread = Math.max(...values) - Math.min(...values);
+    assert.equal(shape.header, 'Benchmark vs the best. The gap is the work.');
     const dragRows = shape.pillars.filter((pillar) => pillar.role === 'drag');
-    if (spread > 10) {
-      const lowest = shape.pillars.reduce((a, b) => (b.value < a.value ? b : a));
-      assert.equal(dragRows.length, 1, `${expectedKey} should flag one benchmark drag`);
-      assert.equal(dragRows[0].label, lowest.label, `${expectedKey} should flag the true lowest pillar`);
-      assert.match(shape.header, /One line \*drags\*\./);
-    } else {
-      assert.equal(dragRows.length, 0, `${expectedKey} should not flag a drag when scores cluster`);
-      assert.match(shape.header, /(Every line sits \*short\*|One line to \*sharpen\*)\./);
-    }
+    assert.equal(dragRows.length, 0, `${expectedKey} should not over-highlight a single row on the benchmark card`);
     for (const pillar of shape.pillars) {
       assert.equal(pillar.icon, pillar.label, `${expectedKey} ${pillar.label} should expose its glyph key`);
       assert.equal(Boolean(pillar.plain), true, `${expectedKey} ${pillar.label} should have plain label copy`);
@@ -149,33 +141,27 @@ test('demo reveal matrix emits the overhauled 8-card contract', () => {
       assert.equal(pillar.benchmark < 100, true, `${expectedKey} ${pillar.label} benchmark should not imply perfection`);
     }
     assert.equal(shape.shapeRead.some((row) => row.label === 'First leak'), true);
-    assert.equal(shape.shapeRead.some((row) => row.label === 'What AI inherits'), true);
-    assert.equal(shape.shapeRead.some((row) => row.label === 'AI today'), true);
-    assert.equal(shape.drawerLabel, 'Why it matters');
+    assert.equal(shape.shapeRead.some((row) => row.label === 'AI risk'), true);
+    assert.equal(shape.drawerLabel, 'What the gap means');
     assert.equal(shape.advanceLabel, 'Find the first leak');
 
     assert.equal(hurdle.eyebrow, 'THE ONE THING TO FIX FIRST');
     assert.equal(hurdle.glyph, profile.hurdle);
     assert.match(hurdle.close, /^First leak: /);
-    assert.equal(hurdle.evidence?.length, 3);
-    assert.equal(hurdle.drawerLabel, 'Answer proof');
+    assert.equal(hurdle.evidence?.length, 0);
+    assert.equal(hurdle.drawerLabel, '');
     assert.equal(hurdle.advanceLabel, 'See the pattern');
-    for (const row of hurdle.evidence) {
-      assert.equal(Boolean(row.prompt), true);
-      assert.equal(Boolean(row.answer), true);
-      assert.equal(Boolean(row.read), true);
-    }
 
-    assert.equal(quote.eyebrow, 'THE RECEIPT');
+    assert.equal(quote.eyebrow, 'THE PATTERN');
     assert.match(quote.header, /Your answers show/);
     assert.equal(Boolean(quote.body), true);
     assert.equal(Boolean(quote.signalLine), true);
     assert.doesNotMatch(quote.body, /clearest signal/i);
-    assert.match(quote.signalLine, /^Best proof: /);
+    assert.doesNotMatch(quote.signalLine, /^The useful pattern: /);
     assert.equal(Boolean(quote.quote), true);
     assert.equal(Boolean(quote.sowhat), true);
-    assert.equal(quote.proof?.length, 3);
-    assert.equal(quote.drawerLabel, 'Exact answers');
+    assert.equal(quote.patternRows?.length, 3);
+    assert.equal(quote.drawerLabel, '');
     assert.equal(quote.advanceLabel, 'Price the cost');
 
     assert.equal(cost.eyebrow, 'WHAT THE GAP COSTS');
@@ -187,8 +173,8 @@ test('demo reveal matrix emits the overhauled 8-card contract', () => {
     assert.equal(cost.model.some((row) => row.label === 'Your number'), true);
     assert.equal(cost.model.some((row) => row.label === 'Track next'), true);
     assert.equal(cost.compounders.some((row) => row.label === 'If ignored'), true);
-    assert.equal(cost.body.length >= 3, true);
-    assert.equal(cost.drawerLabel, 'Show the cost model');
+    assert.equal(cost.body.length >= 2, true);
+    assert.equal(cost.drawerLabel, 'Where the cost hides');
     assert.equal(cost.advanceLabel, 'See the first move');
 
     assert.equal(firstMove.eyebrow, 'THE FIRST MOVE');
@@ -199,7 +185,7 @@ test('demo reveal matrix emits the overhauled 8-card contract', () => {
     assert.equal(firstMove.forward, 'You leave with one rule you can run next week.');
     assert.equal(firstMove.brief.some((row) => row.label === 'Bring'), true);
     assert.equal(firstMove.brief.some((row) => row.label === 'Leave with'), true);
-    assert.equal(firstMove.drawerLabel, 'What to bring');
+    assert.equal(firstMove.drawerLabel, 'Session map');
     assert.equal(firstMove.advanceLabel, 'Book the session');
 
     assert.equal(close.eyebrow, 'WHERE THIS GOES NEXT');
@@ -209,7 +195,7 @@ test('demo reveal matrix emits the overhauled 8-card contract', () => {
     assert.equal(close.glyph, profile.hurdle);
     assert.equal(close.closeLine, PERSONA[expectedKey].closeLine);
     assert.equal(close.outputs?.length >= 3, true);
-    assert.equal(close.qualifier, 'We take six new clients a year. Our CEO leads each one. The session checks the fit both ways.');
+    assert.equal(close.qualifier, '');
     assert.doesNotMatch(close.qualifier, /Saverio/);
 
     assert.equal(Boolean(insights.summary.actionPlan?.artefactName), true);

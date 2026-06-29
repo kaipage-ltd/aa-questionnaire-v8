@@ -56,19 +56,19 @@ test('shape card uses a benchmark tick and respondent value over the fill', () =
 
 test('drawers hold detail instead of default-view dense copy', () => {
   assert.match(playerHtml, /card\.drawerLabel \|\| 'Score detail'/, 'score interpretation should be in a labelled drawer');
-  assert.match(playerHtml, /card\.drawerLabel \|\| 'Why it matters'/, 'shape read should be in a labelled drawer');
-  assert.match(playerHtml, /card\.drawerLabel \|\| 'Answer proof'/, 'hurdle evidence should be in a labelled drawer');
-  assert.match(playerHtml, /card\.drawerLabel \|\| 'Show the cost model'/, 'cost scene should be in a labelled drawer');
+  assert.match(playerHtml, /card\.drawerLabel \|\| 'What the gap means'/, 'shape read should be in a labelled drawer');
+  assert.match(playerHtml, /card\.drawerLabel \|\| 'The pattern'/, 'hurdle evidence should be in a labelled drawer');
+  assert.match(playerHtml, /card\.drawerLabel \|\| 'Where the cost hides'/, 'cost scene should be in a labelled drawer');
   assert.doesNotMatch(playerHtml, /cost-cascade/, 'cost receipts must not ship in the default finale view');
-  assert.match(playerHtml, /card\.drawerLabel \|\| 'What to bring'/, 'first move brief should be in a labelled drawer');
+  assert.match(playerHtml, /card\.drawerLabel \|\| 'Session map'/, 'first move brief should be in a labelled drawer');
   assert.doesNotMatch(playerHtml, /buildDrawer\('What you walk out with'/, 'close slide must not carry a visible detail drawer');
   assert.doesNotMatch(playerHtml, /From your answers/, 'default hurdle view must not ship the anxious support label');
 });
 
 test('pattern slide replaces the old quote-only beat', () => {
-  assert.match(playerHtml, /buildPatternProof/, 'pattern slide must render proof rows');
+  assert.match(playerHtml, /buildPatternSupport/, 'pattern slide must render support rows');
   assert.match(playerHtml, /buildExactAnswers/, 'pattern slide must keep exact answers in a drawer');
-  assert.match(playerHtml, /pattern-proof/, 'pattern proof rail must be styled');
+  assert.match(playerHtml, /pattern-support/, 'pattern support rail must be styled');
   assert.match(playerHtml, /card\.header/, 'quote card branch must support the new pattern header');
 });
 

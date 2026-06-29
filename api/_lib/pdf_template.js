@@ -282,11 +282,10 @@ function shapePage(ctx, meta, profile) {
   </div>
 
   <div class="rows" style="margin-top:9mm; border-top:0;">
-    ${row('The decisive gap', ctx.gap > 6
-      ? `${ctx.gap}-point drag between ${ctx.strongest.label} and ${ctx.hurdleLabel}.`
+    ${row('The gap to close', ctx.gap > 6
+      ? `${ctx.gap}-point gap between ${ctx.strongest.label} and ${ctx.hurdleLabel}.`
       : 'The readings are close. The first move is to choose where to tighten, not to invent a crisis.')}
-    ${ctx.aiImplication ? row('What AI inherits', ctx.aiImplication) : ''}
-    ${ctx.aiLeverage ? row('AI today', ctx.aiLeverage) : ''}
+    ${ctx.aiImplication ? row('AI risk', ctx.aiImplication) : ''}
   </div>
   ${footer(meta, profile, 2)}
 </section>`;
@@ -296,7 +295,7 @@ function evidencePage(ctx, meta, profile) {
   const evidence = (ctx.evidence.length ? ctx.evidence : ctx.receipts.map((text) => ({ read: text }))).slice(0, 3);
   return `<section class="sheet"${sheetStyle('evidence')}>
   ${header('Pattern')}
-  <div class="eyebrow mono">The receipt</div>
+  <div class="eyebrow mono">The pattern</div>
   <h1 class="title">${esc(ctx.patternHeader || 'Three answers. One pattern.')}</h1>
   <p class="lede">${esc(ctx.patternBody || ctx.receiptTail)}</p>
 
@@ -428,7 +427,7 @@ export function profileContext(profile, insights) {
   const costLines = [cost?.hero, cost?.compound, ...costSceneLines].map((line) => String(line || '').trim()).filter(Boolean);
   const receipts = arrayText(receiptsCard?.receipts).length
     ? arrayText(receiptsCard?.receipts)
-    : ['The business has shown us where the drag sits.'];
+    : ['The business has shown us where the leak sits.'];
   const evidence = Array.isArray(receiptsCard?.evidence)
     ? receiptsCard.evidence.filter(Boolean)
     : [];
@@ -446,14 +445,14 @@ export function profileContext(profile, insights) {
     shapeEyebrow: shape?.eyebrow || '',
     shapeHeader: shape?.header || '',
     shapeBody: shape?.body || 'The value is not the score on its own. It is the operating gap behind it.',
-    aiImplication: rowValue(shape?.shapeRead, 'What AI inherits'),
-    aiLeverage: rowValue(shape?.shapeRead, 'AI today'),
+    aiImplication: rowValue(shape?.shapeRead, 'AI risk'),
+    aiLeverage: '',
     costModel: Array.isArray(cost?.model) ? cost.model : [],
     ignoredCost: rowValue(widening?.compounders, 'If ignored'),
     hurdleClose: hurdle?.close || `Your first leak is ${profile.hurdle}: the first place to inspect before stronger AI work depends on it.`,
     receipts,
     evidence,
-    receiptTail: receiptsCard?.tail || 'Three answers. One pattern. The business has shown us where the drag sits.',
+    receiptTail: receiptsCard?.tail || 'Three answers. One pattern. The business has shown us where the leak sits.',
     patternHeader: quoteCard?.header || '',
     patternBody: quoteCard?.body || '',
     patternSoWhat: quoteCard?.sowhat || '',
@@ -465,11 +464,11 @@ export function profileContext(profile, insights) {
     firstMoveHeader: move?.header || '',
     firstMoveLine: move?.move || actionPlan.mondayMove || firstMoveLines[0] || `Inspect the ${profile.hurdle.toLowerCase()} gap first.`,
     fitBody: actionPlan.artefactName
-      ? `Thirty minutes with our CEO. Not a pitch. Bring one live ${profile.hurdle} problem and pressure-test the ${actionPlan.artefactName}: what to map, what to ignore and what to close first.`
-      : 'Thirty minutes with our CEO. Not a pitch. Bring the weak point to the call and pressure-test the first move worth making.',
+      ? `Thirty minutes with our CEO. Bring one live ${profile.hurdle} problem and pressure-test the ${actionPlan.artefactName}: what to map, what to ignore and what to close first.`
+      : 'Thirty minutes with our CEO. Bring the weak point to the call and pressure-test the first move worth making.',
     sessionTakeaway: actionPlan.artefactName
-      ? `One live decision mapped as the ${actionPlan.artefactName}, the operating rule that protects it and a next-week proof measure.`
-      : 'One live decision mapped, the operating rule that protects it and a next-week proof measure.',
+      ? `One live decision mapped as the ${actionPlan.artefactName}, the operating rule that protects it and one measure for next week.`
+      : 'One live decision mapped, the operating rule that protects it and one measure for next week.',
     prepLine: actionPlan.artefactName
       ? 'Bring one live example, not a general AI ambition.'
       : prepLine(firstMoveLines, profile.hurdle)
