@@ -113,8 +113,9 @@ test('demo reveal matrix emits the overhauled 8-card contract', () => {
     const [turn, number, shape, hurdle, quote, cost, firstMove, close] = insights.cards;
 
     assert.equal(turn.eyebrow, 'A+A · AI READINESS');
-    assert.equal(turn.lede, 'We found the *decision leak*.');
-    assert.match(turn.body, /from score to proof to the first rule/);
+    assert.equal(turn.personaName, profile.characterName);
+    assert.equal(Boolean(turn.signature), true);
+    assert.match(turn.body, /from your score to the proof to the first rule/);
 
     assert.equal(number.label, 'WHERE YOUR BUSINESS STANDS TODAY');
     assert.equal(number.max, 100);
@@ -124,11 +125,23 @@ test('demo reveal matrix emits the overhauled 8-card contract', () => {
     assert.equal(number.drawerLabel, 'Score detail');
     assert.equal(number.advanceLabel, 'Find the leak');
 
-    assert.equal(shape.eyebrow, 'WHERE YOU STAND VS PEERS');
-    assert.equal(shape.header, 'Benchmark vs peers. One line *drags*.');
-    assert.match(shape.lede, /strong operators/);
-    assert.match(shape.benchmarkNote, /Peer mark/);
+    assert.equal(shape.eyebrow, 'WHERE YOU STAND VS BEST PRACTICE');
+    assert.match(shape.header, /^Benchmark vs the best\. /);
+    assert.match(shape.lede, /best-practice operators/);
+    assert.match(shape.benchmarkNote, /Best-practice mark/);
     assert.equal(shape.pillars.length, 4);
+    const values = shape.pillars.map((pillar) => pillar.value);
+    const spread = Math.max(...values) - Math.min(...values);
+    const dragRows = shape.pillars.filter((pillar) => pillar.role === 'drag');
+    if (spread > 10) {
+      const lowest = shape.pillars.reduce((a, b) => (b.value < a.value ? b : a));
+      assert.equal(dragRows.length, 1, `${expectedKey} should flag one benchmark drag`);
+      assert.equal(dragRows[0].label, lowest.label, `${expectedKey} should flag the true lowest pillar`);
+      assert.match(shape.header, /One line \*drags\*\./);
+    } else {
+      assert.equal(dragRows.length, 0, `${expectedKey} should not flag a drag when scores cluster`);
+      assert.match(shape.header, /(Every line sits \*short\*|One line to \*sharpen\*)\./);
+    }
     for (const pillar of shape.pillars) {
       assert.equal(pillar.icon, pillar.label, `${expectedKey} ${pillar.label} should expose its glyph key`);
       assert.equal(Boolean(pillar.plain), true, `${expectedKey} ${pillar.label} should have plain label copy`);
@@ -180,9 +193,9 @@ test('demo reveal matrix emits the overhauled 8-card contract', () => {
 
     assert.equal(firstMove.eyebrow, 'THE FIRST MOVE');
     assert.equal(firstMove.glyph, profile.hurdle);
-    assert.match(firstMove.header, /\*.*rule\*/);
+    assert.match(firstMove.header, /Leave with the rule/);
     assert.match(firstMove.move, /Our CEO/);
-    assert.equal(firstMove.forward, 'That is the session: one decision path you can test next week.');
+    assert.equal(firstMove.forward, 'You leave with one rule you can run next week.');
     assert.equal(firstMove.brief.some((row) => row.label === 'Bring'), true);
     assert.equal(firstMove.brief.some((row) => row.label === 'Leave with'), true);
     assert.equal(firstMove.drawerLabel, 'What to bring');
@@ -195,7 +208,7 @@ test('demo reveal matrix emits the overhauled 8-card contract', () => {
     assert.equal(close.glyph, profile.hurdle);
     assert.equal(close.closeLine, PERSONA[expectedKey].closeLine);
     assert.equal(close.outputs?.length >= 3, true);
-    assert.match(close.qualifier, /Our CEO/);
+    assert.equal(close.qualifier, 'We take six new clients a year and our CEO runs every one. The session is how we both check the fit.');
     assert.doesNotMatch(close.qualifier, /Saverio/);
 
     assert.equal(Boolean(insights.summary.actionPlan?.artefactName), true);

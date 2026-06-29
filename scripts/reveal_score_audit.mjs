@@ -16,7 +16,8 @@ const SCOREBOOK = {
     wordmark: [9.0, 9.2, 9.3, 8.8, 8.7, 9.2, 8.6, 9.0],
     eyebrow: [9.0, 8.8, 9.0, 8.6, 8.7, 9.0, 8.6, 9.0],
     nameLine: [9.3, 8.8, 9.4, 8.6, 8.7, 8.9, 8.6, 9.4],
-    lede: [9.1, 9.3, 9.0, 9.2, 9.0, 9.3, 8.8, 9.0],
+    personaName: [9.3, 9.4, 9.5, 9.0, 9.1, 9.2, 9.0, 9.4],
+    signature: [9.1, 9.2, 9.0, 9.0, 9.0, 9.1, 8.9, 9.1],
     body: [9.0, 8.8, 9.0, 8.8, 9.0, 8.9, 9.0, 9.0],
     advance: [9.3, 9.0, 9.4, 8.6, 8.8, 8.8, 8.6, 9.4]
   },
@@ -136,7 +137,8 @@ function cardRows(card) {
     rows.push(row('turn', 'wordmark', 'A+A wordmark'));
     rows.push(row('turn', 'eyebrow', card.eyebrow));
     rows.push(row('turn', 'nameLine', card.nameLine));
-    rows.push(row('turn', 'lede', card.lede));
+    rows.push(row('turn', 'personaName', card.personaName));
+    rows.push(row('turn', 'signature', card.signature));
     rows.push(row('turn', 'body', card.body));
     rows.push(row('turn', 'advance', card.advanceLabel || 'Continue'));
   }

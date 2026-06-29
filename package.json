@@ -7,6 +7,7 @@
     "test:api": "node --test api/**/*.test.js",
     "smoke:production": "node scripts/production_smoke.mjs",
     "smoke:production:headed": "SMOKE_HEADED=1 node scripts/production_smoke.mjs",
+    "smoke:reveal:local": "node scripts/verify_reveal_journeys.mjs",
     "pdf:samples": "node scripts/render_pdfs.mjs",
     "pdf:samples:html": "node scripts/render_pdfs.mjs --html"
   },

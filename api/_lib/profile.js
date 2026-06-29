@@ -82,6 +82,12 @@ function clamp(n, min, max) {
   return Math.max(min, Math.min(max, n));
 }
 
+function sentenceCaseSig(s) {
+  if (!s) return '';
+  const t = String(s).trim();
+  return t.charAt(0).toUpperCase() + t.slice(1) + (/[.!?]$/.test(t) ? '' : '.');
+}
+
 function singleScore(value) {
   const index = Number.isFinite(value) ? clamp(value, 0, 3) : 3;
   return Math.round(100 - (index / 3) * 100);
@@ -225,6 +231,12 @@ export function deriveRevealInsights(answers, profile, context = {}) {
   const gap = Math.max(0, strongest.value - hurdlePillar.value);
   const highEvenShape = strongest.value >= 80 && hurdlePillar.value >= 80 && gap <= 6;
   const balancedEvenShape = !highEvenShape && strongest.value >= 60 && hurdlePillar.value >= 60 && gap <= 6;
+  const bShape = benchmarkShape(pillars);
+  const benchClause = bShape.highEven
+    ? 'One line to *sharpen*.'
+    : bShape.clustered
+    ? 'Every line sits *short*.'
+    : 'One line *drags*.';
   const weakAnswers = weakestAnswersForPillar(answers, profile.hurdle);
   const quote = selectCard6Quote(answers, profile.hurdle, weakAnswers);
   const sp = selfPerception(answers, profile.hurdle);
@@ -249,7 +261,8 @@ export function deriveRevealInsights(answers, profile, context = {}) {
       beat: 'Problem',
       eyebrow: STATIC.card1.eyebrow,
       nameLine: `${firstName}.`,
-      lede: fill(STATIC.card1.lede, interpolateContext),
+      personaName: profile.characterName,
+      signature: sentenceCaseSig(persona.signature),
       body: fill(STATIC.card1.body, interpolateContext),
       contextLine: turnContextLine(answers),
       basis: diagnosticBasis(answers, profile),
@@ -269,21 +282,21 @@ export function deriveRevealInsights(answers, profile, context = {}) {
     {
       type: 'shape',
       beat: 'Problem',
-      eyebrow: 'WHERE YOU STAND VS PEERS',
-      header: 'Benchmark vs peers. One line *drags*.',
-      lede: 'Your number sits on each line. The mark on the right is where strong operators tend to hold.',
+      eyebrow: 'WHERE YOU STAND VS BEST PRACTICE',
+      header: `Benchmark vs the best. ${benchClause}`,
+      lede: 'Your number sits on each line. The mark on the right is where best-practice operators tend to hold.',
       pillars: pillars.map((pillar) => ({
         ...pillar,
-        role: pillar.label === profile.hurdle ? 'hurdle' : pillar.label === strongest.label ? 'strong' : 'normal',
+        role: (bShape.clearLaggard && pillar.label === bShape.lowest.label) ? 'drag' : 'normal',
         icon: pillar.label,
         plain: PILLAR_PLAIN[pillar.label] || '',
         benchmark: BENCHMARK[pillar.label] || 100
       })),
       benchmark: BENCHMARK,
       benchmarkLabel: BENCHMARK_LABEL,
-      benchmarkNote: 'Peer mark: where the operating system should hold before AI carries more decisions.',
+      benchmarkNote: 'Best-practice mark: where the operating system should hold before AI carries more decisions.',
       shapeRead: shapeRead({ strongest, hurdle: hurdlePillar, gap, highEvenShape, balancedEvenShape, leverage: leverageReality(answers, profile) }),
-      body: shapeBody({ strongest, hurdle: hurdlePillar, gap, highEvenShape, balancedEvenShape }),
+      body: shapeBody({ bShape }),
       drawerLabel: 'Why it matters',
       advanceLabel: 'Find the first leak'
     },
@@ -384,7 +397,8 @@ export function deriveRevealInsights(answers, profile, context = {}) {
       gap,
       quote,
       receipts: receiptImplications,
-      actionPlan
+      actionPlan,
+      benchmarkShape: bShape
     }
   };
 }
@@ -414,6 +428,19 @@ function normalisePillars(pillars) {
     label,
     value: values.has(label) ? values.get(label) : 0
   }));
+}
+
+function benchmarkShape(pillars) {
+  const vals = pillars.map((pillar) => pillar.value);
+  const maxV = Math.max(...vals);
+  const minV = Math.min(...vals);
+  const spread = maxV - minV;
+  const lowest = pillars.reduce((a, b) => (b.value < a.value ? b : a));
+  const highest = pillars.reduce((a, b) => (b.value > a.value ? b : a));
+  const highEven = maxV >= 80 && spread <= 10;
+  const clustered = !highEven && spread <= 10;
+  const clearLaggard = spread > 10;
+  return { spread, lowest, highest, maxV, minV, highEven, clustered, clearLaggard };
 }
 
 // One human sentence acknowledging seat and footprint on the opening card,
@@ -690,19 +717,14 @@ function leverageReality(answers, profile) {
   return `${reach}. Leverage depends on one cleaner decision path, otherwise stronger AI inherits ${inherited}.`;
 }
 
-function shapeBody({ strongest, hurdle, gap, highEvenShape, balancedEvenShape }) {
-  if (highEvenShape) {
-    return `The readings are high and close. The work is to choose the first rule before the system carries more AI. Start with ${hurdle.label}.`;
+function shapeBody({ bShape }) {
+  if (bShape.highEven) {
+    return 'The readings are high and close. This is a sharpening job, not a crisis.';
   }
-  if (balancedEvenShape) {
-    return `The readings are close. This is a sharpening job, not a crisis. Start with ${hurdle.label}.`;
+  if (bShape.clustered) {
+    return 'Your readings cluster below best practice. The job is not one line. It is the first leak to close and that is next.';
   }
-  const strongLine = PILLAR_COPY[strongest.label]?.strong || `${strongest.label} is the strongest reading.`;
-  const weakLine = PILLAR_COPY[hurdle.label]?.weak || `${hurdle.label} is the leak.`;
-  if (strongest.label === hurdle.label || gap <= 6) {
-    return `${weakLine} The scores are close, so the job is to close the first leak before it spreads.`;
-  }
-  return `${strongLine} ${hurdle.label} is at ${hurdle.value}, a ${gap}-point drag. That is why the stronger scores do not pay off yet.`;
+  return `${bShape.lowest.label} sits ${bShape.spread} points below your strongest line. That gap is where readiness leaks first.`;
 }
 
 function hurdleCard(hurdle, highEvenShape, balancedEvenShape) {
@@ -749,10 +771,10 @@ function patternSoWhat(hurdle) {
 
 function firstMoveHeader(hurdle) {
   return {
-    Visibility: 'Bring one number. Leave with *one rule*.',
-    Velocity: 'Bring one late call. Leave with *one rule*.',
-    Coherence: 'Bring one split call. Leave with *one rule*.'
-  }[hurdle] || 'One live decision. One *rule*.';
+    Visibility: 'Bring the number you *argue about*. Leave with the rule that *ends it*.',
+    Velocity: 'Bring the call you made *too late*. Leave with the rule that *speeds it up*.',
+    Coherence: 'Bring the call your teams *split on*. Leave with the rule that *settles it*.'
+  }[hurdle] || 'Bring one live decision. Leave with *one rule*.';
 }
 
 function costHero(profile, weakAnswers) {

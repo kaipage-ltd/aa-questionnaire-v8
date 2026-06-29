@@ -7,6 +7,7 @@
 /HANDOFF_*.md
 /AGENT_FEEDBACK_LEDGER.md
 /reveal_copy_studio.html
+/combinations_review.html
 
 # Agent/tooling state and generated output.
 /.claude/

@@ -1,8 +1,7 @@
 export const STATIC = {
   card1: {
     eyebrow: 'A+A · AI READINESS',
-    lede: 'We found the *decision leak*.',
-    body: 'Your answers point to one place where value leaks before a decision lands. We follow it from score to proof to the first rule.'
+    body: 'That is the pattern your answers point to. We follow it from your score to the proof to the first rule to fix.'
   },
   card2: {
     label: 'WHERE YOUR BUSINESS STANDS TODAY'
@@ -40,7 +39,7 @@ export const STATIC = {
   card13: {
     eyebrow: 'WHERE THIS GOES NEXT',
     button: 'Book the working session',
-    qualifier: 'Six new clients a year. Our CEO is in every one. Fit check, both ways.'
+    qualifier: 'We take six new clients a year and our CEO runs every one. The session is how we both check the fit.'
   },
   card14: {
     button: 'Book the working session'
@@ -125,7 +124,7 @@ export const PILLAR_PLAIN = {
 // Where strong peer operators tend to sit. Rendered as a benchmark marker
 // beside each respondent bar so the gap, not the absolute score, is the message.
 export const BENCHMARK = { Visibility: 88, Velocity: 84, Coherence: 86, Leverage: 82 };
-export const BENCHMARK_LABEL = 'Strong peer mark';
+export const BENCHMARK_LABEL = 'Best-practice mark';
 
 export const PILLAR_COPY = {
   Visibility: {
@@ -316,19 +315,19 @@ export const COST_SCENES = {
 
 export const COST_HERO = {
   Visibility: {
-    Clarity: 'Five days to trust the *number*.',
-    Traction: 'Three weeks before spend knows *payback*.',
-    Scale: 'Six weeks before proof catches *conviction*.'
+    Clarity: "The week runs on numbers you can't *trust yet*.",
+    Traction: 'Spend keeps moving before payback is *proven*.',
+    Scale: 'Conviction is *ahead of the proof*.'
   },
   Velocity: {
-    Clarity: 'Seven days is the *bill*.',
-    Traction: 'Eleven days is the *bill*.',
-    Scale: 'Six weeks is the *bill*.'
+    Clarity: 'You see the call early and *make it late*.',
+    Traction: 'The window closes before the *call lands*.',
+    Scale: 'The market moves while the decision *climbs the deck*.'
   },
   Coherence: {
-    Clarity: 'One meeting spent rebuilding the *picture*.',
-    Traction: 'Four weeks before overlap *shows*.',
-    Scale: 'Eight weeks before the split *shows*.'
+    Clarity: 'The meeting starts by *rebuilding the picture*.',
+    Traction: 'Three teams, three versions of the *same win*.',
+    Scale: 'Each function sails its *own chart*.'
   }
 };
 
@@ -341,11 +340,11 @@ export const COST_COMPOUND = {
 export const COST_BILL = {
   Visibility_Clarity: {
     metric: 'Five days',
-    line: 'before the number can be trusted.'
+    line: 'before one number is safe to act on.'
   },
   Visibility_Traction: {
     metric: 'Three weeks',
-    line: 'before payback catches spend.'
+    line: 'before payback catches the spend.'
   },
   Visibility_Scale: {
     metric: 'Six weeks',
@@ -353,11 +352,11 @@ export const COST_BILL = {
   },
   Velocity_Clarity: {
     metric: 'Seven days',
-    line: 'between signal and action.'
+    line: 'between the signal and the call.'
   },
   Velocity_Traction: {
     metric: 'Eleven days',
-    line: 'between signal and action.'
+    line: 'between the signal and the call.'
   },
   Velocity_Scale: {
     metric: 'Six weeks',
@@ -369,7 +368,7 @@ export const COST_BILL = {
   },
   Coherence_Traction: {
     metric: 'Four weeks',
-    line: 'before overlap appears.'
+    line: 'before the overlap shows.'
   },
   Coherence_Scale: {
     metric: 'Eight weeks',
@@ -389,7 +388,7 @@ export const QUOTE_SOWHAT = {
   Coherence: 'The pattern is split: source, definition and who breaks the tie.'
 };
 
-export const MONDAY_FORWARD = 'That is the session: one decision path you can test next week.';
+export const MONDAY_FORWARD = 'You leave with one rule you can run next week.';
 export const SESSION_OFFER = 'Thirty minutes with our CEO. Not a pitch. Bring the decision behind this leak. Leave with one rule you can test next week.';
 
 export const ANSWER_OPTIONS = {

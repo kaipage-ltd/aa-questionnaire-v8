@@ -345,7 +345,7 @@
 
     function flattenCard(card) {
       const out = [];
-      ['eyebrow', 'label', 'nameLine', 'lede', 'body', 'after', 'header', 'move', 'forward', 'quote', 'sowhat', 'hero', 'compound', 'offer', 'qualifier', 'button'].forEach((field) => {
+      ['eyebrow', 'label', 'nameLine', 'personaName', 'signature', 'lede', 'body', 'after', 'header', 'move', 'forward', 'quote', 'sowhat', 'hero', 'compound', 'offer', 'qualifier', 'button'].forEach((field) => {
         addElement(out, field, card[field]);
       });
       if (Array.isArray(card.pillars)) {
@@ -436,7 +436,7 @@
           <div class="slide-head">
             <div>
               <p class="eyebrow">Slide ${String(index + 1).padStart(2, '0')}</p>
-              <h2 class="slide-title">${formatCopy(card.header || card.lede || card.hero || card.quote || card.eyebrow)}</h2>
+              <h2 class="slide-title">${formatCopy(card.personaName || card.header || card.lede || card.hero || card.quote || card.eyebrow)}</h2>
             </div>
             <div class="slide-type">${escapeHtml(card.type)}</div>
           </div>

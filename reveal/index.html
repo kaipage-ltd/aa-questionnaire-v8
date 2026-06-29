@@ -144,12 +144,18 @@
     width: 32%;
     z-index: 30;
     cursor: pointer;
+    pointer-events: none;
   }
   .zone.prev { left: 0; width: 24%; }
   .zone.next { right: 0; width: 76%; }
   body.is-close-card .zone.next {
     pointer-events: none;
     cursor: default;
+  }
+  .card-inner,
+  .card-advance {
+    position: relative;
+    z-index: 40;
   }
 
   .card {
@@ -436,10 +442,14 @@
   .bar-row.hurdle .bar-name,
   .bar-row.hurdle .bar-val,
   .bar-row.hurdle .pglyph { color: var(--ink); }
-  .bar-row.muted .bar-name,
-  .bar-row.muted .bar-val,
-  .bar-row.muted .pglyph { color: var(--ink-faint); }
-  .bar-row.muted .bar-fill { background: var(--ink-faint); }
+  .bar-row.drag .bar-name,
+  .bar-row.drag .bar-val,
+  .bar-row.drag .pglyph,
+  .bar-row.drag .bar-plain { color: var(--ink); }
+  .bar-row.normal .bar-name,
+  .bar-row.normal .bar-val,
+  .bar-row.normal .pglyph { color: var(--ink-soft); }
+  .bar-row.normal .bar-fill { background: rgba(243, 234, 217, 0.58); }
   .card.is-active .bar-fill.go { transition: width 900ms cubic-bezier(0.22, 0.61, 0.36, 1); }
   .pglyph {
     display: inline-flex;
@@ -990,7 +1000,37 @@
   .reveal-wordmark svg { width: 100%; height: auto; display: block; }
 
   /* ── Wrapped-style scale (each beat its own composition) ──────── */
-  .turn-name { font-size: clamp(72px, 11vw, 116px); }
+  .turn-greeting {
+    font-family: var(--serif);
+    font-size: clamp(54px, 8vw, 86px);
+    line-height: 0.98;
+    color: var(--ink);
+    margin-bottom: 16px;
+  }
+  .turn-persona {
+    font-family: var(--serif);
+    font-size: clamp(76px, 12vw, 138px);
+    line-height: 0.9;
+    color: var(--ink);
+    letter-spacing: 0;
+    margin-bottom: 22px;
+  }
+  .turn-signature {
+    max-width: 760px;
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: clamp(30px, 4.5vw, 54px);
+    line-height: 1.08;
+    color: var(--ink-soft);
+    margin: 0 0 22px;
+  }
+  .turn-body {
+    max-width: 650px;
+    font-size: clamp(18px, 2vw, 23px);
+    line-height: 1.42;
+    color: var(--ink-soft);
+    margin: 0;
+  }
   .num { font-size: clamp(180px, 30vw, 300px); }
   .num-wrap {
     display: flex;
@@ -1014,7 +1054,7 @@
     line-height: 1.35;
     color: var(--ink-soft);
   }
-  .bar-row.muted .bar-plain { color: var(--ink-faint); }
+  .bar-row.normal .bar-plain { color: var(--ink-soft); }
   .bench-key {
     margin-top: 18px;
     font-family: var(--mono);
@@ -1417,10 +1457,6 @@
     .card.is-firstMove .more-drawer {
       margin-bottom: 54px;
     }
-    .card.is-shape .more-drawer,
-    .card.is-quote .more-drawer {
-      display: none;
-    }
     .reframe-panel {
       margin-top: 16px;
     }
@@ -1553,7 +1589,7 @@
   <div class="zone next" id="next"></div>
   <div class="beat-tag" id="beatTag"></div>
   <div id="cards"></div>
-  <div class="hint" id="hint">Tap right to continue - left/right keys</div>
+  <div class="hint" id="hint">Use the button or left/right keys</div>
 </div>
 <div class="loading" id="loading">Composing reveal</div>
 
@@ -1747,19 +1783,19 @@ function costImpactLine(hurdle) {
 function moveStepsFor(hurdle) {
   return {
     Visibility: [
-      ['Bring', 'The number challenged in the room.'],
-      ['Set', 'Source, owner and trust rule.'],
-      ['Use', 'The decision it changes this week.']
+      ['Bring', 'The number your team keeps debating.'],
+      ['Set', 'Its source, owner and the test that proves it.'],
+      ['Use', 'The one decision it changes this week.']
     ],
     Velocity: [
-      ['Bring', 'The decision that lands late.'],
+      ['Bring', 'The call that lands late.'],
       ['Find', 'The first wait after signal.'],
-      ['Set', 'Owner, deadline and rule.']
+      ['Set', 'The owner, deadline and rule.']
     ],
     Coherence: [
-      ['Bring', 'The decision teams split on.'],
-      ['Name', 'Source, definition and owner.'],
-      ['Set', 'The tie-breaker.']
+      ['Bring', 'The call teams split on.'],
+      ['Name', 'The source, definition and owner.'],
+      ['Set', 'The tie-breaker rule.']
     ]
   }[hurdle] || [
     ['Bring', 'One repeated decision.'],
@@ -1907,9 +1943,10 @@ function buildCard(card) {
     mark.innerHTML = AA_WORDMARK;
     inner.append(mark);
     inner.append(el('div', 'eyebrow anim d1', card.eyebrow));
-    inner.append(el('div', 'turn-name anim d1', card.nameLine));
-    inner.append(h(card.lede, 'd2'));
-    inner.append(p('body anim d3', card.body));
+    inner.append(el('div', 'turn-greeting anim d1', card.nameLine));
+    inner.append(el('div', 'turn-persona anim d2', card.personaName || ''));
+    inner.append(p('turn-signature anim d2', card.signature || ''));
+    inner.append(p('turn-body anim d3', card.body));
     // The seat/footprint "context line" was cut from the card: it read as jargon
     // ("joins and handoffs are part of this read"). It stays in the payload for
     // tests/analytics but no longer renders, keeping the opening punchier.
@@ -1932,7 +1969,7 @@ function buildCard(card) {
     inner.append(p('lede anim d2', card.lede));
     const bars = el('div', 'bars anim d3');
     card.pillars.forEach((pillar) => {
-      const row = el('div', `bar-row ${pillar.role === 'hurdle' ? 'hurdle' : 'muted'}`);
+      const row = el('div', `bar-row ${pillar.role === 'drag' ? 'drag' : 'normal'}`);
       const head = el('div', 'bar-head');
       head.append(pillarIcon(pillar.icon || pillar.label, 'bar'), el('span', 'bar-name', pillar.label));
       const track = el('div', 'bar-track');

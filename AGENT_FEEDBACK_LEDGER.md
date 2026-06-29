@@ -222,3 +222,17 @@ If a security recommendation reduces conversion, breaks Brevo/Calendly automatio
 - Latest security commit is local only unless pushed later.
 - Internal docs are excluded from Vercel via `.vercelignore`.
 - The booking/email data contract is intentionally preserved after Kai flagged that removing it could break core functionality.
+
+## 2026-06-28 feedback round (local pre-deploy build)
+
+Reviewed on local HEAD (`bd73758`, on top of `0fe0cf7 Harden reveal data handling`), not production. Full build spec written for Codex at `~/.claude/plans/i-need-you-to-abundant-minsky.md`.
+
+1. "Change this answer" in the questionnaire must reposition the page to the question being re-answered (it currently re-enables options in place but does not scroll to them).
+2. Phase-transition interstitials ("Visibility complete / The picture is starting to form", "Halfway / ...") must show the four pillar boxes with their glyphs and completion state. Reuse the existing `renderDomainMap()`.
+3. The "Halfway" interstitial copy is too verbose for how briefly it stays on screen. Trim it (the four-box map now carries the "where you are" info).
+4. The email gate must drive craving. DECISION: louder, more emotive copy PLUS visual intensity (not a real-data tease, scoring stays server-side). Stay inside the restrained brand voice; intensity comes mostly from motion + a "locked" treatment, not exclamation or hype words.
+5. Cover line "We found the decision leak" - "found" questioned, meaning unclear. DECISION: reframe the cover so the PROFILE NAME (e.g. The Dead Reckoner) is the payoff, with the signature tagline; drop "found / decision leak" jargon into plainer body. Also build a reviewable HTML of all 9 persona reveals + variation tables to hand to our CEO (DECISION: 9 personas full + variation tables, not exhaustive enumeration).
+6. Benchmark slide: say "vs best practice", not "vs peers". "One line drags" must not appear when scores are close. BUG: the highlighted line was the narrative hurdle (Visibility 42), not the true lowest (Leverage 41), because `deriveHurdle()` never considers Leverage. DECISION: adaptive headline; the benchmark slide highlights the genuine laggard only when there is one (decoupled from the hurdle), and the named "first leak" stays a separate, later beat. Do NOT add a Leverage persona.
+7/8. firstMove and cost slides are not understood. Make the copy concrete: "one number / one rule" and "five days" must connect to the reader's own situation; remove hero/bill duplication on the cost slide (hero becomes qualitative, bill stays quantitative).
+9. Close-slide qualifier "Six new clients a year. Our CEO is in every one. Fit check, both ways." is confusing. Rewrite for clarity (scarcity + CEO-led + mutual fit).
+10. Inbox confirmation needs a strong CTA to check email immediately (provider-aware webmail button). PDF should reflect the online (dark cinematic) reveal - this SUPERSEDES the earlier "PDF stays light, surfaces intentionally diverge" decision encoded in `api/v8/design_tokens.test.js` (update that test, do not delete it). The online reveal lost the introduction of the profile name; restore it (key).

@@ -11,3 +11,15 @@ export const TOKENS = {
   darkSoft: '#bdbab5',
   darkFaint: '#8a8782'
 };
+
+export const TOKENS_DARK = {
+  bg: '#0b0805',
+  paper: '#f7f3ed',
+  ink: '#f3ead9',
+  inkSoft: 'rgba(243,234,217,0.74)',
+  inkFaint: 'rgba(243,234,217,0.42)',
+  rule: 'rgba(243,234,217,0.18)',
+  dark: '#1c1b18',
+  darkSoft: '#bdbab5',
+  darkFaint: '#8a8782'
+};

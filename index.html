@@ -106,7 +106,7 @@
 
   /* ── Continuous cinematic atmosphere (chosen variant B): the archway scene
      darkened + blurred into an ambient world the whole conversation lives in.
-     One world from the first screen to the reveal — no set-pieces. ── */
+     One world from the first screen to the reveal, no set-pieces. */
   /* Two crossfading image layers so the world can EVOLVE per phase (the sea
      weather: archway → fog → storm → quiet → sunny) without a cut. */
   .atmos {
@@ -175,7 +175,26 @@
     opacity: 0; transform: translateY(20px);
     transition: opacity 1050ms var(--ease-out) 560ms, transform 1150ms var(--ease-out) 560ms;
   }
-  .moment.is-in .m-eyebrow, .moment.is-in .m-line, .moment.is-in .m-sub { opacity: 1; transform: none; }
+  .moment .domain-map {
+    max-width: 620px;
+    margin: 34px 0 0;
+  }
+  .moment .domain-card {
+    color: rgba(243, 234, 217, 0.46);
+    background: rgba(243, 234, 217, 0.04);
+    border-color: rgba(243, 234, 217, 0.10);
+  }
+  .moment .domain-card.is-complete {
+    color: rgba(243, 234, 217, 0.78);
+    background: rgba(243, 234, 217, 0.07);
+  }
+  .moment .domain-card.is-current {
+    color: var(--ink);
+    background: rgba(205, 168, 111, 0.12);
+  }
+  .moment.is-in .m-eyebrow,
+  .moment.is-in .m-line,
+  .moment.is-in .m-sub { opacity: 1; transform: none; }
   @media (prefers-reduced-motion: reduce) {
     .atmos { transition: opacity 200ms linear !important; }
     body::after, body.is-moment .stage { transition: none !important; }
@@ -893,7 +912,7 @@
     transition: opacity 240ms var(--ease-out), transform 240ms var(--ease-out);
     pointer-events: none;
   }
-  /* Only a PAST question (one you've moved beyond) reveals it — never the question
+  /* Only a PAST question (one you've moved beyond) reveals it, never the question
      you just answered, where your cursor still rests. */
   .question-block.is-past:hover .answer-edit,
   .question-block.is-past .answer-edit:focus-within { opacity: 1; transform: none; pointer-events: auto; }
@@ -1277,6 +1296,10 @@
     margin: 0 0 14px;
     color: var(--ink);
   }
+  .gate-title em {
+    font-style: italic;
+    color: var(--ink-soft);
+  }
   .gate-line {
     font-family: var(--serif);
     font-size: 20px;
@@ -1301,7 +1324,12 @@
     align-items: baseline;
     padding: 0 14px;
     border-left: 1px solid var(--rule-soft);
+    opacity: 0;
+    transform: translateY(8px);
+    animation: gateTeaseIn 620ms var(--ease-out) forwards;
   }
+  .gate-includes-row:nth-child(2) { animation-delay: 80ms; }
+  .gate-includes-row:nth-child(3) { animation-delay: 160ms; }
   .gate-includes-row:first-child { border-left: none; padding-left: 0; }
   .gate-includes-row:last-child { padding-right: 0; }
   .gate-includes-num {
@@ -1317,6 +1345,27 @@
     letter-spacing: 0.14em;
     text-transform: uppercase;
     color: var(--ink);
+  }
+  .gate-lock {
+    width: 15px;
+    height: 15px;
+    color: var(--ink-faint);
+    margin-bottom: 2px;
+  }
+  .gate-includes-caption {
+    display: block;
+    margin-top: 6px;
+    font-family: var(--serif);
+    font-size: 14.5px;
+    line-height: 1.28;
+    letter-spacing: 0;
+    text-transform: none;
+    color: var(--ink-soft);
+    filter: blur(0.22px);
+    opacity: 0.74;
+  }
+  @keyframes gateTeaseIn {
+    to { opacity: 1; transform: none; }
   }
   .gate-field { margin-bottom: 22px; }
   .gate-field label {
@@ -1733,6 +1782,12 @@
     color: var(--ink-faint);
     line-height: 1.7;
   }
+  .inbox-cta {
+    margin: 18px 0 18px;
+  }
+  .inbox-cta[hidden] {
+    display: none !important;
+  }
   .gate-card .confirm-btn {
     display: inline-flex;
     align-items: center;
@@ -1746,6 +1801,14 @@
   }
   .gate-card > .confirm-row {
     margin: 12px 0 4px;
+  }
+  .gate-card > .confirm-row .confirm-btn:not(:disabled),
+  .gate-card .inbox-cta:not([hidden]) {
+    animation: gateButtonPulse 2600ms ease-in-out infinite;
+  }
+  @keyframes gateButtonPulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(34, 33, 31, 0); }
+    50% { box-shadow: 0 0 0 5px rgba(34, 33, 31, 0.08); }
   }
   .gate-card .confirm-btn::after {
     color: var(--paper);
@@ -1792,6 +1855,15 @@
     .bot-check { margin-bottom: 12px; }
     .gate-card > .confirm-row { margin-top: 8px; }
     .gate-result-copy.is-primary { font-size: 42px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .gate-includes-row,
+    .gate-card > .confirm-row .confirm-btn:not(:disabled),
+    .gate-card .inbox-cta:not([hidden]) {
+      animation: none !important;
+      opacity: 1;
+      transform: none;
+    }
   }
   .demo-harness .demo-close {
     background: none;
@@ -2682,11 +2754,11 @@ const DEMO_SCENARIOS = {
     description: 'Early business. It cannot clearly see what is working yet.',
     answers: {
       Q1: 0, CC: [0],
-      Q2: 3, Q3: 3, Q4: 2, Q5: 3,
-      Q6: 2, Q7: 2, Q8: 2, Q9: 1,
-      Q10: 1, Q11: 2, Q12: 1, Q13: 2,
-      Q14: [0, 1],
-      Q15: 3, Q16: 3, Q17: 2, Q18: 3,
+      Q2: 2, Q3: 2, Q4: 2, Q5: 2,
+      Q6: 2, Q7: 2, Q8: 2, Q9: 2,
+      Q10: 2, Q11: 2, Q12: 2, Q13: 2,
+      Q14: [2],
+      Q15: 2, Q16: 2, Q17: 2, Q18: 2,
       SP: [3, 4, 6]
     }
   },
@@ -2992,7 +3064,7 @@ async function hold(label, ms = 480, opts = {}) {
 async function appendBeat(content, opts = {}) {
   // Any question already in the stream is becoming "past" (a newer beat is
   // arriving), which makes its "change this answer" affordance hover-available.
-  // We flag it only AFTER the new beat has scrolled into place — otherwise the
+  // We flag it only AFTER the new beat has scrolled into place, otherwise the
   // just-answered question would flash the affordance while it slides away under
   // a resting cursor (it looks broken). 700ms covers the smooth-scroll.
   const settling = Array.from(stream.querySelectorAll('.question-block:not(.is-past)'));
@@ -3493,7 +3565,7 @@ function showInterstitial({ image, eyebrow, line, emphasis, lede, body }) {
 // A MOMENT inside the one world: the atmosphere swells forward, the conversation
 // recedes, and the beat lands held + cinematic, then it settles back. The
 // set-pieces keep their drama without becoming separate screens.
-function showMoment({ eyebrow, line, emphasis, sub, dwell }) {
+function showMoment({ eyebrow, line, emphasis, sub, dwell, domains }) {
   return new Promise((resolve) => {
     document.body.classList.add('is-moment');
     const m = el('div', 'moment');
@@ -3507,6 +3579,11 @@ function showMoment({ eyebrow, line, emphasis, sub, dwell }) {
     lineEl.innerHTML = emphasizeLine(line, emphasis);
     inner.appendChild(lineEl);
     if (sub) inner.appendChild(el('div', 'm-sub', sub));
+    if (domains) {
+      const map = renderDomainMap({ current: domains.current, compact: true });
+      map.classList.add('is-in');
+      inner.appendChild(map);
+    }
     m.appendChild(inner);
     document.body.appendChild(m);
     requestAnimationFrame(() => requestAnimationFrame(() => m.classList.add('is-in')));
@@ -3538,7 +3615,8 @@ async function renderAphorism({ text, current }) {
   await showMoment({
     eyebrow: doneName ? `${doneName} complete` : null,
     line: text,
-    emphasis: meta.emphasis
+    emphasis: meta.emphasis,
+    domains: { current }
   });
   if (current) await hold(`Composing ${current}`, reduceMotion ? 180 : 1100, { scroll: true });
 }
@@ -3707,6 +3785,7 @@ async function renderSingle(q) {
   updateBottomSpace();
 
   attachAnswerEdit(block, () => {
+    smoothScrollTo(block, 0.18);
     optEls.forEach((opt) => {
       opt.disabled = false;
       opt.style.opacity = '';
@@ -3898,6 +3977,7 @@ async function renderMulti(q) {
   updateBottomSpace();
 
   attachAnswerEdit(block, () => {
+    smoothScrollTo(block, 0.18);
     // Re-open options + confirm; the selected Set retains the prior picks.
     optEls.forEach((opt) => { opt.disabled = false; opt.style.opacity = ''; });
     hint.style.opacity = '';
@@ -3929,9 +4009,10 @@ async function renderReflection() {
   await hold('Holding', reduceMotion ? 150 : 720);
   await showMoment({
     eyebrow: 'Halfway',
-    line: "You've moved through what the business can see, and how fast it acts on it.",
-    emphasis: 'how fast it acts on it.',
-    sub: 'The next layer is coherence: whether the seeing and the acting are connected to one picture, or running on parallel tracks.',
+    line: "You've mapped what you can see, and how fast you act.",
+    emphasis: 'act.',
+    sub: 'Next: whether it all connects.',
+    domains: { current: 'Coherence' },
     dwell: 4200
   });
 }
@@ -4206,6 +4287,21 @@ function isWorkEmail(email) {
   return !blocked.has(domain);
 }
 
+function inboxTargetFor(email) {
+  const domain = String(email || '').trim().toLowerCase().split('@')[1] || '';
+  if (!domain) return { label: 'Open your inbox', url: '' };
+  if (domain === 'gmail.com' || domain === 'googlemail.com') {
+    return { label: 'Open Gmail', url: 'https://mail.google.com/' };
+  }
+  if (['outlook.com', 'hotmail.com', 'live.com', 'msn.com'].includes(domain)) {
+    return { label: 'Open Outlook', url: 'https://outlook.live.com/mail/' };
+  }
+  if (domain === 'yahoo.com' || domain.startsWith('yahoo.')) {
+    return { label: 'Open Yahoo', url: 'https://mail.yahoo.com/' };
+  }
+  return { label: 'Open your inbox', url: `https://${domain}` };
+}
+
 async function renderGate(scenario) {
   await hold('Composing', 500);
   await hold('Last step', 900);
@@ -4214,21 +4310,24 @@ async function renderGate(scenario) {
   const gate = el('form', 'gate-card');
   gate.noValidate = true;
   gate.innerHTML = `
-    <div class="gate-eyebrow">THE PICTURE IS READY</div>
-    <h2 class="gate-title">Your profile is ready.</h2>
-    <p class="gate-line">What your answers unlocked.</p>
+    <div class="gate-eyebrow">THE READ IS READY</div>
+    <h2 class="gate-title">Your profile is <em>ready</em>.</h2>
+    <p class="gate-line">Your score, the one leak to fix first and the move that closes it. Tell us where to send it.</p>
     <div class="gate-includes" aria-label="What the profile includes">
       <div class="gate-includes-row">
+        <svg class="gate-lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="10" width="14" height="10" rx="1.8"></rect><path d="M8 10V7a4 4 0 0 1 8 0v3"></path></svg>
         <span class="gate-includes-num">01</span>
-        <span class="gate-includes-text">Score</span>
+        <span class="gate-includes-text">Your score<span class="gate-includes-caption">Where you stand, out of 100.</span></span>
       </div>
       <div class="gate-includes-row">
+        <svg class="gate-lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="10" width="14" height="10" rx="1.8"></rect><path d="M8 10V7a4 4 0 0 1 8 0v3"></path></svg>
         <span class="gate-includes-num">02</span>
-        <span class="gate-includes-text">Weak point</span>
+        <span class="gate-includes-text">Your first leak<span class="gate-includes-caption">The one place value slips.</span></span>
       </div>
       <div class="gate-includes-row">
+        <svg class="gate-lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="10" width="14" height="10" rx="1.8"></rect><path d="M8 10V7a4 4 0 0 1 8 0v3"></path></svg>
         <span class="gate-includes-num">03</span>
-        <span class="gate-includes-text">First move</span>
+        <span class="gate-includes-text">Your first move<span class="gate-includes-caption">The fix you can run this week.</span></span>
       </div>
     </div>
     <div class="gate-field" data-field="name">
@@ -4280,6 +4379,7 @@ async function renderGate(scenario) {
       <div class="q-id">Profile sent</div>
       <p class="gate-result-copy is-primary" id="gateResultCopy">Check your inbox.</p>
       <p class="gate-result-copy" id="gateResultLine"><em>It usually lands within a minute.</em></p>
+      <a class="inbox-cta confirm-btn" id="inboxCta" href="#" target="_blank" rel="noopener" hidden>Open your inbox →</a>
       <div class="profile-dispatch" aria-hidden="true">
         <div class="dispatch-top">
           <span class="dispatch-kicker">Open the email</span>
@@ -4382,6 +4482,13 @@ async function renderGate(scenario) {
       ? '<em>It usually lands within a minute.</em>'
       : '<em>Email delivery is not configured in this preview.</em>';
     gate.querySelector('#dispatchEmail').textContent = email;
+    const inboxCta = gate.querySelector('#inboxCta');
+    const inbox = inboxTargetFor(email);
+    if (inboxCta && inbox.url) {
+      inboxCta.href = inbox.url;
+      inboxCta.textContent = `${inbox.label} →`;
+      inboxCta.hidden = false;
+    }
 
     // Email-only access: the reveal is reached solely via the emailed link, so a
     // real (verified) work email is required to see the profile. In review mode
@@ -4400,8 +4507,8 @@ async function renderGate(scenario) {
       else gate.querySelector('#gateResult').appendChild(cta);
     }
 
-    // A brief beat before the confirmation lands — the hand-off to the inbox
-    // gets a moment of ceremony rather than a hard cut (Saverio: "how it loads").
+    // A brief beat before the confirmation lands. The hand-off to the inbox
+    // gets a moment of ceremony rather than a hard cut.
     await hold('Sending to your inbox', 1200);
     gate.classList.add('is-submitted');
     document.body.classList.add('gate-submitted');

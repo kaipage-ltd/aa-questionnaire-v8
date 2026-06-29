@@ -671,7 +671,8 @@ test('all-strong reveals keep calibrated shape copy and the plain constraint bea
   const quote = insights.cards.find((card) => card.type === 'quote');
 
   assert.equal(profile.score, 100);
-  assert.match(shape.body, /choose the first rule/i);
+  assert.match(shape.body, /high and close/i);
+  assert.match(shape.header, /One line to \*sharpen\*/i);
   assert.doesNotMatch(shape.body, /thin|collapse/i);
   assert.equal(hurdle.lede, "You have the numbers. You can't *trust* them.");
   assert.equal(hurdle.close, 'First leak: Visibility');
@@ -708,7 +709,8 @@ test('balanced mid-strength reveals keep calibrated shape copy and the plain con
   const hurdle = insights.cards.find((card) => card.type === 'hurdle');
 
   assert.equal(profile.score, 66);
-  assert.match(shape.body, /sharpening job/i);
+  assert.match(shape.body, /cluster below best practice/i);
+  assert.match(shape.header, /Every line sits \*short\*/i);
   assert.doesNotMatch(shape.body, /thin|collapse/i);
   assert.equal(hurdle.lede, "You have the numbers. You can't *trust* them.");
   assert.equal(hurdle.close, 'First leak: Visibility');

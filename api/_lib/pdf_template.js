@@ -1,9 +1,10 @@
 // The profile report as an HTML document, printed to PDF by headless Chromium.
 // Five fixed A4 sheets, laid out with CSS so variable-length profile copy can
 // never collide or clip the way absolute-positioned PDFKit drawing did. The
-// design language is the reveal's: Instrument Serif, Instrument Sans, paper/ink/dark.
-import { TOKENS } from './design_tokens.js';
+// design language is the reveal's: Instrument Serif, Instrument Sans, dark cinematic image world.
+import { TOKENS_DARK } from './design_tokens.js';
 import { fontFaceCss } from './pdf_fonts.js';
+import { sheetStyle } from './pdf_images.js';
 
 export function renderReportHtml({ name, email, profile, submittedAt, revealUrl, insights }) {
   const ctx = profileContext(profile, insights);
@@ -36,15 +37,19 @@ ${firstMovePage(ctx, meta, profile)}
 function baseCss() {
   return `
   :root {
-    --paper: ${TOKENS.paper};
-    --paper-dim: ${TOKENS.paperDim};
-    --ink: ${TOKENS.ink};
-    --ink-soft: ${TOKENS.inkSoft};
-    --ink-faint: ${TOKENS.inkFaint};
-    --rule: ${TOKENS.rule};
-    --dark: ${TOKENS.dark};
-    --dark-soft: ${TOKENS.darkSoft};
-    --dark-faint: ${TOKENS.darkFaint};
+    --bg: ${TOKENS_DARK.bg};
+    --paper: ${TOKENS_DARK.paper};
+    --paper-dim: #efeae0;
+    --ink: ${TOKENS_DARK.ink};
+    --ink-soft: ${TOKENS_DARK.inkSoft};
+    --ink-faint: ${TOKENS_DARK.inkFaint};
+    --rule: ${TOKENS_DARK.rule};
+    --dark: ${TOKENS_DARK.dark};
+    --dark-soft: ${TOKENS_DARK.darkSoft};
+    --dark-faint: ${TOKENS_DARK.darkFaint};
+    --paper-ink: #22211f;
+    --paper-soft: rgba(34, 33, 31, 0.68);
+    --paper-faint: rgba(34, 33, 31, 0.44);
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   @page { size: A4; margin: 0; }
@@ -56,19 +61,40 @@ function baseCss() {
   body {
     font-family: 'Instrument Serif', Georgia, serif;
     color: var(--ink);
-    background: var(--paper);
+    background: var(--bg);
   }
   .sheet {
     position: relative;
     width: 210mm;
     height: 297mm;
     overflow: hidden;
-    background: var(--paper);
+    background: var(--bg);
     padding: 15mm 16mm 18mm;
     page-break-after: always;
     break-inside: avoid;
     display: flex;
     flex-direction: column;
+  }
+  .sheet::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: var(--bg-img, none);
+    background-size: cover;
+    background-position: var(--bg-pos, center);
+    opacity: 0.62;
+  }
+  .sheet::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(155deg, rgba(8,6,3,0.46) 0%, rgba(8,6,3,0.72) 58%, rgba(6,4,2,0.90) 100%),
+      radial-gradient(ellipse 92% 78% at 48% 42%, transparent 42%, rgba(0,0,0,0.46) 100%);
+  }
+  .sheet > * {
+    position: relative;
+    z-index: 1;
   }
   .sheet:last-child { page-break-after: auto; }
 
@@ -122,21 +148,23 @@ function baseCss() {
   .row .val em { font-style: italic; }
 
   .dark-band {
-    background: var(--dark);
-    color: var(--paper);
+    background: rgba(247, 243, 237, 0.93);
+    color: var(--paper-ink);
     padding: 9mm 10mm;
   }
-  .dark-band .mono { color: var(--dark-faint); }
+  .dark-band .mono { color: var(--paper-faint); }
 
   .bar-row { padding: 4.6mm 0; border-bottom: 1px solid var(--rule); }
   .bar-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 2.4mm; }
   .bar-name { font-family: 'Instrument Sans', system-ui, sans-serif; font-size: 8px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-soft); }
   .bar-val { font-size: 19px; font-weight: 500; font-variant-numeric: tabular-nums; }
-  .bar-track { height: 2.5px; background: rgba(33, 29, 22, 0.10); border-radius: 2px; }
+  .bar-track { position: relative; height: 2.5px; background: rgba(243,234,217,0.16); border-radius: 2px; }
   .bar-fill { height: 100%; background: var(--ink); border-radius: 2px; }
-  .bar-row.is-hurdle .bar-name, .bar-row.is-hurdle .bar-val { color: var(--ink); }
-  .bar-row.is-muted .bar-name, .bar-row.is-muted .bar-val { color: var(--ink-faint); }
-  .bar-row.is-muted .bar-fill { background: var(--ink-faint); }
+  .bar-bench { position:absolute; top:-4px; width:1.5px; height:10px; background:var(--ink-faint); }
+  .bar-benchval { position:absolute; left:50%; top:-15px; transform:translateX(-50%); font-family:'Instrument Sans', system-ui, sans-serif; font-size:6.4px; letter-spacing:0.08em; color:var(--ink-faint); }
+  .bar-row.is-drag .bar-name, .bar-row.is-drag .bar-val { color: var(--ink); }
+  .bar-row.is-normal .bar-name, .bar-row.is-normal .bar-val { color: var(--ink-soft); }
+  .bar-row.is-normal .bar-fill { background: rgba(243,234,217,0.58); }
 
   .btn {
     display: inline-block;
@@ -149,11 +177,11 @@ function baseCss() {
     border: 1px solid currentColor;
     color: inherit;
   }
-  .btn.solid { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+  .btn.solid { background: var(--paper); color: var(--paper-ink); border-color: var(--paper); }
   /* Brand primary on a dark band: a cream pill (matches the reveal CTA). */
   .btn.pill {
     background: var(--paper);
-    color: var(--ink);
+    color: var(--paper-ink);
     border-color: var(--paper);
     border-radius: 40px;
     text-transform: none;
@@ -181,7 +209,7 @@ function footer(meta, profile, pageNumber) {
 }
 
 function coverPage(ctx, meta, profile) {
-  return `<section class="sheet">
+  return `<section class="sheet"${sheetStyle('cover')}>
   ${header('Private profile')}
   <div class="eyebrow mono" style="margin-top:6mm;">Prepared for ${esc(meta.name)}</div>
   <h1 class="title" style="font-size:64px; max-width:170mm;">${esc(profile.characterName)}</h1>
@@ -202,7 +230,7 @@ function coverPage(ctx, meta, profile) {
     </div>
     <div>
       <div class="mono" style="font-size:7.4px;">The thesis</div>
-      <div style="font-size:11.5px; line-height:1.42; color:#e6decd; margin-top:2.5mm;">${esc(ctx.hurdleClose)}</div>
+      <div style="font-size:11.5px; line-height:1.42; color:var(--paper-soft); margin-top:2.5mm;">${esc(ctx.hurdleClose)}</div>
     </div>
   </div>
 
@@ -230,23 +258,25 @@ function coverPage(ctx, meta, profile) {
 }
 
 function shapePage(ctx, meta, profile) {
-  return `<section class="sheet">
+  return `<section class="sheet"${sheetStyle('shape')}>
   ${header('The operating shape')}
-  <div class="eyebrow mono">Benchmark vs strong peers</div>
-  <h1 class="title">Benchmark vs peers. One line drags.</h1>
+  <div class="eyebrow mono">${esc(ctx.shapeEyebrow || 'WHERE YOU STAND VS BEST PRACTICE')}</div>
+  <h1 class="title">${esc(ctx.shapeHeader || 'Benchmark vs the best.')}</h1>
   <p class="lede">${esc(ctx.shapeBody)}</p>
 
   <div style="margin-top:9mm; border-top:1px solid var(--rule);">
     ${ctx.pillars.map((pillar) => {
-      const isHurdle = pillar.label === ctx.hurdleLabel;
-      const isStrong = pillar.label === ctx.strongest.label && !isHurdle;
-      const cls = isHurdle ? 'is-hurdle' : isStrong ? '' : 'is-muted';
+      const cls = pillar.role === 'drag' ? 'is-drag' : 'is-normal';
+      const benchmark = Number.isFinite(pillar.benchmark) ? pillar.benchmark : 100;
       return `<div class="bar-row ${cls}">
         <div class="bar-head">
-          <span class="bar-name">${esc(pillar.label)}${isHurdle ? ' &nbsp;-&nbsp; first leak' : isStrong ? ' &nbsp;-&nbsp; strongest signal' : ''}</span>
+          <span class="bar-name">${esc(pillar.label)}</span>
           <span class="bar-val">${esc(String(pillar.value))}</span>
         </div>
-        <div class="bar-track"><div class="bar-fill" style="width:${Math.max(2, Math.min(100, pillar.value))}%;"></div></div>
+        <div class="bar-track">
+          <div class="bar-bench" style="left:${Math.max(0, Math.min(100, benchmark))}%"><span class="bar-benchval">${esc(String(benchmark))}</span></div>
+          <div class="bar-fill" style="width:${Math.max(2, Math.min(100, pillar.value))}%;"></div>
+        </div>
       </div>`;
     }).join('')}
   </div>
@@ -264,7 +294,7 @@ function shapePage(ctx, meta, profile) {
 
 function evidencePage(ctx, meta, profile) {
   const evidence = (ctx.evidence.length ? ctx.evidence : ctx.receipts.map((text) => ({ read: text }))).slice(0, 3);
-  return `<section class="sheet">
+  return `<section class="sheet"${sheetStyle('evidence')}>
   ${header('Pattern')}
   <div class="eyebrow mono">The receipt</div>
   <h1 class="title">${esc(ctx.patternHeader || 'Three answers. One pattern.')}</h1>
@@ -285,7 +315,7 @@ function evidencePage(ctx, meta, profile) {
   <div class="dark-band" style="margin-top:auto; margin-bottom:10mm; padding:11mm 10mm;">
     <div class="mono" style="font-size:7.4px;">The clearest line</div>
     <div style="font-size:28px; line-height:1.28; font-style:italic; margin-top:4.5mm;">&ldquo;${esc(ctx.quoteText)}&rdquo;</div>
-    ${ctx.patternSoWhat ? `<div style="font-size:12.5px; line-height:1.5; color:#d8d0be; margin-top:5mm; max-width:155mm;">${esc(ctx.patternSoWhat)}</div>` : ''}
+    ${ctx.patternSoWhat ? `<div style="font-size:12.5px; line-height:1.5; color:var(--paper-soft); margin-top:5mm; max-width:155mm;">${esc(ctx.patternSoWhat)}</div>` : ''}
   </div>
   ${footer(meta, profile, 3)}
 </section>`;
@@ -293,7 +323,7 @@ function evidencePage(ctx, meta, profile) {
 
 function costPage(ctx, meta, profile) {
   const [lead, ...scene] = ctx.costLines;
-  return `<section class="sheet">
+  return `<section class="sheet"${sheetStyle('cost')}>
   ${header('The cost')}
   <div class="eyebrow mono">What the gap costs</div>
   <h1 class="title">${esc(lead || 'Picture the cost inside one real operating cycle.')}</h1>
@@ -306,8 +336,8 @@ function costPage(ctx, meta, profile) {
   </div>
 
   ${ctx.ignoredCost ? `
-  <div style="margin-top:9mm; background:var(--paper-dim); border-left:2px solid var(--ink); padding:6.5mm 7mm;">
-    <div class="mono" style="font-size:7.2px; color:var(--ink-faint);">If ignored</div>
+  <div style="margin-top:9mm; background:rgba(247,243,237,0.93); color:var(--paper-ink); border-left:2px solid var(--paper); padding:6.5mm 7mm;">
+    <div class="mono" style="font-size:7.2px; color:var(--paper-faint);">If ignored</div>
     <div style="font-size:12.5px; line-height:1.5; margin-top:2.2mm;">${esc(ctx.ignoredCost)}</div>
   </div>` : ''}
   ${footer(meta, profile, 4)}
@@ -316,7 +346,7 @@ function costPage(ctx, meta, profile) {
 
 function firstMovePage(ctx, meta, profile) {
   const steps = firstMoveSteps(ctx);
-  return `<section class="sheet">
+  return `<section class="sheet"${sheetStyle('firstMove')}>
   ${header('First move')}
   <div class="eyebrow mono">Book the session</div>
   <h1 class="title">${esc(ctx.firstMoveHeader || 'One live decision. One rule.')}</h1>
@@ -335,9 +365,9 @@ function firstMovePage(ctx, meta, profile) {
     <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:10mm;">
       <div style="max-width:118mm;">
         <div class="mono" style="font-size:7.4px;">The call</div>
-        <div style="font-size:13px; line-height:1.5; color:#e6decd; margin-top:3mm;">${esc(ctx.fitBody)}</div>
+        <div style="font-size:13px; line-height:1.5; color:var(--paper-soft); margin-top:3mm;">${esc(ctx.fitBody)}</div>
         <div class="mono" style="font-size:7.4px; margin-top:5mm;">You leave with</div>
-        <div style="font-size:10.5px; line-height:1.5; color:#d8d0be; margin-top:2mm;">${esc(ctx.sessionTakeaway)}</div>
+        <div style="font-size:10.5px; line-height:1.5; color:var(--paper-soft); margin-top:2mm;">${esc(ctx.sessionTakeaway)}</div>
       </div>
       <a class="btn pill" style="white-space:nowrap; margin-top:1mm;" href="${escAttr(meta.revealUrl)}">Book the working session</a>
     </div>
@@ -408,11 +438,13 @@ export function profileContext(profile, insights) {
     bucket: profile.bucket,
     score: profile.score,
     signature: summary.signature || `${profile.characterName} describes the operating pattern your answers revealed.`,
-    pillars,
+    pillars: Array.isArray(shape?.pillars) && shape.pillars.length ? shape.pillars : pillars,
     strongest,
     hurdleLabel: hurdlePillar.label,
     hurdleValue: hurdlePillar.value,
     gap,
+    shapeEyebrow: shape?.eyebrow || '',
+    shapeHeader: shape?.header || '',
     shapeBody: shape?.body || 'The value is not the score on its own. It is the operating gap behind it.',
     aiImplication: rowValue(shape?.shapeRead, 'What AI inherits'),
     aiLeverage: rowValue(shape?.shapeRead, 'AI today'),
