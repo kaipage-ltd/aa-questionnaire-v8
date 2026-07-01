@@ -55,7 +55,8 @@ test('shape card uses a benchmark tick and respondent value over the fill', () =
 });
 
 test('drawers hold detail instead of default-view dense copy', () => {
-  assert.match(playerHtml, /card\.drawerLabel \|\| 'Score detail'/, 'score interpretation should be in a labelled drawer');
+  assert.match(playerHtml, /function buildOpenDetail/, 'score interpretation should render as an always-open detail block');
+  assert.match(playerHtml, /buildOpenDetail\(card\.drawerLabel \|\| 'Score detail'/, 'score detail must be open by default, not hidden behind a toggle');
   assert.match(playerHtml, /card\.drawerLabel \|\| 'What the gap means'/, 'shape read should be in a labelled drawer');
   assert.match(playerHtml, /card\.drawerLabel \|\| 'The pattern'/, 'hurdle evidence should be in a labelled drawer');
   assert.match(playerHtml, /card\.drawerLabel \|\| 'Where the cost hides'/, 'cost scene should be in a labelled drawer');

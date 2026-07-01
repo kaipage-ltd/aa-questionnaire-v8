@@ -4301,7 +4301,7 @@ function inboxTargetFor(email) {
   if (domain === 'yahoo.com' || domain.startsWith('yahoo.')) {
     return { label: 'Open Yahoo', url: 'https://mail.yahoo.com/' };
   }
-  return { label: 'Open your inbox', url: `https://${domain}` };
+  return { label: 'Open mail app', url: 'mailto:' };
 }
 
 async function renderGate(scenario) {
@@ -4489,6 +4489,13 @@ async function renderGate(scenario) {
     if (inboxCta && inbox.url) {
       inboxCta.href = inbox.url;
       inboxCta.textContent = `${inbox.label} →`;
+      if (inbox.url.startsWith('mailto:')) {
+        inboxCta.removeAttribute('target');
+        inboxCta.removeAttribute('rel');
+      } else {
+        inboxCta.target = '_blank';
+        inboxCta.rel = 'noopener';
+      }
       inboxCta.hidden = false;
     }
 

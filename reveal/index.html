@@ -531,6 +531,26 @@
     padding-right: 8px;
   }
   .dark .more-summary { color: var(--dark-soft); }
+  .open-detail {
+    margin-top: 28px;
+    margin-bottom: 24px;
+    text-align: left;
+  }
+  .open-detail-label {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    text-align: center;
+    margin-bottom: 14px;
+  }
+  .open-detail > :not(.open-detail-label) {
+    max-height: min(42vh, 360px);
+    overflow: auto;
+    padding-right: 8px;
+  }
+  .dark .open-detail-label { color: var(--dark-soft); }
 
   .receipt {
     display: grid;
@@ -1145,6 +1165,9 @@
   .card:has(.more-drawer[open]) .card-inner {
     padding-bottom: clamp(84px, 10vh, 118px);
   }
+  .card:has(.open-detail) .card-inner {
+    padding-bottom: clamp(84px, 10vh, 118px);
+  }
 
   /* Touch: hover states latch after a tap on iOS, so reset them; and keep the
      densest card copy clear of the home indicator. */
@@ -1266,6 +1289,9 @@
     .card.is-close { padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px)); }
     .card-inner { padding-bottom: 14px; }
     .card:has(.more-drawer[open]) .card-inner {
+      padding-bottom: 22px;
+    }
+    .card:has(.open-detail) .card-inner {
       padding-bottom: 22px;
     }
     /* Pin the advance button to the visible bottom. The finale cost card keeps
@@ -1755,6 +1781,12 @@ function buildDrawer(label, contentNode) {
   return drawer;
 }
 
+function buildOpenDetail(label, contentNode) {
+  const detail = el('div', 'open-detail');
+  detail.append(el('div', 'open-detail-label', label), contentNode);
+  return detail;
+}
+
 function buildEvidenceSupport(rows) {
   const support = el('div', 'support');
   (rows || []).slice(0, 2).forEach((receipt) => {
@@ -1986,7 +2018,7 @@ function buildCard(card) {
     inner.append(numWrap);
     inner.append(p('num-after', card.after));
     if (card.interpretation?.length) {
-      inner.append(buildDrawer(card.drawerLabel || 'Score detail', buildBriefPanel(card.interpretation, 'score-brief')));
+      inner.append(buildOpenDetail(card.drawerLabel || 'Score detail', buildBriefPanel(card.interpretation, 'score-brief')));
     }
   } else if (card.type === 'shape') {
     inner.append(el('div', 'eyebrow anim', card.eyebrow));
