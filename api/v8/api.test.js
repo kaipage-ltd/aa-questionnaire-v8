@@ -64,6 +64,7 @@ function clearBrevoEnv() {
 }
 
 function clearTurnstileEnv() {
+  delete process.env.ALLOW_DEMO_HARNESS;
   delete process.env.TURNSTILE_SITE_KEY;
   delete process.env.TURNSTILE_SECRET_KEY;
   delete process.env.TURNSTILE_ALLOWED_HOSTNAMES;
@@ -133,6 +134,7 @@ test('config exposes public Turnstile settings only when configured', async () =
   let response = config(new Request('https://v8.example.test/api/v8/config'));
   let body = await response.json();
   assert.equal(response.status, 200);
+  assert.deepEqual(body.demoHarness, { enabled: false });
   assert.deepEqual(body.turnstile, {
     enabled: false,
     configured: false,
@@ -144,12 +146,21 @@ test('config exposes public Turnstile settings only when configured', async () =
   response = config(new Request('https://v8.example.test/api/v8/config'));
   body = await response.json();
   assert.equal(response.status, 200);
+  assert.deepEqual(body.demoHarness, { enabled: false });
   assert.deepEqual(body.turnstile, {
     enabled: true,
     configured: true,
     siteKey: 'test-site-key',
     action: 'v8-submit'
   });
+
+  clearTurnstileEnv();
+  process.env.ALLOW_DEMO_HARNESS = 'true';
+  response = config(new Request('https://v8.example.test/api/v8/config'));
+  body = await response.json();
+  assert.equal(response.status, 200);
+  assert.deepEqual(body.demoHarness, { enabled: true });
+  assert.equal(body.turnstile.enabled, false);
 
   clearTurnstileEnv();
 });
@@ -584,7 +595,12 @@ test('reveal route resolves a submitted token', async () => {
   assert.equal('answers' in body.reveal, false);
 });
 
-test('reveal demo path returns cards without a token or submit (no Turnstile/email)', async () => {
+test('reveal demo path is disabled unless the review harness is explicitly enabled', async () => {
+  delete process.env.ALLOW_DEMO_HARNESS;
+  const blocked = await reveal(new Request('https://v8.example.test/api/v8/reveal?demo=t-ve'));
+  assert.equal(blocked.status, 404);
+
+  process.env.ALLOW_DEMO_HARNESS = 'true';
   const response = await reveal(new Request('https://v8.example.test/api/v8/reveal?demo=t-ve'));
   assert.equal(response.status, 200);
   const body = await response.json();
@@ -598,6 +614,7 @@ test('reveal demo path returns cards without a token or submit (no Turnstile/ema
 
   const unknown = await reveal(new Request('https://v8.example.test/api/v8/reveal?demo=not-a-key'));
   assert.equal(unknown.status, 404);
+  delete process.env.ALLOW_DEMO_HARNESS;
 });
 
 test('single-channel respondents can still surface a material Coherence hurdle', () => {

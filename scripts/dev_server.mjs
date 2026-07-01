@@ -7,6 +7,7 @@ import { join, normalize, extname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 process.env.JWT_SECRET ||= 'local-dev-secret-not-for-production';
+process.env.ALLOW_DEMO_HARNESS ||= 'true';
 
 const root = join(fileURLToPath(import.meta.url), '..', '..');
 const port = Number(process.argv[2]) || 4870;

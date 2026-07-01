@@ -42,6 +42,7 @@ async function startServer(port) {
     cwd: process.cwd(),
     env: {
       ...process.env,
+      ALLOW_DEMO_HARNESS: 'true',
       PUBLIC_SITE_URL: `http://127.0.0.1:${port}`,
       JWT_SECRET: process.env.JWT_SECRET || 'local-reveal-journey-secret'
     },

@@ -9,9 +9,7 @@
 <link rel="icon" href="data:,">
 <title>The AI Readiness Diagnostic</title>
 <script>
-  if (new URLSearchParams(window.location.search).get('demoNav') === '1') {
-    document.documentElement.classList.add('demo-nav-enabled');
-  }
+  window.__AA_DEMO_HARNESS_ALLOWED__ = false;
 </script>
 <style>
   /* ── A+A brand faces, self-hosted (Instrument Serif + Instrument Sans) ── */
@@ -2878,9 +2876,38 @@ const DEMO_SCENARIOS = {
   }
 };
 
+const pageParams = new URLSearchParams(window.location.search);
+
+function demoHarnessRequested() {
+  return pageParams.has('demo') || pageParams.get('demoNav') === '1';
+}
+
+function markDemoHarnessAllowed(enabled) {
+  window.__AA_DEMO_HARNESS_ALLOWED__ = Boolean(enabled);
+  if (window.__AA_DEMO_HARNESS_ALLOWED__ && pageParams.get('demoNav') === '1') {
+    document.documentElement.classList.add('demo-nav-enabled');
+  }
+  return window.__AA_DEMO_HARNESS_ALLOWED__;
+}
+
+async function resolveDemoHarnessAllowed() {
+  if (window.__AA_DEMO_HARNESS_ALLOWED__) return true;
+  if (!demoHarnessRequested()) return false;
+  if (!demoHarnessConfigPromise) {
+    demoHarnessConfigPromise = fetch('/api/v8/config', { headers: { accept: 'application/json' } })
+      .then(async (res) => {
+        const ct = res.headers.get('content-type') || '';
+        const body = ct.includes('application/json') ? await res.json() : {};
+        return Boolean(res.ok && body.ok !== false && body.demoHarness?.enabled);
+      })
+      .catch(() => false);
+  }
+  return markDemoHarnessAllowed(await demoHarnessConfigPromise);
+}
+
 function getDemoScenario() {
-  const params = new URLSearchParams(window.location.search);
-  const key = params.get('demo');
+  if (!window.__AA_DEMO_HARNESS_ALLOWED__) return null;
+  const key = pageParams.get('demo');
   return key && DEMO_SCENARIOS[key] ? DEMO_SCENARIOS[key] : null;
 }
 
@@ -2895,6 +2922,7 @@ const TURNSTILE_SCRIPT_URL = 'https://challenges.cloudflare.com/turnstile/v0/api
 const BOT_CHECK_TIMEOUT_MS = 120000;
 
 let botConfigPromise = null;
+let demoHarnessConfigPromise = null;
 let turnstileScriptPromise = null;
 let standaloneBotCheckPromise = null;
 
@@ -4548,6 +4576,7 @@ async function run() {
   state.answers = {};
   document.body.classList.remove('gate-submitted');
 
+  await resolveDemoHarnessAllowed();
   const scenario = getDemoScenario();
   if (scenario) {
     state.answers = { ...scenario.answers };
@@ -4638,16 +4667,17 @@ function toggleHarness() {
 harnessLaunch.addEventListener('click', toggleHarness);
 harnessClose.addEventListener('click', toggleHarness);
 harnessGate.addEventListener('click', () => {
+  if (!window.__AA_DEMO_HARNESS_ALLOWED__) return;
   const url = new URL(window.location.href);
   url.searchParams.set('demo', selectedDemoKey || 's-ve');
   window.location.href = url.toString();
 });
 harnessReveal.addEventListener('click', () => {
-  if (!selectedDemoKey) return;
+  if (!window.__AA_DEMO_HARNESS_ALLOWED__ || !selectedDemoKey) return;
   window.location.href = `./reveal/?demo=${encodeURIComponent(selectedDemoKey)}`;
 });
 harnessPdf.addEventListener('click', async () => {
-  if (!selectedDemoKey) return;
+  if (!window.__AA_DEMO_HARNESS_ALLOWED__ || !selectedDemoKey) return;
   const scenario = DEMO_SCENARIOS[selectedDemoKey];
   const originalText = harnessPdf.textContent;
   harnessPdf.disabled = true;

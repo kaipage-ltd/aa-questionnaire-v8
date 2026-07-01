@@ -15,3 +15,11 @@ test('sent-profile inbox CTA never falls back to the respondent company homepage
   assert.match(appHtml, /inbox\.url\.startsWith\('mailto:'\)[\s\S]*?removeAttribute\('target'\)/);
   assert.match(appHtml, /inbox\.url\.startsWith\('mailto:'\)[\s\S]*?removeAttribute\('rel'\)/);
 });
+
+test('questionnaire demo URLs are ignored unless the review harness is enabled', () => {
+  assert.match(appHtml, /window\.__AA_DEMO_HARNESS_ALLOWED__ = false/);
+  assert.match(appHtml, /function resolveDemoHarnessAllowed/);
+  assert.match(appHtml, /body\.demoHarness\?\.enabled/);
+  assert.match(appHtml, /if \(!window\.__AA_DEMO_HARNESS_ALLOWED__\) return null;[\s\S]*?const key = pageParams\.get\('demo'\)/);
+  assert.doesNotMatch(appHtml, /window\.__AA_DEMO_HARNESS_ALLOWED__ = \['localhost', '127\.0\.0\.1', '::1'\]\.includes/);
+});

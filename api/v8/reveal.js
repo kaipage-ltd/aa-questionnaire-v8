@@ -2,6 +2,7 @@ import { json, jsonError } from '../_lib/http.js';
 import { isRevealTokenShape, verifyRevealPayload } from '../_lib/jwt.js';
 import { deriveProfile, deriveRevealInsights, sanitiseAnswers } from '../_lib/profile.js';
 import { DEMO_SCENARIOS } from '../_lib/demo_scenarios.js';
+import { demoHarnessEnabled } from '../_lib/demoHarness.js';
 import { rateLimit } from '../_lib/rateLimit.js';
 
 export async function GET(req) {
@@ -19,6 +20,7 @@ export async function GET(req) {
   // token and all side effects (no Brevo, no email). It is fixed demo content.
   const demo = url.searchParams.get('demo');
   if (demo) {
+    if (!demoHarnessEnabled()) return jsonError(404, 'unknown_demo');
     const scenario = DEMO_SCENARIOS[demo];
     if (!scenario) return jsonError(404, 'unknown_demo');
     const answers = sanitiseAnswers(scenario);

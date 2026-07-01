@@ -9,9 +9,7 @@
 <link rel="icon" href="data:,">
 <title>The AI Readiness Diagnostic</title>
 <script>
-  if (new URLSearchParams(window.location.search).get('demoNav') === '1') {
-    document.documentElement.classList.add('demo-nav-enabled');
-  }
+  window.__AA_DEMO_HARNESS_ALLOWED__ = false;
 </script>
 <style>
   /* A+A brand faces (same self-hosted files the questionnaire uses). */
@@ -1668,6 +1666,34 @@ let segs = [];
 let i = 0;
 let revealIdentity = {};
 let revealHurdle = '';
+let demoHarnessConfigPromise = null;
+
+function demoHarnessRequested() {
+  return params.has('demo') || params.get('demoNav') === '1';
+}
+
+function markDemoHarnessAllowed(enabled) {
+  window.__AA_DEMO_HARNESS_ALLOWED__ = Boolean(enabled);
+  if (window.__AA_DEMO_HARNESS_ALLOWED__ && params.get('demoNav') === '1') {
+    document.documentElement.classList.add('demo-nav-enabled');
+  }
+  return window.__AA_DEMO_HARNESS_ALLOWED__;
+}
+
+async function resolveDemoHarnessAllowed() {
+  if (window.__AA_DEMO_HARNESS_ALLOWED__) return true;
+  if (!demoHarnessRequested()) return false;
+  if (!demoHarnessConfigPromise) {
+    demoHarnessConfigPromise = fetch('/api/v8/config', { headers: { accept: 'application/json' } })
+      .then(async (res) => {
+        const ct = res.headers.get('content-type') || '';
+        const body = ct.includes('application/json') ? await res.json() : {};
+        return Boolean(res.ok && body.ok !== false && body.demoHarness?.enabled);
+      })
+      .catch(() => false);
+  }
+  return markDemoHarnessAllowed(await demoHarnessConfigPromise);
+}
 
 const DEMO_SCENARIOS = {
   'c-vi': { label: 'The Dead Reckoner', answers: { Q1: 0, CC: [0], Q2: 3, Q3: 3, Q4: 2, Q5: 3, Q6: 2, Q7: 2, Q8: 2, Q9: 1, Q10: 1, Q11: 2, Q12: 1, Q13: 2, Q14: [0, 1], Q15: 3, Q16: 3, Q17: 2, Q18: 3, SP: [3, 4, 6] } },
@@ -2276,6 +2302,7 @@ async function loadToken(token) {
 }
 
 async function loadDemo(key) {
+  if (!window.__AA_DEMO_HARNESS_ALLOWED__) throw new Error('unknown_demo');
   // Read-only demo endpoint: no submit, no Turnstile, no email/Brevo side effects.
   const demoKey = DEMO_SCENARIOS[key] ? key : 't-ve';
   const res = await fetch(`/api/v8/reveal?demo=${encodeURIComponent(demoKey)}`);
@@ -2294,6 +2321,7 @@ function buildDemoHarness() {
     button.type = 'button';
     button.innerHTML = `<span class="demo-key">${key}</span>${scenario.label}`;
     button.addEventListener('click', () => {
+      if (!window.__AA_DEMO_HARNESS_ALLOWED__) return;
       loading.classList.remove('is-hidden');
       demoHarness.classList.remove('is-open');
       loadDemo(key).catch(showError);
@@ -2352,17 +2380,33 @@ document.addEventListener('keydown', (event) => {
     go(i - 1);
   }
 });
-demoLaunch.addEventListener('click', () => demoHarness.classList.toggle('is-open'));
+demoLaunch.addEventListener('click', () => {
+  if (!window.__AA_DEMO_HARNESS_ALLOWED__) return;
+  demoHarness.classList.toggle('is-open');
+});
 buildDemoHarness();
 
 const token = params.get('token');
 const demoKey = params.get('demo');
 const demoNavOn = params.get('demoNav') === '1';
-if (token) loadToken(token).catch(showError);
-// Demo only runs on explicit opt-in (?demo=… or ?demoNav=1). A bare, tokenless /reveal/
-// no longer auto-submits a demo (which would mint a Brevo contact); it shows a neutral state.
-else if (demoKey || demoNavOn) loadDemo(demoKey || 't-ve').catch(showError);
-else showNeutral();
+async function startReveal() {
+  if (token) {
+    await loadToken(token);
+    return;
+  }
+
+  const demoAllowed = await resolveDemoHarnessAllowed();
+  // Demo only runs on explicit opt-in (?demo=... or ?demoNav=1) and only when
+  // the review harness is enabled. A bare, tokenless /reveal/ shows a neutral state.
+  if (demoAllowed && (demoKey || demoNavOn)) {
+    await loadDemo(demoKey || 't-ve');
+    return;
+  }
+
+  showNeutral();
+}
+
+startReveal().catch(showError);
 </script>
 </body>
 </html>

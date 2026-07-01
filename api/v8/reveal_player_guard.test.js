@@ -129,3 +129,14 @@ test('booking link preserves invitee prefill while suppressing referrer data', (
   assert.match(playerHtml, /searchParams\.set\('name'/, 'name prefill must remain wired for the scheduler');
   assert.match(playerHtml, /body\.reveal\.email/, 'the reveal player should receive respondent email for scheduler prefill');
 });
+
+test('reveal demo URLs are ignored unless the review harness is enabled', () => {
+  assert.match(playerHtml, /window\.__AA_DEMO_HARNESS_ALLOWED__ = false/);
+  assert.match(playerHtml, /function resolveDemoHarnessAllowed/);
+  assert.match(playerHtml, /body\.demoHarness\?\.enabled/);
+  assert.match(playerHtml, /if \(!window\.__AA_DEMO_HARNESS_ALLOWED__\) throw new Error\('unknown_demo'\)/);
+  assert.match(playerHtml, /const demoAllowed = await resolveDemoHarnessAllowed\(\)/);
+  assert.match(playerHtml, /if \(demoAllowed && \(demoKey \|\| demoNavOn\)\)/);
+  assert.doesNotMatch(playerHtml, /else if \(demoKey \|\| demoNavOn\) loadDemo/);
+  assert.doesNotMatch(playerHtml, /window\.__AA_DEMO_HARNESS_ALLOWED__ = \['localhost', '127\.0\.0\.1', '::1'\]\.includes/);
+});
