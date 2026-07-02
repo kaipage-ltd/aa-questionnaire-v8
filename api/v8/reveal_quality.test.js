@@ -72,8 +72,8 @@ test('scoreAfterLine returns the four specified score-band lines', () => {
   assert.equal(scoreAfterLine(44), 'Clear enough to act. Low enough to show the first fix.');
   assert.equal(scoreAfterLine(45), 'Enough signal to act. Too uneven to scale cleanly.');
   assert.equal(scoreAfterLine(64), 'Enough signal to act. Too uneven to scale cleanly.');
-  assert.equal(scoreAfterLine(65), 'Strong base. One leak is carrying too much risk.');
-  assert.equal(scoreAfterLine(79), 'Strong base. One leak is carrying too much risk.');
+  assert.equal(scoreAfterLine(65), 'Strong base. One weak point is carrying too much risk.');
+  assert.equal(scoreAfterLine(79), 'Strong base. One weak point is carrying too much risk.');
   assert.equal(scoreAfterLine(80), 'Strong base. Fix the rule before adding another tool.');
   assert.equal(scoreAfterLine(100), 'Strong base. Fix the rule before adding another tool.');
 });
@@ -140,14 +140,18 @@ test('demo reveal matrix emits the overhauled 8-card contract', () => {
       assert.equal(Number.isFinite(pillar.benchmark), true, `${expectedKey} ${pillar.label} should carry benchmark value`);
       assert.equal(pillar.benchmark < 100, true, `${expectedKey} ${pillar.label} benchmark should not imply perfection`);
     }
-    assert.equal(shape.shapeRead.some((row) => row.label === 'First leak'), true);
+    assert.equal(shape.shapeRead.some((row) => row.label === 'Main weakness'), true);
     assert.equal(shape.shapeRead.some((row) => row.label === 'AI risk'), true);
     assert.equal(shape.drawerLabel, 'What the gap means');
-    assert.equal(shape.advanceLabel, 'Find the first leak');
+    assert.equal(shape.advanceLabel, 'Find what to fix first');
 
     assert.equal(hurdle.eyebrow, 'THE ONE THING TO FIX FIRST');
     assert.equal(hurdle.glyph, profile.hurdle);
-    assert.match(hurdle.close, /^First leak: /);
+    assert.match(hurdle.close, /^Main weakness: /);
+    assert.equal(hurdle.profileRead.label, 'YOUR PROFILE TYPE');
+    assert.equal(hurdle.profileRead.name, profile.characterName);
+    assert.match(hurdle.profileRead.meaning, /describes the pattern your answers revealed/);
+    assert.match(hurdle.profileRead.fix, /^First fix: /);
     assert.equal(hurdle.evidence?.length, 0);
     assert.equal(hurdle.drawerLabel, '');
     assert.equal(hurdle.advanceLabel, 'See the pattern');
@@ -186,7 +190,7 @@ test('demo reveal matrix emits the overhauled 8-card contract', () => {
     assert.equal(firstMove.brief.some((row) => row.label === 'Bring'), true);
     assert.equal(firstMove.brief.some((row) => row.label === 'Leave with'), true);
     assert.equal(firstMove.drawerLabel, 'Session map');
-    assert.equal(firstMove.advanceLabel, 'Book the session');
+    assert.equal(firstMove.advanceLabel, 'See the session');
 
     assert.equal(close.eyebrow, 'WHERE THIS GOES NEXT');
     assert.equal(close.header, PERSONA[expectedKey].headline.replace('{brandName}', 'A+A Demo'));

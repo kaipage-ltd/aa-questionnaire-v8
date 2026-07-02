@@ -54,6 +54,13 @@ test('shape card uses a benchmark tick and respondent value over the fill', () =
   assert.match(playerHtml, /bar-plain/, 'each pillar must carry a plain-language meaning');
 });
 
+test('hurdle card explains the profile name where it is earned', () => {
+  assert.match(playerHtml, /function buildProfileRead/, 'profile explainer helper must exist');
+  assert.match(playerHtml, /profile-read/, 'profile explainer must ship');
+  assert.match(playerHtml, /buildProfileRead\(card\.profileRead\)/, 'hurdle slide must render profile explainer copy');
+  assert.match(playerHtml, /The name describes the pattern your answers revealed/, 'fallback profile explainer must define what the name means');
+});
+
 test('drawers hold detail instead of default-view dense copy', () => {
   assert.match(playerHtml, /function buildOpenDetail/, 'score interpretation should render as an always-open detail block');
   assert.match(playerHtml, /buildOpenDetail\(card\.drawerLabel \|\| 'Score detail'/, 'score detail must be open by default, not hidden behind a toggle');
@@ -109,6 +116,14 @@ test('image placeholders never ship to respondents', () => {
 test('every non-final card carries a visible advance affordance', () => {
   assert.match(playerHtml, /card-advance/, 'cards must offer a visible Continue button, not only invisible zones');
   assert.match(playerHtml, /card\.advanceLabel \|\| 'Continue'/, 'advance buttons should support slide-specific next actions');
+});
+
+test('mobile advance CTAs stay in the content flow', () => {
+  const advanceRules = [...playerHtml.matchAll(/\.card-advance\s*\{([^}]*)\}/g)].map((match) => match[1]);
+  assert(advanceRules.length > 0, 'advance CTA rules must exist');
+  assert.match(playerHtml, /@media \(max-width: 680px\)[\s\S]*?\.card-advance\s*\{[\s\S]*?position:\s*relative/, 'mobile advance buttons must remain in-flow');
+  assert(advanceRules.every((rule) => !/position:\s*sticky/.test(rule)), 'advance buttons must not become sticky overlays');
+  assert(advanceRules.every((rule) => !/position:\s*fixed/.test(rule)), 'advance buttons must not become fixed overlays');
 });
 
 test('reveal tap zones and drawer-open CTAs stay interactive', () => {

@@ -200,11 +200,11 @@ export function deriveActionPlan(profile) {
       avoidForNow: 'Do not scale more AI pilots until one shared decision has one source, one definition and one owner.'
     }
   }[hurdle] || {
-    artefactName: 'First Leak Map',
+    artefactName: 'Main Weakness Map',
     why: 'The next useful move is to make one repeated decision cleaner.',
     mondayMove: 'Choose *one recurring decision* and write the signal, owner, source, delay and first fix.',
     whatToBringToCall: 'Bring one live decision the business is already struggling to make cleanly.',
-    avoidForNow: 'Do not broaden the work before the first leak is visible.'
+    avoidForNow: 'Do not broaden the work before the main weakness is visible.'
   };
 
   return {
@@ -280,7 +280,7 @@ export function deriveRevealInsights(answers, profile, context = {}) {
       beat: 'Problem',
       eyebrow: 'WHERE YOU STAND VS BEST PRACTICE',
       header: 'Benchmark vs the best. The gap is the work.',
-      lede: 'Your score is the light line. The mark on the right is best practice. The gap shows what AI would inherit.',
+      lede: 'Your score is the light line. The right-hand mark is best practice. The gap shows what must improve before AI carries more decisions.',
       pillars: pillars.map((pillar) => ({
         ...pillar,
         role: 'normal',
@@ -290,11 +290,11 @@ export function deriveRevealInsights(answers, profile, context = {}) {
       })),
       benchmark: BENCHMARK,
       benchmarkLabel: BENCHMARK_LABEL,
-      benchmarkNote: 'Right-hand mark: where the operating system should hold before AI carries more decisions.',
+      benchmarkNote: 'Right-hand mark: best practice before AI carries more decisions.',
       shapeRead: shapeRead({ strongest, hurdle: hurdlePillar, gap, highEvenShape, balancedEvenShape, leverage: leverageReality(answers, profile) }),
       body: shapeBody({ bShape }),
       drawerLabel: 'What the gap means',
-      advanceLabel: 'Find the first leak'
+      advanceLabel: 'Find what to fix first'
     },
     {
       type: 'hurdle',
@@ -302,6 +302,12 @@ export function deriveRevealInsights(answers, profile, context = {}) {
       eyebrow: 'THE ONE THING TO FIX FIRST',
       ...hurdleCard(profile.hurdle, highEvenShape, balancedEvenShape),
       glyph: profile.hurdle,
+      profileRead: {
+        label: 'YOUR PROFILE TYPE',
+        name: profile.characterName,
+        meaning: persona.profileRead?.meaning || `${profile.characterName} is the operating pattern your answers revealed.`,
+        fix: persona.profileRead?.fix || `First fix: ${profile.hurdle}.`
+      },
       // Folded receipts: shown only in the optional detail drawer.
       receipts: receiptImplications,
       evidence: [],
@@ -355,7 +361,7 @@ export function deriveRevealInsights(answers, profile, context = {}) {
       brief: firstMoveBrief({ actionPlan, hurdle: profile.hurdle, quote }),
       body: firstMoveBody({ actionPlan, hurdle: profile.hurdle, quote }),
       drawerLabel: 'Session map',
-      advanceLabel: 'Book the session'
+      advanceLabel: 'See the session'
     },
     {
       type: 'close',
@@ -605,7 +611,7 @@ function blockerCalibration({ orderedPicks, hurdle, noneSelected, convergent, na
     return [
       { label: 'You named', value: 'No blocker selected.' },
       { label: 'Measured signal', value: measured },
-      { label: 'Calibration', value: `Not feeling blocked is useful data. It means the first leak is embedded in the operating rhythm, not visible as a named initiative problem.` },
+      { label: 'Calibration', value: `Not feeling blocked is useful data. It means the main weakness is embedded in the operating rhythm, not visible as a named initiative problem.` },
       { label: 'Inspect first', value: inspect }
     ];
   }
@@ -633,8 +639,8 @@ function blockerCalibration({ orderedPicks, hurdle, noneSelected, convergent, na
 
 function scoreInterpretation({ profile, strongest, hurdle, gap, highEvenShape, balancedEvenShape }) {
   const scoreRead =
-    profile.score >= 80 ? 'Strong enough to push, if the first leak does not travel forward.' :
-    profile.score >= 65 ? 'Useful readiness, with *one leak* carrying too much risk.' :
+    profile.score >= 80 ? 'Strong enough to push, once the weakest decision path is fixed.' :
+    profile.score >= 65 ? 'Useful readiness, with *one weak point* carrying too much risk.' :
     profile.score >= 45 ? 'Enough signal to act, but too uneven to scale cleanly.' :
     'Low enough to matter. Clear enough to show *where to start*.';
   const strength = highEvenShape
@@ -644,7 +650,7 @@ function scoreInterpretation({ profile, strongest, hurdle, gap, highEvenShape, b
     : `${strongest.label} is carrying the profile at ${strongest.value}. ${PILLAR_COPY[strongest.label]?.strong || 'That is the operating strength to protect.'}`;
   const exposure = highEvenShape || balancedEvenShape || gap <= 6
     ? `${hurdle.label} is still the first inspection point, even without a dramatic score gap.`
-    : `${hurdle.label} is ${gap} points behind the strongest reading. That is where readiness leaks first.`;
+    : `${hurdle.label} is ${gap} points behind the strongest reading. That is the main weakness to inspect first.`;
   const threshold = {
     Visibility: 'The next threshold is decision-grade evidence: one owner, one source, one trust rule, one decision changed.',
     Velocity: 'The next threshold is decision speed: first signal to first irreversible action, without another governance layer.',
@@ -654,7 +660,7 @@ function scoreInterpretation({ profile, strongest, hurdle, gap, highEvenShape, b
   return [
     { label: 'Score read', value: scoreRead },
     { label: 'Strongest signal', value: strength },
-    { label: 'First leak', value: exposure },
+    { label: 'Main weakness', value: exposure },
     { label: 'Next threshold', value: threshold }
   ];
 }
@@ -662,25 +668,25 @@ function scoreInterpretation({ profile, strongest, hurdle, gap, highEvenShape, b
 export function scoreAfterLine(score) {
   if (score < 45) return 'Clear enough to act. Low enough to show the first fix.';
   if (score < 65) return 'Enough signal to act. Too uneven to scale cleanly.';
-  if (score < 80) return 'Strong base. One leak is carrying too much risk.';
+  if (score < 80) return 'Strong base. One weak point is carrying too much risk.';
   return 'Strong base. Fix the rule before adding another tool.';
 }
 
 function shapeRead({ hurdle, gap, highEvenShape, balancedEvenShape, leverage }) {
   // The bars above already show where the power is and which reading is the hurdle,
   // so the panel does not restate the score gap (card 2 owns that). It reads the shape
-  // forward into what AI inherits from it.
+  // forward into what AI would carry from it.
   const constraint = highEvenShape || balancedEvenShape || gap <= 6
     ? `${hurdle.label} is the first place to sharpen before AI leans on the operating system.`
-    : `${hurdle.label} is the first leak to close before stronger scores can turn into value.`;
+    : `${hurdle.label} is the main weakness to close before stronger scores can turn into value.`;
   const aiImplication = {
     Visibility: 'If the number still needs defending, AI speeds up debate instead of decisions.',
     Velocity: 'If the signal still waits, AI makes the delay faster to see but not faster to close.',
     Coherence: 'If teams still split the picture, AI can multiply separate work instead of compounding value.'
-  }[hurdle.label] || 'AI inherits the first operating leak unless the repeated decision path is made cleaner.';
+  }[hurdle.label] || 'AI carries the same operating weakness unless the repeated decision path is made cleaner.';
 
   return [
-    { label: 'First leak', value: constraint },
+    { label: 'Main weakness', value: constraint },
     { label: 'AI risk', value: aiImplication }
   ];
 }
@@ -696,7 +702,7 @@ function leverageReality(answers, profile) {
     Visibility: 'uncertainty in the numbers',
     Velocity: 'delay in the decision path',
     Coherence: 'fragmented team pictures'
-  }[profile.hurdle] || 'the first operating leak';
+  }[profile.hurdle] || 'the main operating weakness';
   const reach =
     picks.includes(0) || aiUse === 0 ? 'AI is not yet materially in the work' :
     aiUse >= 7 ? 'AI is already touching decision routing' :
@@ -725,9 +731,9 @@ function shapeBody({ bShape }) {
     return 'The readings are high and close. This is a sharpening job, not a crisis.';
   }
   if (bShape.clustered) {
-    return 'Your readings cluster below best practice. No single bar explains it. The work starts with the first leak.';
+    return 'Your readings cluster below best practice. No single bar explains it. The work starts with the main weakness.';
   }
-  return 'The chart shows the gap to best practice. The first leak is the line the business can act on now.';
+  return 'The chart shows the gap to best practice. The main weakness is the line the business can act on now.';
 }
 
 function hurdleCard(hurdle, highEvenShape, balancedEvenShape) {
@@ -915,7 +921,7 @@ function costModel(profile) {
   };
 
   return [
-    { label: 'Loss unit', value: specific.unit },
+    { label: 'Repeated cost', value: specific.unit },
     { label: 'Where it hides', value: shared.hidden },
     { label: 'Business consequence', value: specific.consequence },
     { label: 'Your number', value: shared.yourNumber },
@@ -941,7 +947,7 @@ function compoundingModel(profile) {
       later: 'The cost shows up in enterprise value: confidence, capital and customer decisions move with less precision than they should.'
     }
   }[profile.bucket] || {
-    now: 'The leak is visible in a repeated decision.',
+    now: 'The weakness is visible in a repeated decision.',
     next: 'If it stays open, the business normalises the workaround.',
     later: 'The cost becomes harder to separate from the operating model.'
   };
@@ -949,7 +955,7 @@ function compoundingModel(profile) {
     Visibility: 'Because the picture is not decision-grade, stronger AI work inherits uncertainty.',
     Velocity: 'Because the path from signal to action is slow, stronger AI work only makes the delay visible faster.',
     Coherence: 'Because the picture splits before action, stronger AI work can amplify separate work instead of compounding shared value.'
-  }[profile.hurdle] || 'Because the first leak is unresolved, stronger AI work inherits the operating leak.';
+  }[profile.hurdle] || 'Because the main weakness is unresolved, stronger AI work carries the same operating weakness.';
 
   return [
     { label: 'Now', value: stage.now },

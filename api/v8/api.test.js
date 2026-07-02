@@ -587,7 +587,7 @@ test('reveal route resolves a submitted token', async () => {
   assert.equal(quotePeak.peak, 1);
   assert.ok(body.reveal.cards.find((card) => card.type === 'hurdle').receipts.some((receipt) => receipt.includes('opportunity stays open')));
   assert.equal(body.reveal.cards.find((card) => card.type === 'quote').quote, 'Analysis takes longer than the opportunity window allows.');
-  assert.match(body.reveal.cards.find((card) => card.type === 'shape').body, /gap|first leak/i);
+  assert.match(body.reveal.cards.find((card) => card.type === 'shape').body, /gap|main weakness/i);
   assert.equal(body.reveal.summary.persona, 'The Lagging Tanker');
   assert.equal(body.reveal.summary.actionPlan.artefactName, body.reveal.actionPlan.artefactName);
   assert.equal(body.reveal.privacy.version, '2026-06-25');
@@ -692,7 +692,7 @@ test('all-strong reveals keep calibrated shape copy and the plain constraint bea
   assert.equal(shape.header, 'Benchmark vs the best. The gap is the work.');
   assert.doesNotMatch(shape.body, /thin|collapse/i);
   assert.equal(hurdle.lede, 'You have the number. The room still has to *trust it*.');
-  assert.equal(hurdle.close, 'First leak: Visibility');
+  assert.equal(hurdle.close, 'Main weakness: Visibility');
   assert.match(hurdle.tail, /profile is strong/i);
   assert.match(quote.implication, /selected that as a strength/i);
 });
@@ -730,7 +730,7 @@ test('balanced mid-strength reveals keep calibrated shape copy and the plain con
   assert.equal(shape.header, 'Benchmark vs the best. The gap is the work.');
   assert.doesNotMatch(shape.body, /thin|collapse/i);
   assert.equal(hurdle.lede, 'You have the number. The room still has to *trust it*.');
-  assert.equal(hurdle.close, 'First leak: Visibility');
+  assert.equal(hurdle.close, 'Main weakness: Visibility');
   assert.match(hurdle.tail, /first move is a small rule/i);
 });
 

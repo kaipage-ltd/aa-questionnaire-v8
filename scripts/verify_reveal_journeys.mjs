@@ -8,7 +8,8 @@ import { DEMO_SCENARIOS } from '../api/_lib/demo_scenarios.js';
 
 const VIEWPORTS = [
   { name: 'desktop', width: 1440, height: 1000 },
-  { name: 'mobile', width: 390, height: 844 }
+  { name: 'mobile', width: 390, height: 844 },
+  { name: 'mobile-tight', width: 390, height: 670 }
 ];
 
 const RETIRED_COPY = [
@@ -85,8 +86,19 @@ async function collectActiveCard(page) {
   return page.evaluate(() => {
     const card = document.querySelector('.card.is-active');
     const rect = card?.getBoundingClientRect();
+    const overlaps = (a, b) => (
+      a.left < b.right - 2 &&
+      a.right > b.left + 2 &&
+      a.top < b.bottom - 2 &&
+      a.bottom > b.top + 2
+    );
+    const isActuallyVisible = (node) => {
+      const closedDetails = node.closest('details:not([open])');
+      if (closedDetails && node.tagName !== 'SUMMARY') return false;
+      return node.offsetParent !== null && (node.textContent || '').trim().length > 0;
+    };
     const textEls = Array.from(card?.querySelectorAll('h1,h2,h3,p,div,button,summary,span') || [])
-      .filter((node) => node.offsetParent !== null && (node.textContent || '').trim().length > 0)
+      .filter(isActuallyVisible)
       .map((node) => {
         const r = node.getBoundingClientRect();
         return {
@@ -101,11 +113,52 @@ async function collectActiveCard(page) {
           height: r.height
         };
       });
+    const advance = card?.querySelector('.card-advance');
+    const advanceRect = advance?.getBoundingClientRect();
+    const overlapTargets = Array.from(card?.querySelectorAll([
+      'h1',
+      'h2',
+      'h3',
+      'p',
+      'summary',
+      '.bar-row',
+      '.brief-row',
+      '.cost-impact',
+      '.impact-line',
+      '.impact-metric',
+      '.move-symbol',
+      '.move-copy',
+      '.profile-read',
+      '.pattern-row',
+      '.support-row',
+      '.num',
+      '.num-after',
+      '.score-brief'
+    ].join(',')) || [])
+      .filter((node) => advance && !advance.contains(node) && !node.contains(advance) && isActuallyVisible(node))
+      .map((node) => {
+        const r = node.getBoundingClientRect();
+        return {
+          tag: node.tagName.toLowerCase(),
+          className: String(node.className || ''),
+          text: (node.textContent || '').replace(/\s+/g, ' ').trim().slice(0, 120),
+          left: r.left,
+          right: r.right,
+          top: r.top,
+          bottom: r.bottom,
+          width: r.width,
+          height: r.height
+        };
+      });
+    const advanceOverlaps = advanceRect
+      ? overlapTargets.filter((node) => node.width > 0 && node.height > 0 && overlaps(advanceRect, node))
+      : [];
     return {
       type: Array.from(card?.classList || []).find((cls) => cls.startsWith('is-'))?.replace('is-', '') || '',
       text: card?.innerText || '',
       rect: rect ? { left: rect.left, right: rect.right, top: rect.top, bottom: rect.bottom, width: rect.width, height: rect.height } : null,
       textEls,
+      advanceOverlaps,
       activeCount: document.querySelectorAll('.card.is-active').length,
       docWidth: document.documentElement.scrollWidth,
       viewportWidth: document.documentElement.clientWidth
@@ -124,6 +177,7 @@ function checkActiveCard({ key, viewport, slide, active }) {
     (node.left < -2 || node.right > active.viewportWidth + 2)
   ));
   assert(bad.length === 0, `${key}/${viewport.name}/slide ${slide}: visible text overflow ${JSON.stringify(bad[0])}`);
+  assert(active.advanceOverlaps.length === 0, `${key}/${viewport.name}/slide ${slide}: advance CTA overlaps content ${JSON.stringify(active.advanceOverlaps[0])}`);
 
   for (const retired of RETIRED_COPY) {
     assert(!active.text.includes(retired), `${key}/${viewport.name}/slide ${slide}: retired copy present: ${retired}`);

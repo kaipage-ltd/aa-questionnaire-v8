@@ -495,6 +495,42 @@
     color: var(--ink-faint);
     margin-top: 18px;
   }
+  .profile-read {
+    width: min(100%, 720px);
+    margin-top: 24px;
+    padding-top: 18px;
+    border-top: 1px solid var(--rule);
+  }
+  .profile-kicker {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin-bottom: 8px;
+  }
+  .profile-name {
+    font-family: var(--serif);
+    font-size: clamp(30px, 3.8vw, 42px);
+    line-height: 1.04;
+    color: var(--ink);
+    margin-bottom: 8px;
+  }
+  .profile-meaning {
+    max-width: 680px;
+    font-size: 17.5px;
+    line-height: 1.42;
+    color: var(--ink-soft);
+  }
+  .profile-fix {
+    font-family: var(--mono);
+    font-size: 10px;
+    line-height: 1.45;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin-top: 10px;
+  }
   .more-drawer {
     margin-top: 22px;
   }
@@ -1155,10 +1191,20 @@
   }
   .card-advance.on-dark { background: rgba(250, 248, 242, 0.08); border-color: var(--paper); color: var(--paper); }
   .card-advance.on-dark:hover { background: rgba(250, 248, 242, 0.14); color: var(--paper); }
-  .card:has(.more-drawer[open]) .card-advance {
+  .card:has(.more-drawer[open]) .card-advance,
+  .card:has(.open-detail) .card-advance {
+    position: relative;
+    left: auto;
+    bottom: auto;
+    transform: none;
+    margin: 26px auto 0;
     opacity: 1;
     pointer-events: auto;
     visibility: visible;
+  }
+  .card:has(.more-drawer[open]) .card-advance:hover,
+  .card:has(.open-detail) .card-advance:hover {
+    transform: translateY(-2px);
   }
   .card:has(.more-drawer[open]) .card-inner {
     padding-bottom: clamp(84px, 10vh, 118px);
@@ -1292,17 +1338,30 @@
     .card:has(.open-detail) .card-inner {
       padding-bottom: 22px;
     }
-    /* Pin the advance button to the visible bottom. The finale cost card keeps
-       its receipts in the drawer on phones, so the main beat stays short. */
+    /* On phones the advance button must sit in the content flow. A sticky
+       button crosses dense drawers and bars once mobile browser chrome shrinks
+       the visible viewport. */
     .card-advance {
-      position: sticky;
+      position: relative;
       left: auto;
-      bottom: 4px;
+      bottom: auto;
       transform: none;
-      margin: 14px auto 0;
+      width: min(100%, 320px);
+      min-height: 56px;
+      justify-content: center;
+      box-sizing: border-box;
+      margin: clamp(22px, 6vh, 38px) auto 0;
+      padding: 14px 22px;
+      text-align: center;
+      white-space: nowrap;
       flex: 0 0 auto;
     }
-    .card.is-cost .card-advance { margin-top: 14px; }
+    .card:has(.more-drawer[open]) .card-advance,
+    .card:has(.open-detail) .card-advance {
+      margin-top: 24px;
+    }
+    .card.is-cost .card-advance,
+    .card.is-firstMove .card-advance { margin-top: 28px; }
     .card-advance:hover { transform: none; }
     /* On phones the image slots are hidden and the card returns to full-width copy. */
     .visual { display: none; }
@@ -1330,6 +1389,20 @@
       font-size: 18px;
       line-height: 1.36;
     }
+    .profile-read {
+      margin-top: 18px;
+      padding-top: 14px;
+    }
+    .profile-name {
+      font-size: clamp(28px, 8vw, 36px);
+    }
+    .profile-meaning {
+      font-size: 16px;
+      line-height: 1.38;
+    }
+    .profile-fix {
+      font-size: 9px;
+    }
     .cost-impact {
       min-height: 0;
       border-left: 0;
@@ -1350,19 +1423,7 @@
       font-size: 44px;
       margin-bottom: 8px;
     }
-    .move-symbol {
-      min-height: 160px;
-      padding: 18px;
-      flex-direction: row;
-      align-items: flex-end;
-    }
-    .move-symbol .pglyph svg {
-      width: 72px;
-      height: 72px;
-    }
-    .move-symbol-word {
-      font-size: 42px;
-    }
+    .move-symbol { display: none; }
     .move-rail { display: none; }
     .move-step {
       display: grid;
@@ -1392,6 +1453,9 @@
     }
     .close-action .cta {
       width: auto;
+      min-width: min(100%, 320px);
+      min-height: 56px;
+      justify-content: center;
       padding: 15px 22px;
       font-size: 11px;
     }
@@ -1813,6 +1877,19 @@ function buildOpenDetail(label, contentNode) {
   return detail;
 }
 
+function buildProfileRead(profileRead) {
+  const node = el('div', 'profile-read anim d3');
+  node.append(el('div', 'profile-kicker', profileRead.label || 'Your profile type'));
+  node.append(el('div', 'profile-name', profileRead.name || ''));
+  node.append(p('profile-meaning', profileRead.meaning || 'The name describes the pattern your answers revealed.'));
+  if (profileRead.fix) {
+    const fix = el('div', 'profile-fix');
+    fix.innerHTML = formatCopy(profileRead.fix);
+    node.append(fix);
+  }
+  return node;
+}
+
 function buildEvidenceSupport(rows) {
   const support = el('div', 'support');
   (rows || []).slice(0, 2).forEach((receipt) => {
@@ -2028,7 +2105,7 @@ function buildCard(card) {
     inner.append(mark);
     inner.append(el('div', 'eyebrow anim d1', card.eyebrow));
     inner.append(el('div', 'turn-greeting anim d1', card.nameLine));
-    inner.append(el('div', 'turn-headline anim d2', card.headline || 'Your answers show the first leak.'));
+    inner.append(el('div', 'turn-headline anim d2', card.headline || 'Your answers show the main weakness.'));
     inner.append(p('turn-body anim d3', card.body));
     // The seat/footprint "context line" was cut from the card: it read as jargon
     // ("joins and handoffs are part of this read"). It stays in the payload for
@@ -2078,7 +2155,11 @@ function buildCard(card) {
     inner.append(pillarIcon(card.glyph, 'big anim d1'));
     inner.append(h(card.lede, 'd1'));
     inner.append(p('lede anim d2', card.body));
-    inner.append(el('div', 'constraint-tag anim d3', card.close));
+    if (card.profileRead) {
+      inner.append(buildProfileRead(card.profileRead));
+    } else {
+      inner.append(el('div', 'constraint-tag anim d3', card.close));
+    }
     if (card.evidence?.length) inner.append(buildDrawer(card.drawerLabel || 'The pattern', buildEvidenceSupport(card.evidence)));
   } else if (card.type === 'quote') {
     inner.append(el('div', 'eyebrow anim', card.eyebrow));

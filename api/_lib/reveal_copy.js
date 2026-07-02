@@ -51,6 +51,10 @@ export const PERSONA = {
     name: 'The Dead Reckoner',
     signature: 'a business plotting the week by estimate because the instruments are not yet trusted',
     headline: 'Stop steering by *guess*.',
+    profileRead: {
+      meaning: 'The name describes the pattern your answers revealed: the business has numbers, but the room still steers by estimate.',
+      fix: 'First fix: make one number the room can trust.'
+    },
     fitLine: 'You came in as The Dead Reckoner: a business moving by feel because the numbers do not yet give leadership a clean position.',
     closeLine: 'The Dead Reckoner changes the day it stops steering by estimate.'
   },
@@ -58,6 +62,10 @@ export const PERSONA = {
     name: 'The Sole Hand',
     signature: 'a business where too many real decisions still wait for the same one or two people',
     headline: 'Get the decision *out of your hands*.',
+    profileRead: {
+      meaning: 'The name describes the pattern your answers revealed: real decisions still wait for the same one or two people.',
+      fix: 'First fix: shorten the wait after signal.'
+    },
     fitLine: 'You came in as The Sole Hand: a business that can see the move, but still waits for the same person to make it real.',
     closeLine: 'The Sole Hand changes the day one repeat call no longer needs you in the room.'
   },
@@ -65,6 +73,10 @@ export const PERSONA = {
     name: 'The Patchwork Crew',
     signature: 'a crew stitching the picture together by hand before the work can begin',
     headline: 'One picture. *Then* the work starts.',
+    profileRead: {
+      meaning: 'The name describes the pattern your answers revealed: capable people keep rebuilding the picture by hand before they can move.',
+      fix: 'First fix: give one decision one shared picture.'
+    },
     fitLine: 'You came in as The Patchwork Crew: capable people rebuilding the picture before they can decide what to do.',
     closeLine: 'The Patchwork Crew changes the day one question has one agreed answer.'
   },
@@ -72,6 +84,10 @@ export const PERSONA = {
     name: 'The Blind Sprinter',
     signature: 'a business with real pace, running faster than the evidence underneath it',
     headline: 'Run fast. On numbers you *trust*.',
+    profileRead: {
+      meaning: 'The name describes the pattern your answers revealed: the business has pace, but the evidence underneath still needs defending.',
+      fix: 'First fix: make one number the room can trust.'
+    },
     fitLine: 'You came in as The Blind Sprinter: momentum is real, but the business is moving faster than its evidence.',
     closeLine: 'The Blind Sprinter changes the day it can prove which growth deserves more speed.'
   },
@@ -79,6 +95,10 @@ export const PERSONA = {
     name: 'The Late Caller',
     signature: 'a business that reads the play correctly and acts a beat late',
     headline: 'Stop *calling it late*.',
+    profileRead: {
+      meaning: 'The name describes the pattern your answers revealed: the business sees the signal, but the decision lands after the useful window.',
+      fix: 'First fix: shorten the wait after signal.'
+    },
     fitLine: 'You came in as The Late Caller: a business that reads the play and arrives after the whistle.',
     closeLine: 'The Late Caller wins the day it stops calling things late.'
   },
@@ -86,6 +106,10 @@ export const PERSONA = {
     name: 'The Splitting Pack',
     signature: 'a fast-moving business whose teams are pulling in different directions',
     headline: 'Point the whole team *one way*.',
+    profileRead: {
+      meaning: 'The name describes the pattern your answers revealed: teams move quickly, but each one is working from a different picture.',
+      fix: 'First fix: give one decision one shared picture.'
+    },
     fitLine: 'You came in as The Splitting Pack: speed is real, but the work is starting to split by team, tool and definition.',
     closeLine: 'The Splitting Pack changes the day teams stop solving the same problem twice.'
   },
@@ -93,6 +117,10 @@ export const PERSONA = {
     name: 'The Flagship on Faith',
     signature: 'a large operation with a clear direction and numbers that still require belief',
     headline: 'Back the conviction with *numbers*.',
+    profileRead: {
+      meaning: 'The name describes the pattern your answers revealed: direction is clear, but the numbers still need belief before they can carry decisions.',
+      fix: 'First fix: make one number the room can trust.'
+    },
     fitLine: 'You came in as The Flagship on Faith: direction is clear, but the evidence underneath still asks for belief.',
     closeLine: 'The Flagship on Faith changes the day conviction is backed by numbers the room can defend.'
   },
@@ -100,6 +128,10 @@ export const PERSONA = {
     name: 'The Lagging Tanker',
     signature: 'a large business with power and mandate, turning slower than the market allows',
     headline: 'Turn the ship before the *market* does.',
+    profileRead: {
+      meaning: 'The name describes the pattern your answers revealed: the business has weight and mandate, but the turn still takes too long.',
+      fix: 'First fix: shorten the wait after signal.'
+    },
     fitLine: 'You came in as The Lagging Tanker: the direction is right, the power is real but the turn is still too slow.',
     closeLine: 'The Lagging Tanker changes the day strong evidence stops waiting for permission.'
   },
@@ -107,6 +139,10 @@ export const PERSONA = {
     name: 'The Scattered Fleet',
     signature: 'a large business where functions are powered up but sailing different charts',
     headline: 'One chart for the *whole fleet*.',
+    profileRead: {
+      meaning: 'The name describes the pattern your answers revealed: teams are powered up, but they are not using one shared picture.',
+      fix: 'First fix: give one decision one shared picture.'
+    },
     fitLine: 'You came in as The Scattered Fleet: each function has motion, but the business does not yet have one shared chart.',
     closeLine: 'The Scattered Fleet changes the day the AI work connects instead of duplicating.'
   }
@@ -150,7 +186,7 @@ export const HURDLE_COPY = {
     hurdleCard: {
       lede: 'You have the number. The room still has to *trust it*.',
       body: 'If the number needs defending, the decision waits. Fix the trust rule first.',
-      close: 'First leak: Visibility'
+      close: 'Main weakness: Visibility'
     },
     reframe: {
       lede: 'Here is what is actually happening. It is not just a data problem.',
@@ -178,7 +214,7 @@ export const HURDLE_COPY = {
     hurdleCard: {
       lede: 'You see the move. You make it *too late*.',
       body: 'The leak is not effort. It is the wait after signal: owner, permission, evidence and the call that moves it.',
-      close: 'First leak: Velocity'
+      close: 'Main weakness: Velocity'
     },
     reframe: {
       lede: 'Here is what is actually happening. It is not what you think.',
@@ -206,7 +242,7 @@ export const HURDLE_COPY = {
     hurdleCard: {
       lede: 'Your teams work hard from *different pictures*.',
       body: 'The leak is not effort. It is the time spent agreeing which picture the decision can use.',
-      close: 'First leak: Coherence'
+      close: 'Main weakness: Coherence'
     },
     reframe: {
       lede: 'Here is what is actually happening. It is not just a collaboration problem.',
@@ -623,8 +659,8 @@ export const SP_GAP_COPY = {
     Coherence: 'That blocker is real, but it is not where the earliest cost shows up. Your answers point to Coherence: teams are not yet working from one picture.'
   },
   none: {
-    Visibility: 'That does not mean the business is stuck. It means the first leak is hiding underneath the numbers leadership already uses. If those numbers are unclear, every stronger AI move inherits that uncertainty.',
-    Velocity: 'That does not mean the business is stuck. It means the first leak is hiding in the path from signal to action. If useful evidence waits too long, stronger AI only helps the business notice the delay faster.',
-    Coherence: 'That does not mean the business is stuck. It means the first leak is hiding between teams, tools and definitions. If the picture splits before the decision, stronger AI can make the split move faster.'
+    Visibility: 'That does not mean the business is stuck. It means the main weakness is hiding underneath the numbers leadership already uses. If those numbers are unclear, every stronger AI move inherits that uncertainty.',
+    Velocity: 'That does not mean the business is stuck. It means the main weakness is hiding in the path from signal to action. If useful evidence waits too long, stronger AI only helps the business notice the delay faster.',
+    Coherence: 'That does not mean the business is stuck. It means the main weakness is hiding between teams, tools and definitions. If the picture splits before the decision, stronger AI can make the split move faster.'
   }
 };
