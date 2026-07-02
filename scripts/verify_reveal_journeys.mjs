@@ -276,7 +276,7 @@ async function verifyJourney(browser, baseUrl, key, viewport) {
   await page.locator('.card.is-active .cta').click({ timeout: 10000 });
   const popup = await popupPromise;
   summary.popupUrl = popup.url();
-  assert(summary.popupUrl.includes('calendly.com/atelier-and-avenue-saverio-bianchi'), `${key}/${viewport.name}: unexpected booking URL ${summary.popupUrl}`);
+  assert(summary.popupUrl.includes('calendly.com/atelier-and-avenue-saverio-bianchi/ai-readiness-diagnostic-follow-up-chat'), `${key}/${viewport.name}: unexpected booking URL ${summary.popupUrl}`);
   await popup.close();
 
   assert(errors.length === 0, `${key}/${viewport.name}: browser errors ${errors.join(' | ')}`);

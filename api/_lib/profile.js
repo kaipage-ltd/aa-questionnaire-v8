@@ -220,7 +220,7 @@ export function deriveActionPlan(profile) {
 
 // Booking link for the close-card CTA. Overridable per-environment via
 // PUBLIC_CALENDAR_URL; this default keeps the button live everywhere.
-const DEFAULT_CALENDAR_URL = 'https://calendly.com/atelier-and-avenue-saverio-bianchi/atelier-and-avenue-intro-20min';
+const DEFAULT_CALENDAR_URL = 'https://calendly.com/atelier-and-avenue-saverio-bianchi/ai-readiness-diagnostic-follow-up-chat';
 
 export function deriveRevealInsights(answers, profile, context = {}) {
   const persona = PERSONA[profile.key];
