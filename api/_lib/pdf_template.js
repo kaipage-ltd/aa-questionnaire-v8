@@ -368,7 +368,7 @@ function firstMovePage(ctx, meta, profile) {
   const bookingUrl = ctx.calendarUrl || meta.revealUrl;
   return `<section class="sheet"${sheetStyle('firstMove')}>
   ${header('First move')}
-  <div class="eyebrow mono">Book the session</div>
+  <div class="eyebrow mono">The standing invitation</div>
   <h1 class="title">${esc(ctx.pdfFirstMoveHeader)}</h1>
   <p class="lede">${esc(ctx.pdfFirstMoveLine)}</p>
 
@@ -389,7 +389,7 @@ function firstMovePage(ctx, meta, profile) {
         <div class="mono" style="font-size:7.4px; margin-top:5mm;">You leave with</div>
         <div style="font-size:11.8px; line-height:1.46; color:var(--paper-soft); margin-top:2mm;">${esc(ctx.sessionTakeaway)}</div>
       </div>
-      <a class="btn pill" style="white-space:nowrap; margin-top:1mm;" href="${escAttr(bookingUrl)}">Book the working session</a>
+      <a class="btn pill" style="white-space:nowrap; margin-top:1mm;" href="${escAttr(bookingUrl)}">Book the call</a>
     </div>
   </div>
   ${footer(meta, profile, 5)}
@@ -402,9 +402,9 @@ function row(label, value) {
 
 function firstMoveSteps(ctx) {
   return [
-    { title: 'Bring', body: firstMoveBringLine(ctx.hurdleLabel) },
-    { title: 'Map', body: 'We mark the signal, the wait, the owner, the handoff and the cost.' },
-    { title: 'Leave', body: 'You leave with one rule to test next week and one measure that proves whether it worked.' }
+    { title: 'Bring', body: 'One real decision that is hard right now.' },
+    { title: 'Read', body: 'Our CEO gives you the read you cannot get from inside your own business.' },
+    { title: 'Leave', body: 'The part the room cannot see from inside.' }
   ];
 }
 
@@ -546,11 +546,11 @@ function firstMoveBringLine(hurdle) {
 }
 
 function pdfFirstMoveHeader() {
-  return 'Bring one real decision. Leave with one rule.';
+  return 'Bring one real decision. Leave with the read you cannot get elsewhere.';
 }
 
 function pdfFirstMoveLine() {
-  return 'This is not a pitch. Bring the decision this profile points to. Our CEO maps where it waits, what to ignore and the rule that moves it next.';
+  return 'No script, no deck. You bring the decision that is hard right now. Our CEO gives you the read you cannot get from inside your own business.';
 }
 
 // ---- context assembly (moved from the PDFKit renderer; shapes the 14-card payload
@@ -623,8 +623,8 @@ export function profileContext(profile, insights) {
     firstMoveLine: move?.move || actionPlan.mondayMove || firstMoveLines[0] || `Inspect the ${profile.hurdle.toLowerCase()} gap first.`,
     pdfFirstMoveHeader: pdfFirstMoveHeader(profile),
     pdfFirstMoveLine: pdfFirstMoveLine(profile),
-    fitBody: 'Thirty minutes with our CEO. You bring the decision. We map the wait, decide what to ignore and name the rule that moves it.',
-    sessionTakeaway: 'A short decision map, one operating rule and one next measure. Enough to test inside the business next week.',
+    fitBody: 'Twenty minutes with our CEO. Not a pitch. Two operators comparing notes.',
+    sessionTakeaway: 'An outside read on the decision in front of you.',
     calendarUrl: close?.calendarUrl || '',
     prepLine: actionPlan.artefactName
       ? 'Bring one live example, not a general AI ambition.'

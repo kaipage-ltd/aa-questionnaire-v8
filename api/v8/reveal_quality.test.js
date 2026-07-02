@@ -183,11 +183,12 @@ test('demo reveal matrix emits the overhauled 8-card contract', () => {
 
     assert.equal(firstMove.eyebrow, 'THE FIRST MOVE');
     assert.equal(firstMove.glyph, profile.hurdle);
-    assert.match(firstMove.header, /Bring/);
+    assert.equal(firstMove.header, "Bring one real decision. Leave with *the read you can't get elsewhere*.");
     assert.equal((firstMove.header.match(/\*/g) || []).length, 2);
-    assert.match(firstMove.move, /Our CEO/);
-    assert.equal(firstMove.forward, 'You leave with one rule you can run next week.');
+    assert.equal(firstMove.move, 'No script, no deck.');
+    assert.match(firstMove.forward, /our CEO gives you the read/i);
     assert.equal(firstMove.brief.some((row) => row.label === 'Bring'), true);
+    assert.equal(firstMove.brief.some((row) => row.label === 'Read'), true);
     assert.equal(firstMove.brief.some((row) => row.label === 'Leave with'), true);
     assert.equal(firstMove.drawerLabel, 'Session map');
     assert.equal(firstMove.advanceLabel, 'See the session');
@@ -196,6 +197,7 @@ test('demo reveal matrix emits the overhauled 8-card contract', () => {
     assert.equal(close.header, PERSONA[expectedKey].headline.replace('{brandName}', 'A+A Demo'));
     assert.equal(close.offer, SESSION_OFFER);
     assert.equal(close.fitBody, SESSION_OFFER);
+    assert.deepEqual(close.offerLines, ['Twenty minutes with our CEO.', 'Not a pitch. Two operators comparing notes.']);
     assert.equal(close.glyph, profile.hurdle);
     assert.equal(close.closeLine, PERSONA[expectedKey].closeLine);
     assert.equal(close.outputs?.length >= 3, true);

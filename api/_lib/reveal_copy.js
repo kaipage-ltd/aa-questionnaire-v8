@@ -38,11 +38,11 @@ export const STATIC = {
   },
   card13: {
     eyebrow: 'WHERE THIS GOES NEXT',
-    button: 'Book the working session',
+    button: 'Book the call',
     qualifier: ''
   },
   card14: {
-    button: 'Book the working session'
+    button: 'Book the call'
   }
 };
 
@@ -50,7 +50,7 @@ export const PERSONA = {
   'c-vi': {
     name: 'The Dead Reckoner',
     signature: 'a business plotting the week by estimate because the instruments are not yet trusted',
-    headline: 'Stop steering by *guess*.',
+    headline: 'Make your brand stop *steering by guess*.',
     profileRead: {
       meaning: 'The name describes the pattern your answers revealed: the business has numbers, but the room still steers by estimate.',
       fix: 'First fix: make one number the room can trust.'
@@ -61,7 +61,7 @@ export const PERSONA = {
   'c-ve': {
     name: 'The Sole Hand',
     signature: 'a business where too many real decisions still wait for the same one or two people',
-    headline: 'Get the decision *out of your hands*.',
+    headline: 'Make your brand stop *waiting for you*.',
     profileRead: {
       meaning: 'The name describes the pattern your answers revealed: real decisions still wait for the same one or two people.',
       fix: 'First fix: shorten the wait after signal.'
@@ -72,7 +72,7 @@ export const PERSONA = {
   'c-co': {
     name: 'The Patchwork Crew',
     signature: 'a crew stitching the picture together by hand before the work can begin',
-    headline: 'One picture. *Then* the work starts.',
+    headline: 'Make your brand stop *rebuilding the picture*.',
     profileRead: {
       meaning: 'The name describes the pattern your answers revealed: capable people keep rebuilding the picture by hand before they can move.',
       fix: 'First fix: give one decision one shared picture.'
@@ -83,7 +83,7 @@ export const PERSONA = {
   't-vi': {
     name: 'The Blind Sprinter',
     signature: 'a business with real pace, running faster than the evidence underneath it',
-    headline: 'Run fast. On numbers you *trust*.',
+    headline: 'Make your brand stop *outrunning the proof*.',
     profileRead: {
       meaning: 'The name describes the pattern your answers revealed: the business has pace, but the evidence underneath still needs defending.',
       fix: 'First fix: make one number the room can trust.'
@@ -94,7 +94,7 @@ export const PERSONA = {
   't-ve': {
     name: 'The Late Caller',
     signature: 'a business that reads the play correctly and acts a beat late',
-    headline: 'Stop *calling it late*.',
+    headline: 'Make your brand stop *calling it late*.',
     profileRead: {
       meaning: 'The name describes the pattern your answers revealed: the business sees the signal, but the decision lands after the useful window.',
       fix: 'First fix: shorten the wait after signal.'
@@ -105,7 +105,7 @@ export const PERSONA = {
   't-co': {
     name: 'The Splitting Pack',
     signature: 'a fast-moving business whose teams are pulling in different directions',
-    headline: 'Point the whole team *one way*.',
+    headline: 'Make your brand stop *splitting the work*.',
     profileRead: {
       meaning: 'The name describes the pattern your answers revealed: teams move quickly, but each one is working from a different picture.',
       fix: 'First fix: give one decision one shared picture.'
@@ -116,7 +116,7 @@ export const PERSONA = {
   's-vi': {
     name: 'The Flagship on Faith',
     signature: 'a large operation with a clear direction and numbers that still require belief',
-    headline: 'Back the conviction with *numbers*.',
+    headline: 'Make your brand stop *running on belief*.',
     profileRead: {
       meaning: 'The name describes the pattern your answers revealed: direction is clear, but the numbers still need belief before they can carry decisions.',
       fix: 'First fix: make one number the room can trust.'
@@ -127,7 +127,7 @@ export const PERSONA = {
   's-ve': {
     name: 'The Lagging Tanker',
     signature: 'a large business with power and mandate, turning slower than the market allows',
-    headline: 'Turn the ship before the *market* does.',
+    headline: 'Make your brand stop *turning too late*.',
     profileRead: {
       meaning: 'The name describes the pattern your answers revealed: the business has weight and mandate, but the turn still takes too long.',
       fix: 'First fix: shorten the wait after signal.'
@@ -138,7 +138,7 @@ export const PERSONA = {
   's-co': {
     name: 'The Scattered Fleet',
     signature: 'a large business where functions are powered up but sailing different charts',
-    headline: 'One chart for the *whole fleet*.',
+    headline: 'Make your brand stop *using different pictures*.',
     profileRead: {
       meaning: 'The name describes the pattern your answers revealed: teams are powered up, but they are not using one shared picture.',
       fix: 'First fix: give one decision one shared picture.'
@@ -413,9 +413,9 @@ export const COST_BILL = {
 };
 
 export const MOVE_BODY = {
-  Visibility: 'Bring the number the room still debates. Our CEO maps the source, owner, trust test and the decision it should change.',
-  Velocity: 'Bring the call that landed late. Our CEO maps the signal, first wait, owner and the rule that moves it.',
-  Coherence: 'Bring the decision teams split on. Our CEO maps the source, definition, owner and the tie-breaker.'
+  Visibility: 'No script, no deck.',
+  Velocity: 'No script, no deck.',
+  Coherence: 'No script, no deck.'
 };
 
 export const QUOTE_SOWHAT = {
@@ -424,8 +424,12 @@ export const QUOTE_SOWHAT = {
   Coherence: 'The split sits in the source, the definition or who breaks the tie.'
 };
 
-export const MONDAY_FORWARD = 'You leave with one rule you can run next week.';
-export const SESSION_OFFER = 'Thirty minutes with our CEO. Bring the decision this read points to. Leave with one rule you can run next week.';
+export const MONDAY_FORWARD = 'You bring the decision that is hard right now. Our CEO gives you the read you cannot get from inside your own business.';
+export const SESSION_OFFER_LINES = [
+  'Twenty minutes with our CEO.',
+  'Not a pitch. Two operators comparing notes.'
+];
+export const SESSION_OFFER = SESSION_OFFER_LINES.join(' ');
 
 export const ANSWER_OPTIONS = {
   Q2: [

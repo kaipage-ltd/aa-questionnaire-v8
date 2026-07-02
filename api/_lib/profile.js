@@ -20,6 +20,7 @@ import {
   RECEIPT_IMPLICATIONS,
   RECEIPT_PROOFS,
   SAFE_TO_QUOTE,
+  SESSION_OFFER_LINES,
   SESSION_OFFER,
   SP_GAP_COPY,
   SP_TO_HURDLE,
@@ -372,6 +373,7 @@ export function deriveRevealInsights(answers, profile, context = {}) {
       actionPlan,
       header: fill(persona.headline, interpolateContext),
       offer: SESSION_OFFER,
+      offerLines: SESSION_OFFER_LINES,
       glyph: profile.hurdle,
       lede: fill(persona.headline, interpolateContext),
       fitBody: SESSION_OFFER,
@@ -773,11 +775,7 @@ function patternSoWhat(hurdle) {
 }
 
 function firstMoveHeader(hurdle) {
-  return {
-    Visibility: 'Bring one number. Leave with one *trust rule*.',
-    Velocity: 'Bring one late call. Leave with one *release rule*.',
-    Coherence: 'Bring one split call. Leave with one *tie-breaker*.'
-  }[hurdle] || 'Bring one live *decision*.';
+  return "Bring one real decision. Leave with *the read you can't get elsewhere*.";
 }
 
 function costHero(profile, weakAnswers) {
@@ -1068,46 +1066,20 @@ function embeddedImplementation(hurdle) {
   ];
 }
 
-function firstMoveMap(hurdle) {
-  return {
-    Visibility: 'the number, owner, trust test and next decision',
-    Velocity: 'the signal, first wait, owner and next deadline',
-    Coherence: 'the source, definition, owner and tie-breaker'
-  }[hurdle] || 'the signal, owner, rule and next decision';
-}
-
 function firstMoveBody({ actionPlan, hurdle, quote }) {
-  const map = firstMoveMap(hurdle);
-
   return [
-    actionPlan.whatToBringToCall,
-    actionPlan.mondayMove,
-    `You leave with one rule for ${map}.`,
-    `Avoid for now: ${actionPlan.avoidForNow}`
+    'Bring the decision that is hard right now.',
+    'Our CEO gives you the read you cannot get from inside your own business.',
+    'You leave with the part the room cannot see from inside.',
+    'No script, no deck.'
   ];
 }
 
 function firstMoveBrief({ actionPlan, hurdle, quote }) {
-  return {
-    Visibility: [
-      { label: 'Bring', value: 'The number the room still debates.' },
-      { label: 'Find', value: 'Where trust breaks: source, owner or payback.' },
-      { label: 'Leave with', value: 'One trust rule and the decision it changes next.' }
-    ],
-    Velocity: [
-      { label: 'Bring', value: 'The call that landed late.' },
-      { label: 'Find', value: 'The first wait after signal: owner, permission or meeting.' },
-      { label: 'Leave with', value: 'One release rule and the next deadline.' }
-    ],
-    Coherence: [
-      { label: 'Bring', value: 'The decision teams keep splitting on.' },
-      { label: 'Find', value: 'The source, definition or owner that breaks alignment.' },
-      { label: 'Leave with', value: 'One tie-breaker rule before the next call.' }
-    ]
-  }[hurdle] || [
-    { label: 'Bring', value: 'One live decision.' },
-    { label: 'Find', value: 'Where the decision waits.' },
-    { label: 'Leave with', value: 'One rule to test next week.' }
+  return [
+    { label: 'Bring', value: 'One real decision that is hard right now.' },
+    { label: 'Read', value: 'An outside read from our CEO.' },
+    { label: 'Leave with', value: 'What the room cannot see from inside.' }
   ];
 }
 

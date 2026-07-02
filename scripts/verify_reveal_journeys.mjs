@@ -254,12 +254,14 @@ async function verifyJourney(browser, baseUrl, key, viewport) {
       assert(active.text.includes('THE BILL'), `${key}/${viewport.name}: cost bill missing`);
     }
     if (slide === 7) {
-      assert(active.text.includes('You leave with one rule'), `${key}/${viewport.name}: first move rule missing`);
+      assert(active.text.includes("the read you can't get elsewhere"), `${key}/${viewport.name}: standing invitation promise missing`);
+      assert(active.text.includes('No script, no deck'), `${key}/${viewport.name}: standing invitation body missing`);
     }
     if (slide === 8) {
-      assert(active.text.includes('Thirty minutes with our CEO'), `${key}/${viewport.name}: close offer missing`);
+      assert(active.text.includes('Twenty minutes with our CEO'), `${key}/${viewport.name}: close offer missing`);
+      assert(active.text.includes('Not a pitch. Two operators comparing notes.'), `${key}/${viewport.name}: close promise missing`);
       assert(!active.text.includes('six new clients'), `${key}/${viewport.name}: retired close qualifier is still visible`);
-      assert(active.text.includes('Book the working session'), `${key}/${viewport.name}: booking CTA missing`);
+      assert(active.text.includes('Book the call'), `${key}/${viewport.name}: booking CTA missing`);
     }
 
     const drawer = await verifyDrawer(page, key, viewport, slide);

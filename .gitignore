@@ -1,6 +1,7 @@
 .env
 .env.local
 .vercel
+.vercel.*
 node_modules
 npm-debug.log*
 scripts/output/

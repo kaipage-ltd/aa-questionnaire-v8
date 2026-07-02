@@ -1051,6 +1051,9 @@
     font-size: clamp(21px, 2.2vw, 29px);
     line-height: 1.34;
   }
+  .close-stage .close-sublede {
+    margin-top: 10px;
+  }
   .close-action {
     display: flex;
     align-items: center;
@@ -2103,26 +2106,10 @@ function costImpactLine(hurdle) {
 }
 
 function moveStepsFor(hurdle) {
-  return {
-    Visibility: [
-      ['Bring', 'The number your team keeps debating.'],
-      ['Set', 'Its source, owner and the test that proves it.'],
-      ['Use', 'The one decision it changes this week.']
-    ],
-    Velocity: [
-      ['Bring', 'The call that lands late.'],
-      ['Find', 'The first wait after signal.'],
-      ['Set', 'The owner, deadline and rule.']
-    ],
-    Coherence: [
-      ['Bring', 'The call teams split on.'],
-      ['Name', 'The source, definition and owner.'],
-      ['Set', 'The tie-breaker rule.']
-    ]
-  }[hurdle] || [
-    ['Bring', 'One repeated decision.'],
-    ['Map', 'The signal, owner and rule.'],
-    ['Set', 'One rule before it spreads.']
+  return [
+    ['Bring', 'One hard decision.'],
+    ['Read', 'An outside view from our CEO.'],
+    ['Leave', 'What the room cannot see from inside.']
   ];
 }
 
@@ -2382,7 +2369,12 @@ function buildCard(card) {
     });
     closeStage.append(motif);
     closeStage.append(h(card.header, 'd1'));
-    closeStage.append(p('lede anim d2', card.offer || card.fitBody));
+    const offerLines = Array.isArray(card.offerLines) && card.offerLines.length
+      ? card.offerLines
+      : [card.offer || card.fitBody].filter(Boolean);
+    offerLines.forEach((line, index) => {
+      closeStage.append(p(`lede anim d2${index ? ' close-sublede' : ''}`, line));
+    });
     const ctaWrap = el('div', 'close-action anim d3');
     const cta = el('button', 'cta', `${card.button} →`);
     cta.type = 'button';
