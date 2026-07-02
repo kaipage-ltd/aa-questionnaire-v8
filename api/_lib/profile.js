@@ -280,7 +280,7 @@ export function deriveRevealInsights(answers, profile, context = {}) {
       beat: 'Problem',
       eyebrow: 'WHERE YOU STAND VS BEST PRACTICE',
       header: 'Benchmark vs the best. The gap is the work.',
-      lede: 'Your score is the light line. The right-hand mark is best practice. The gap shows what must improve before AI carries more decisions.',
+      lede: 'Your score is the light line. The mark on the right is best practice. The gap is what AI would inherit.',
       pillars: pillars.map((pillar) => ({
         ...pillar,
         role: 'normal',
@@ -290,7 +290,7 @@ export function deriveRevealInsights(answers, profile, context = {}) {
       })),
       benchmark: BENCHMARK,
       benchmarkLabel: BENCHMARK_LABEL,
-      benchmarkNote: 'Right-hand mark: best practice before AI carries more decisions.',
+      benchmarkNote: 'Right mark: best practice before AI carries more decisions.',
       shapeRead: shapeRead({ strongest, hurdle: hurdlePillar, gap, highEvenShape, balancedEvenShape, leverage: leverageReality(answers, profile) }),
       body: shapeBody({ bShape }),
       drawerLabel: 'What the gap means',
@@ -644,18 +644,18 @@ function scoreInterpretation({ profile, strongest, hurdle, gap, highEvenShape, b
     profile.score >= 45 ? 'Enough signal to act, but too uneven to scale cleanly.' :
     'Low enough to matter. Clear enough to show *where to start*.';
   const strength = highEvenShape
-    ? 'All four readings are high. The work is to choose which part of the system should carry more weight next.'
+    ? 'All four readings are high. Choose the rule AI should carry first.'
     : balancedEvenShape
-    ? 'The readings are close. The work is to sharpen the first inspection point rather than invent a crisis.'
-    : `${strongest.label} is carrying the profile at ${strongest.value}. ${PILLAR_COPY[strongest.label]?.strong || 'That is the operating strength to protect.'}`;
+    ? 'The readings are close. Sharpen the first inspection point.'
+    : `${strongest.label} is strongest at ${strongest.value}. ${PILLAR_COPY[strongest.label]?.strong || 'Protect it.'}`;
   const exposure = highEvenShape || balancedEvenShape || gap <= 6
-    ? `${hurdle.label} is still the first inspection point, even without a dramatic score gap.`
-    : `${hurdle.label} is ${gap} points behind the strongest reading. That is the main weakness to inspect first.`;
+    ? `${hurdle.label} is still the first place to inspect.`
+    : `${hurdle.label} is ${gap} points behind the strongest reading. Inspect it first.`;
   const threshold = {
-    Visibility: 'The next threshold is decision-grade evidence: one owner, one source, one trust rule, one decision changed.',
-    Velocity: 'The next threshold is decision speed: first signal to first irreversible action, without another governance layer.',
-    Coherence: 'The next threshold is one shared picture: source, definition, owner and escalation rule agreed before teams act.'
-  }[hurdle.label] || 'The next threshold is one repeated decision made cleaner before more AI work is added.';
+    Visibility: 'Next: one owner, one source and one trust rule.',
+    Velocity: 'Next: first signal to first action, without another layer.',
+    Coherence: 'Next: one source, one definition, one owner and one tie-break rule.'
+  }[hurdle.label] || 'Next: one repeated decision made cleaner before more AI work.';
 
   return [
     { label: 'Score read', value: scoreRead },

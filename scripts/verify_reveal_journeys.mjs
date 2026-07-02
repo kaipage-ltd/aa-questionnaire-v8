@@ -161,7 +161,17 @@ async function collectActiveCard(page) {
       advanceOverlaps,
       activeCount: document.querySelectorAll('.card.is-active').length,
       docWidth: document.documentElement.scrollWidth,
-      viewportWidth: document.documentElement.clientWidth
+      viewportWidth: document.documentElement.clientWidth,
+      cardScrollWidth: card?.scrollWidth || 0,
+      cardClientWidth: card?.clientWidth || 0,
+      cardScrollLeftAfterProbe: (() => {
+        if (!card) return 0;
+        const before = card.scrollLeft;
+        card.scrollLeft = 40;
+        const after = card.scrollLeft;
+        card.scrollLeft = before;
+        return after;
+      })()
     };
   });
 }
@@ -170,6 +180,10 @@ function checkActiveCard({ key, viewport, slide, active }) {
   assert(active.activeCount === 1, `${key}/${viewport.name}/slide ${slide}: expected one active card`);
   assert(active.text.trim().length > 0, `${key}/${viewport.name}/slide ${slide}: active card has no text`);
   assert(active.docWidth <= active.viewportWidth + 3, `${key}/${viewport.name}/slide ${slide}: horizontal overflow ${active.docWidth} > ${active.viewportWidth}`);
+  if (viewport.name.startsWith('mobile')) {
+    assert(active.cardScrollWidth <= active.cardClientWidth + 2, `${key}/${viewport.name}/slide ${slide}: active card horizontal overflow ${active.cardScrollWidth} > ${active.cardClientWidth}`);
+    assert(active.cardScrollLeftAfterProbe === 0, `${key}/${viewport.name}/slide ${slide}: active card can pan horizontally to ${active.cardScrollLeftAfterProbe}`);
+  }
 
   const bad = active.textEls.filter((node) => (
     node.width > 0 &&
@@ -231,7 +245,7 @@ async function verifyJourney(browser, baseUrl, key, viewport) {
     }
     if (slide === 3) {
       assert(active.text.includes('Benchmark vs the best.'), `${key}/${viewport.name}: benchmark headline missing`);
-      assert(active.text.toLowerCase().includes('right-hand mark'), `${key}/${viewport.name}: benchmark note missing`);
+      assert(active.text.toLowerCase().includes('right mark'), `${key}/${viewport.name}: benchmark note missing`);
       const dragCount = await page.locator('.card.is-active .bar-row.drag').count();
       const normalCount = await page.locator('.card.is-active .bar-row.normal').count();
       assert(dragCount + normalCount === 4, `${key}/${viewport.name}: expected four benchmark rows`);

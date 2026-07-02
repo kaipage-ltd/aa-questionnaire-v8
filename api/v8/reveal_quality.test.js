@@ -129,7 +129,7 @@ test('demo reveal matrix emits the overhauled 8-card contract', () => {
     assert.equal(shape.eyebrow, 'WHERE YOU STAND VS BEST PRACTICE');
     assert.match(shape.header, /^Benchmark vs the best\. /);
     assert.match(shape.lede, /light line/);
-    assert.match(shape.benchmarkNote, /Right-hand mark/);
+    assert.match(shape.benchmarkNote, /Right mark/);
     assert.equal(shape.pillars.length, 4);
     assert.equal(shape.header, 'Benchmark vs the best. The gap is the work.');
     const dragRows = shape.pillars.filter((pillar) => pillar.role === 'drag');

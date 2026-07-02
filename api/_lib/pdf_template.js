@@ -601,7 +601,7 @@ export function profileContext(profile, insights) {
     shapeHeader: shape?.header || '',
     shapeBody: shape?.body || 'The value is not the score on its own. It is the operating gap behind it.',
     pdfShapeHeader: 'Benchmark vs the best. The gap is the work.',
-    pdfShapeBody: 'Your score is the light line. The right-hand mark is best practice. The gap shows what must improve before AI carries more decisions.',
+    pdfShapeBody: 'Your score is the light line. The mark on the right is best practice. The gap is what AI would inherit.',
     aiImplication: rowValue(shape?.shapeRead, 'AI risk'),
     pdfAiRisk: pdfClean(rowValue(shape?.shapeRead, 'AI risk')) || 'AI inherits this gap unless the repeated decision path is made cleaner.',
     aiLeverage: '',
